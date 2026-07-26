@@ -7,3 +7,17 @@ out/
 .DS_Store
 *.log
 .superpowers/
+
+# next.js scaffold additions
+/build
+/coverage
+*.pem
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
