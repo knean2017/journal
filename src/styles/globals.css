@@ -20,49 +20,59 @@
   --font-sans: var(--font-lato), system-ui, sans-serif;
 }
 
-/* Global reset. Prototype lines 16-23. */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  border-radius: 0;
+/*
+ * Global reset. Prototype lines 16-23.
+ *
+ * This MUST sit inside @layer base. Unlayered CSS outranks every cascade
+ * layer, so an unlayered `a { color }` would beat the button classes in
+ * @layer components and render cream-on-maroon labels invisible.
+ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-radius: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-maroon-hover);
+  }
+
+  img {
+    max-width: 100%;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+@layer base {
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
 
-body {
-  margin: 0;
-  background: var(--color-page);
-  color: var(--color-ink);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-}
-
-a {
-  color: var(--color-maroon);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--color-maroon-hover);
-}
-
-img {
-  max-width: 100%;
-}
-
-::selection {
-  background: var(--color-gold);
-  color: var(--color-ink);
-}
-
-input,
-select,
-textarea,
-button {
-  font-family: inherit;
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
 }
 
 /* Keyframes. Prototype lines 24-29. */
@@ -102,6 +112,10 @@ button {
 
   .rule-double {
     border-top: 3px double var(--color-maroon);
+  }
+
+  .rule-double-bottom {
+    border-bottom: 3px double var(--color-maroon);
   }
 
   .btn-base {
