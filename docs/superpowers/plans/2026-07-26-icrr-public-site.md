@@ -1855,7 +1855,14 @@ git commit -m "feat: add UI primitives for the journal design system"
 
 `Nav` and `Drawer` are one client island (`Nav.tsx` owns the `narrow` and `menuOpen` state and renders `Drawer`). `ToastProvider` is a client island. `RevealArmer` is a client island that calls `armReveal` on mount and on every pathname change.
 
-- [ ] **Step 1: Write the nav item constants**
+- [ ] **Step 1: Write the failing nav-items test**
+
+Create `tests/unit/nav-items.test.ts` with the content given in step 2 below, then run it.
+
+Run: `npm test -- tests/unit/nav-items.test.ts`
+Expected: FAIL with "Failed to resolve import @/lib/nav-items". Record as RED evidence.
+
+- [ ] **Step 2: Write the nav item constants**
 
 Create `src/lib/nav-items.ts`. Prototype lines 959-966 and 861-864.
 
@@ -1899,7 +1906,9 @@ export function pageTitleFor(pathname: string): string {
 }
 ```
 
-- [ ] **Step 2: Write the failing chrome unit test**
+- [ ] **Step 3: The nav-items test content, and verify it now passes**
+
+This is the file created in step 1. After step 2 it must pass.
 
 Create `tests/unit/nav-items.test.ts`:
 
@@ -1942,9 +1951,9 @@ describe('pageTitleFor', () => {
 ```
 
 Run: `npm test -- tests/unit/nav-items.test.ts`
-Expected: FAIL, then PASS after step 1's file is in place. If step 1 is already committed, this test passes immediately; that is acceptable for a pure constants module.
+Expected: PASS, all seven cases. Record as GREEN evidence.
 
-- [ ] **Step 3: Build TopStrip and Masthead**
+- [ ] **Step 4: Build TopStrip and Masthead**
 
 `src/components/chrome/TopStrip.tsx` — port prototype lines 36-41. Server component.
 
@@ -1993,7 +2002,7 @@ export function Masthead() {
 }
 ```
 
-- [ ] **Step 4: Build Nav and Drawer**
+- [ ] **Step 5: Build Nav and Drawer**
 
 `src/components/chrome/Nav.tsx` — client island. Ports prototype lines 48-102 and the matchMedia logic at 872-875. The two variants are separate DOM, switched by state, not by CSS `display`.
 
@@ -2163,7 +2172,7 @@ export function Drawer({
 }
 ```
 
-- [ ] **Step 5: Build Footer**
+- [ ] **Step 6: Build Footer**
 
 `src/components/chrome/Footer.tsx` — port prototype lines 703-742. Server component. Column 1 uses the standalone square mark, never the full lockup on a plate.
 
@@ -2244,7 +2253,7 @@ export function Footer({ contactEmail }: { contactEmail: string }) {
 }
 ```
 
-- [ ] **Step 6: Build ToastProvider and RevealArmer**
+- [ ] **Step 7: Build ToastProvider and RevealArmer**
 
 `src/components/chrome/ToastProvider.tsx` — client island. Ports prototype lines 743-745 and 916.
 
@@ -2292,9 +2301,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 }
 ```
 
-Note: this is the only `box-shadow` permitted in the codebase, and it is written inline rather than in `globals.css` so the task 1 shadow test keeps passing. Add an exemption to that test:
-
-In `tests/unit/tokens.test.ts`, the shadow assertion already scopes to `globals.css` only, so no change is needed.
+Note: this is the only `box-shadow` permitted in the codebase, and it is written inline rather than in `globals.css` so the task 1 shadow test, which scopes its assertion to `globals.css` only, keeps passing. Task 17 audits shadows across all of `src/` and expects this one file.
 
 `src/components/chrome/RevealArmer.tsx` — client island.
 
@@ -2318,7 +2325,7 @@ export function RevealArmer() {
 }
 ```
 
-- [ ] **Step 7: Compose the site layout**
+- [ ] **Step 8: Compose the site layout**
 
 Create `src/app/(site)/layout.tsx`:
 
@@ -2351,7 +2358,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
 Move the placeholder home page: `git mv src/app/page.tsx "src/app/(site)/page.tsx"`.
 
-- [ ] **Step 8: Configure Playwright**
+- [ ] **Step 9: Configure Playwright**
 
 Create `playwright.config.ts`:
 
@@ -2376,7 +2383,7 @@ export default defineConfig({
 })
 ```
 
-- [ ] **Step 9: Write the chrome e2e test**
+- [ ] **Step 10: Write the chrome e2e test**
 
 Create `tests/e2e/chrome.spec.ts`:
 
@@ -2467,7 +2474,7 @@ test('footer carries the contact address and the licence line', async ({ page })
 })
 ```
 
-- [ ] **Step 10: Create stub routes so the e2e test can navigate**
+- [ ] **Step 11: Create stub routes so the e2e test can navigate**
 
 Create minimal placeholder pages so navigation resolves. Each is replaced by its real task later.
 
@@ -2489,12 +2496,12 @@ EOF
 cp "src/app/(site)/authors/[slug]/page.tsx" "src/app/(site)/articles/[slug]/page.tsx"
 ```
 
-- [ ] **Step 11: Run the e2e test**
+- [ ] **Step 12: Run the e2e test**
 
 Run: `npm run test:e2e -- tests/e2e/chrome.spec.ts`
 Expected: PASS, all cases across both projects.
 
-- [ ] **Step 12: Commit**
+- [ ] **Step 13: Commit**
 
 ```bash
 git add -A
@@ -2507,14 +2514,16 @@ git commit -m "feat: add global chrome with matchMedia nav switching and drawer"
 
 Each view follows the same shape, so the steps are given once here and the per-view detail follows. **Do not skip the per-view detail; each view names its own sections, data, and prototype lines.**
 
-**Shared steps for every view task:**
+**Shared steps for every view task.** These are TDD: the spec file is written and observed failing against the stub route before any view code exists.
 
 - [ ] **Step A:** Open `design-reference/ICRR Journal.dc.html` at the cited line range. Read the entire range before writing anything.
-- [ ] **Step B:** Write the route's `page.tsx` as an async server component that awaits only the accessors listed under Data.
-- [ ] **Step C:** Write one component file per section under `src/components/site/<view>/`. Port markup and inline styles verbatim; replace `{{ }}` bindings with props; replace `onClick="{{ go* }}"` with `next/link`.
-- [ ] **Step D:** Run `npm run build` and confirm no type errors.
-- [ ] **Step E:** Run the view's Playwright spec and confirm it passes.
-- [ ] **Step F:** Commit with `feat: add <view> page`.
+- [ ] **Step B:** Write the view's Playwright spec file exactly as given under **Test**.
+- [ ] **Step C:** Run it. Expected: FAIL, because the route is still the stub placeholder from task 6 step 10. Record the failing output as RED evidence.
+- [ ] **Step D:** Write the route's `page.tsx` as an async server component that awaits only the accessors listed under Data.
+- [ ] **Step E:** Write one component file per section under `src/components/site/<view>/`. Port markup and inline styles verbatim; replace `{{ }}` bindings with props; replace `onClick="{{ go* }}"` with `next/link`.
+- [ ] **Step F:** Run `npm run build` and confirm no type errors.
+- [ ] **Step G:** Re-run the view's Playwright spec. Expected: PASS. Record as GREEN evidence.
+- [ ] **Step H:** Commit with `feat: add <view> page`.
 
 ---
 
@@ -3086,10 +3095,10 @@ Create `tests/unit/design-audit.test.ts`:
 
 ```ts
 import { readFileSync } from 'node:fs'
-import { globSync } from 'node:fs'
+import fg from 'fast-glob'
 import { describe, expect, it } from 'vitest'
 
-const FILES = globSync('src/**/*.{ts,tsx,css}')
+const FILES = fg.sync('src/**/*.{ts,tsx,css}')
 const read = (file: string) => readFileSync(file, 'utf8')
 
 const ALLOWED_HEX = new Set([
@@ -3131,7 +3140,7 @@ describe('design audit', () => {
 })
 ```
 
-If `globSync` is unavailable on the installed Node version, replace it with `fast-glob`: `npm install -D fast-glob` and `import fg from 'fast-glob'; const FILES = fg.sync('src/**/*.{ts,tsx,css}')`.
+Install the glob dependency first: `npm install -D fast-glob`. Node's own `fs.globSync` is still experimental on Node 22 and emits a warning that would break the pristine-output requirement.
 
 - [ ] **Step 2: Run it and fix every offender**
 
