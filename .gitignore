@@ -24,3 +24,5 @@ next-env.d.ts
 .playwright-mcp/
 *.png
 !public/**/*.png
+test-results/
+playwright-report/
