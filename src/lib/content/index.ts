@@ -1,131 +1,63 @@
-import {
-  announcementSchema,
-  articleSchema,
-  authorSchema,
-  disciplineSchema,
-  editorialRoleSchema,
-  issueSchema,
-  siteConfigSchema,
-  teamMemberSchema,
-  tickerLineSchema,
-} from './schema'
-import type {
-  Announcement,
-  Article,
-  Author,
-  Discipline,
-  EditorialRole,
-  Fact,
-  Issue,
-  ProcessStep,
-  Requirement,
-  SiteConfig,
-  TeamMember,
-  TickerLine,
-  TimelineEntry,
-  TocPreviewEntry,
-} from './schema'
-
-import { config } from './seed/config'
-import { disciplines } from './seed/disciplines'
-import { team } from './seed/team'
-import { editorialRoles } from './seed/roles'
-import { authors } from './seed/authors'
-import { issues } from './seed/issues'
-import { articles } from './seed/articles'
-import { announcements } from './seed/announcements'
-import { tickerLines } from './seed/ticker'
-import { checklist, facts, processSteps, requirements, timeline, tocPreview } from './seed/process'
+import { isSupabaseConfigured } from '@/lib/supabase/env'
+import * as seed from './sources/seed'
+import * as db from './sources/supabase'
 
 /**
  * The only content API the rest of the app may import.
  *
- * Every accessor is async so the Supabase implementation can replace these
- * bodies with queries and no call site has to change.
+ * Picks its source at call time: Supabase when credentials are present, the
+ * seed files otherwise, so the site builds and renders with no database
+ * attached. If a Supabase read throws, the seed value is served rather than
+ * failing the page, and the error is logged.
  */
 
-const byOrder = <T extends { sortOrder: number }>(rows: T[]): T[] =>
-  [...rows].sort((a, b) => a.sortOrder - b.sortOrder)
+const useDb = () => isSupabaseConfigured()
 
-export async function getConfig(): Promise<SiteConfig> {
-  return siteConfigSchema.parse(config)
+async function fromDb<T>(read: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {
+  if (!useDb()) return fallback()
+  try {
+    return await read()
+  } catch (error) {
+    console.error('[content] Supabase read failed, serving seed content instead:', error)
+    return fallback()
+  }
 }
 
-export async function getDisciplines(): Promise<Discipline[]> {
-  return byOrder(disciplines).map((d) => disciplineSchema.parse(d))
-}
+export const getConfig = () => fromDb(db.getConfig, seed.getConfig)
+export const getDisciplines = () => fromDb(db.getDisciplines, seed.getDisciplines)
+export const getTeam = () => fromDb(db.getTeam, seed.getTeam)
+export const getEditorialRoles = () => fromDb(db.getEditorialRoles, seed.getEditorialRoles)
+export const getAuthors = () => fromDb(db.getAuthors, seed.getAuthors)
+export const getIssues = () => fromDb(db.getIssues, seed.getIssues)
+export const getCurrentIssue = () => fromDb(db.getCurrentIssue, seed.getCurrentIssue)
+export const getArticles = () => fromDb(db.getArticles, seed.getArticles)
+export const getAnnouncements = () => fromDb(db.getAnnouncements, seed.getAnnouncements)
+export const getTickerLines = () => fromDb(db.getTickerLines, seed.getTickerLines)
 
-export async function getTeam(): Promise<TeamMember[]> {
-  return byOrder(team).map((t) => teamMemberSchema.parse(t))
-}
+export const getAuthorBySlug = (slug: string) =>
+  fromDb(
+    () => db.getAuthorBySlug(slug),
+    () => seed.getAuthorBySlug(slug),
+  )
 
-export async function getEditorialRoles(): Promise<EditorialRole[]> {
-  return byOrder(editorialRoles).map((r) => editorialRoleSchema.parse(r))
-}
+export const getArticleBySlug = (slug: string) =>
+  fromDb(
+    () => db.getArticleBySlug(slug),
+    () => seed.getArticleBySlug(slug),
+  )
 
-export async function getAuthors(): Promise<Author[]> {
-  return authors.map((a) => authorSchema.parse(a))
-}
+export const getArticlesByAuthor = (authorId: string) =>
+  fromDb(
+    () => db.getArticlesByAuthor(authorId),
+    () => seed.getArticlesByAuthor(authorId),
+  )
 
-export async function getAuthorBySlug(slug: string): Promise<Author | null> {
-  const found = authors.find((a) => a.slug === slug)
-  return found ? authorSchema.parse(found) : null
-}
-
-export async function getIssues(): Promise<Issue[]> {
-  return issues.map((i) => issueSchema.parse(i))
-}
-
-export async function getCurrentIssue(): Promise<Issue | null> {
-  const found = issues.find((i) => i.isCurrent)
-  return found ? issueSchema.parse(found) : null
-}
-
-export async function getArticles(): Promise<Article[]> {
-  return articles.map((a) => articleSchema.parse(a))
-}
-
-export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  const found = articles.find((a) => a.slug === slug)
-  return found ? articleSchema.parse(found) : null
-}
-
-export async function getArticlesByAuthor(authorId: string): Promise<Article[]> {
-  return articles
-    .filter((a) => a.authors.some((x) => x.authorId === authorId))
-    .map((a) => articleSchema.parse(a))
-}
-
-export async function getAnnouncements(): Promise<Announcement[]> {
-  return byOrder(announcements).map((a) => announcementSchema.parse(a))
-}
-
-export async function getTickerLines(): Promise<TickerLine[]> {
-  return byOrder(tickerLines).map((t) => tickerLineSchema.parse(t))
-}
-
-export async function getProcessSteps(): Promise<ProcessStep[]> {
-  return processSteps
-}
-
-export async function getTimeline(): Promise<TimelineEntry[]> {
-  return timeline
-}
-
-export async function getTocPreview(): Promise<TocPreviewEntry[]> {
-  return tocPreview
-}
-
-export async function getFacts(): Promise<Fact[]> {
-  return facts
-}
-
-export async function getRequirements(): Promise<Requirement[]> {
-  return requirements
-}
-
-export async function getChecklist(): Promise<string[]> {
-  return checklist
-}
+// Editorial furniture: fixed copy, not editable content. Seed only.
+export const getProcessSteps = seed.getProcessSteps
+export const getTimeline = seed.getTimeline
+export const getTocPreview = seed.getTocPreview
+export const getFacts = seed.getFacts
+export const getRequirements = seed.getRequirements
+export const getChecklist = seed.getChecklist
 
 export * from './schema'

@@ -1,12 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useActionState, useEffect } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
-import { SUBSCRIBE_TOAST } from '@/lib/toasts'
+import { subscribe, type FormResult } from '@/lib/submissions/actions'
 
 export function StayInformed() {
   const toast = useToast()
-  const [email, setEmail] = useState('')
+  const [state, action, pending] = useActionState<FormResult | null, FormData>(subscribe, null)
+
+  useEffect(() => {
+    if (state?.message) toast(state.message)
+  }, [state, toast])
 
   return (
     <aside className="border border-rule bg-cream px-[22px] py-6 sticky top-[70px] w-full max-w-[380px] justify-self-start">
@@ -17,27 +21,20 @@ export function StayInformed() {
         Get issue announcements by email, one message a month at most.
       </p>
 
-      <form
-        onSubmit={(event) => {
-          event.preventDefault()
-          // TODO(plan-3): replace with the real server action.
-          toast(SUBSCRIBE_TOAST)
-          setEmail('')
-        }}
-      >
+      <form action={action}>
         <input
           type="email"
+          name="email"
           aria-label="Email address"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
           placeholder="you@university.edu"
           className="field mt-[14px] text-[14px]"
         />
         <button
           type="submit"
+          disabled={pending}
           className="btn-base btn-maroon block w-full text-center mt-[10px] py-3"
         >
-          Subscribe
+          {pending ? 'Adding…' : 'Subscribe'}
         </button>
       </form>
     </aside>
