@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&amp;family=Lato:ital,wght@0,400;0,700;0,900;1,400&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  html{scroll-behavior:smooth}
+  body{margin:0;background:#FDFBF7;color:#241F1E;font-family:'Lato',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:#5D1D21;text-decoration:none}
+  a:hover{color:#7C2A2F}
+  *{box-sizing:border-box}
+  img{max-width:100%}
+  ::selection{background:#C0A265;color:#241F1E}
+  input,select,textarea,button{font-family:inherit}
+  @keyframes icrrUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+  @keyframes icrrIn{from{opacity:0}to{opacity:1}}
+  @keyframes icrrDraw{from{width:0}to{width:96px}}
+  @keyframes icrrPlate{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+  @keyframes icrrPulse{0%,100%{opacity:.35}50%{opacity:1}}
+  @keyframes icrrDrawer{from{transform:translateX(100%)}to{transform:none}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+<div style="background:#5D1D21;color:rgba(247,244,239,.82);font-size:11px;letter-spacing:.16em;text-transform:uppercase">
+  <div style="max-width:1180px;margin:0 auto;padding:8px clamp(16px,5vw,40px);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
+    <span>Open Access · ISSN Pending · Est. 2026</span>
+    <span style="display:flex;gap:22px"><a href="#contact" style="color:rgba(247,244,239,.82)">Contact</a><a href="#" onClick="{{ goNews }}" style="color:rgba(247,244,239,.82)">Announcements</a></span>
+  </div>
+</div>
+
+<header style="text-align: center; padding: clamp(22px,4vw,34px) clamp(16px,5vw,40px) clamp(18px,3vw,26px); animation: icrrIn .6s ease both; padding-top: clamp(14px,4vw,10px); padding-bottom: clamp(18px,3vw,8px)">
+  <a href="#" onClick="{{ goHome }}" style="display:inline-block">
+    <img src="assets/icrr_lockup_full_name_transparent.png" alt="International Collegiate Research Review" style="height: 126px; width: 454px; object-fit: contain; display: block">
+  </a>
+</header>
+
+<nav style="position:sticky;top:0;z-index:40;background:#FDFBF7;border-top:3px double #5D1D21;border-bottom:1px solid #5D1D21">
+  <sc-if value="{{ wideNav }}" hint-placeholder-val="{{ true }}">
+  <div style="max-width:1180px;margin:0 auto;padding:0 clamp(12px,4vw,40px);display:flex;align-items:center;justify-content:space-between;gap:clamp(10px,2vw,24px);min-height:50px">
+    <div style="flex:1;min-width:0;display:flex;gap:clamp(13px,2.2vw,30px);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;justify-content:safe center;font-size:clamp(10.5px,1.15vw,12.5px);letter-spacing:.13em;text-transform:uppercase;font-weight:700;white-space:nowrap">
+      <a href="#" onClick="{{ goHome }}" style="padding:15px 0;border-bottom:2px solid {{ uHome }};color:#3F3733">Home</a>
+      <a href="#" onClick="{{ goAbout }}" style="padding:15px 0;border-bottom:2px solid {{ uAbout }};color:#3F3733">About</a>
+      <a href="#" onClick="{{ goIssue }}" style="padding:15px 0;border-bottom:2px solid {{ uIssue }};color:#3F3733">Current Issue</a>
+      <a href="#" onClick="{{ goArchives }}" style="padding:15px 0;border-bottom:2px solid {{ uArchives }};color:#3F3733">Archives</a>
+      <a href="#" onClick="{{ goAuthors }}" style="padding:15px 0;border-bottom:2px solid {{ uAuthors }};color:#3F3733">Authors</a>
+      <a href="#" onClick="{{ goBoard }}" style="padding:15px 0;border-bottom:2px solid {{ uBoard }};color:#3F3733">Our Team</a>
+    </div>
+    <a href="#" onClick="{{ goSubmit }}" style="flex:none;background:#5D1D21;color:#F7F4EF;padding:9px 18px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;white-space:nowrap" style-hover="background:#7C2A2F;color:#F7F4EF">Submit</a>
+  </div>
+  </sc-if>
+  <sc-if value="{{ narrowNav }}" hint-placeholder-val="{{ false }}">
+  <div style="max-width:1180px;margin:0 auto;padding:0 clamp(12px,4vw,40px);display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:52px">
+    <a href="#" onClick="{{ toggleMenu }}" aria-label="Menu" style="display:flex;align-items:center;gap:11px;padding:14px 2px;color:#3F3733;font-size:11.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:700">
+      <span style="display:flex;flex-direction:column;gap:4px;width:20px">
+        <span style="display:block;height:1.5px;background:#5D1D21;transition:transform .25s ease,opacity .2s ease;transform:{{ barTop }}"></span>
+        <span style="display:block;height:1.5px;background:#5D1D21;transition:opacity .2s ease;opacity:{{ barMid }}"></span>
+        <span style="display:block;height:1.5px;background:#5D1D21;transition:transform .25s ease;transform:{{ barBot }}"></span>
+      </span>
+      <span>{{ menuLabel }}</span>
+    </a>
+    <span style="flex:1;min-width:0;text-align:center;font-family:'Libre Baskerville',Georgia,serif;font-size:12.5px;color:#8A7B5C;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ pageTitle }}</span>
+    <a href="#" onClick="{{ goSubmit }}" style="flex:none;background:#5D1D21;color:#F7F4EF;padding:9px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;white-space:nowrap" style-hover="background:#7C2A2F;color:#F7F4EF">Submit</a>
+  </div>
+  </sc-if>
+</nav>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:60;background:rgba(36,31,30,.5);animation:icrrIn .2s ease both" onClick="{{ closeMenu }}">
+  <div onClick="{{ stopClick }}" style="position:absolute;top:0;right:0;bottom:0;width:min(86vw,340px);background:#FDFBF7;border-left:3px double #5D1D21;display:flex;flex-direction:column;animation:icrrDrawer .3s cubic-bezier(.2,.7,.2,1) both;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 22px;border-bottom:1px solid #E2DACB">
+      <span style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Navigation</span>
+      <a href="#" onClick="{{ closeMenu }}" aria-label="Close menu" style="font-size:20px;line-height:1;color:#5D1D21;padding:4px 6px">×</a>
+    </div>
+    <div style="display:flex;flex-direction:column;padding:6px 0">
+      <sc-for list="{{ menuItems }}" as="m" hint-placeholder-count="7">
+        <a href="#" onClick="{{ m.go }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px;border-bottom:1px solid #EFE9DF;font-family:'Libre Baskerville',Georgia,serif;font-size:17px;color:{{ m.color }}" style-hover="background:#F7F4EF">
+          <span>{{ m.label }}</span>
+          <span style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:'Lato',sans-serif;font-weight:700;color:#C0A265">{{ m.mark }}</span>
+        </a>
+      </sc-for>
+    </div>
+    <div style="padding:22px;margin-top:auto;border-top:1px solid #E2DACB;background:#F7F4EF">
+      <a href="#" onClick="{{ goSubmit }}" style="display:block;text-align:center;padding:14px;background:#5D1D21;color:#F7F4EF;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F;color:#F7F4EF">Submit a manuscript</a>
+      <p style="margin:14px 0 0;font-size:12.5px;line-height:1.7;color:#6E655C">Calls for papers close {{ deadline }}.<br><a href="mailto:icrrjournal@gmail.com">icrrjournal@gmail.com</a></p>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<main style="flex:1">
+
+<sc-if value="{{ pgHome }}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Home">
+
+  <section style="max-width:1180px;margin:0 auto;padding:64px clamp(18px,5vw,40px) 30px;text-align:center">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700;animation:icrrUp .6s ease both">{{ issueLabel }}</div>
+    <h1 style="margin:18px auto 0;max-width:22ch;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(29px,6.3vw,52px);line-height:1.2;font-weight:400;letter-spacing:-.01em;animation:icrrUp .7s ease .06s both">Student research, <em style="color: rgb(93, 29, 33);">read closely.</em></h1>
+    <div style="height:2px;background:#C0A265;margin:26px auto 0;animation:icrrDraw .9s cubic-bezier(.2,.7,.2,1) .35s both"></div>
+    <p style="margin:26px auto 0;max-width:64ch;font-size:clamp(15px,1.7vw,16.5px);line-height:1.85;color:#5A524A;animation:icrrUp .7s ease .14s both">An independent, open-access journal publishing undergraduate and graduate research across five sections. Submissions are open for our first issue.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:32px;animation:icrrUp .7s ease .22s both">
+      <a href="#" onClick="{{ goSubmit }}" style="padding:14px 30px;background:#5D1D21;color:#F7F4EF;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F">Submit a Manuscript</a>
+      <a href="#" onClick="{{ goNews }}" style="padding:14px 30px;border:1px solid #5D1D21;color:#5D1D21;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#F7F4EF">Read the Call for Papers</a>
+    </div>
+  </section>
+
+  <section style="max-width:1400px;margin:0 auto;padding:34px clamp(14px,4vw,40px) 0;animation:icrrPlate .9s cubic-bezier(.2,.7,.2,1) .3s both">
+    <div style="position:relative;height:clamp(230px,45vw,470px);background:#F7F4EF;border:1px solid #E2DACB">
+      <image-slot id="icrr-hero" shape="rect" fit="cover" placeholder="Drop a hero image: a library, reading room, or campus interior"></image-slot>
+      <div style="position:absolute;left:0;bottom:0;pointer-events:none;background:linear-gradient(to top,rgba(36,31,30,.72),rgba(36,31,30,0));width:100%;height:52%"></div>
+      <div style="position:absolute;left:clamp(16px,3vw,34px);bottom:clamp(16px,2.4vw,28px);right:clamp(16px,3vw,34px);pointer-events:none;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(16px,2.4vw,22px);line-height:1.5;color:#F7F4EF;max-width:34ch">Rigorous review. Transparent process. Work that stands on its own.</div>
+        <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(247,244,239,.75)">Volume 1 in preparation</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top:56px;background:#5D1D21;color:#F7F4EF">
+    <div style="max-width:1180px;margin:0 auto;padding:16px clamp(16px,5vw,40px);display:flex;align-items:center;gap:26px;flex-wrap:wrap;min-height:56px">
+      <span style="display:flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:#C0A265;flex:none"><span style="width:6px;height:6px;background:#C0A265;border-radius:50%;animation:icrrPulse 2.4s ease-in-out infinite"></span>Latest</span>
+      <span style="font-family:'Libre Baskerville',Georgia,serif;font-size:16px;line-height:1.6;flex:1;min-width:280px;transition:opacity .4s ease">{{ annText }}</span>
+      <a href="#" onClick="{{ goNews }}" style="color:#C0A265;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;flex:none">All announcements</a>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:0 clamp(18px,5vw,40px)" data-reveal="">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));border-bottom:1px solid #E2DACB">
+      <div style="padding:clamp(26px,3.4vw,38px) clamp(0px,2.4vw,34px) clamp(26px,3.4vw,38px) 0;border-bottom:1px solid #E2DACB">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:13px;color:#C0A265">01</div>
+        <h3 style="margin:12px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:21px;font-weight:700;color:#5D1D21">Double-blind peer review</h3>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.8;color:#5A524A">Every submission is assessed by at least two subject-specialist reviewers.</p>
+      </div>
+      <div style="padding:clamp(26px,3.4vw,38px) clamp(0px,2.4vw,34px);border-bottom:1px solid #E2DACB">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:13px;color:#C0A265">02</div>
+        <h3 style="margin:12px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:21px;font-weight:700;color:#5D1D21">Open access, no fees</h3>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.8;color:#5A524A">Free to read and free to publish. Authors retain copyright under CC BY 4.0.</p>
+      </div>
+      <div style="padding:clamp(26px,3.4vw,38px) 0 clamp(26px,3.4vw,38px) clamp(0px,2.4vw,34px);border-bottom:1px solid #E2DACB">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:13px;color:#C0A265">03</div>
+        <h3 style="margin:12px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:21px;font-weight:700;color:#5D1D21">Multidisciplinary</h3>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.8;color:#5A524A">Five sections and one review board, so interdisciplinary work has somewhere to go.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:64px clamp(18px,5vw,40px) 0" data-reveal="">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;border-bottom:3px double #5D1D21;padding-bottom:12px">
+      <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(22px,3.4vw,30px);font-weight:400">What we publish</h2>
+      <a href="#" onClick="{{ goAbout }}" style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700">Aims &amp; scope</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:0;margin-top:0">
+      <sc-for list="{{ disciplines }}" as="d" hint-placeholder-count="5">
+        <div style="padding:26px 24px 26px 0;border-bottom:1px solid #E2DACB">
+          <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:19px;font-weight:700;color:#241F1E">{{ d.name }}</div>
+          <p style="margin:8px 0 0;font-size:13.5px;line-height:1.75;color:#6E655C">{{ d.blurb }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:64px clamp(18px,5vw,40px) 0" data-reveal="">
+    <div style="border-bottom:3px double #5D1D21;padding-bottom:12px">
+      <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(22px,3.4vw,30px);font-weight:400">From submission to publication</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:0;margin-top:34px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+        <div style="padding:0 26px 0 0;border-left:1px solid #E2DACB;padding-left:22px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px;border:1px solid #C0A265;color:#5D1D21;display:flex;align-items:center;justify-content:center;font-family:'Libre Baskerville',Georgia,serif;font-size:12px">{{ s.n }}</span><span style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ s.time }}</span></div>
+          <h3 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:18px;font-weight:700">{{ s.title }}</h3>
+          <p style="margin:8px 0 0;font-size:13.5px;line-height:1.75;color:#6E655C">{{ s.body }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:70px clamp(18px,5vw,40px) 0" data-reveal="">
+    <div style="background:#F7F4EF;border:1px solid #E2DACB;padding:clamp(26px,4vw,52px) clamp(22px,4vw,60px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(26px,4vw,52px);align-items:center">
+      <div>
+        <div style="font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Our position</div>
+        <blockquote style="margin:16px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(19px,2.6vw,26px);line-height:1.55;font-style:italic;color:#3F1417">“Student research deserves the same editorial care as any other scholarship. Not a lower bar, just a fairer door.”</blockquote>
+        <p style="margin:20px 0 0;font-size:14.5px;line-height:1.8;color:#5A524A">ICRR exists because early-career researchers produce serious work that rarely finds a home. We review it properly, edit it carefully, and publish it where it can be cited.</p>
+        <a href="#" onClick="{{ goAbout }}" style="display:inline-block;margin-top:22px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #C0A265;padding-bottom:3px">More about the journal</a>
+      </div>
+      <div style="height:290px;border:1px solid #E2DACB;background:#FDFBF7">
+        <image-slot id="icrr-about" shape="rect" fit="cover" placeholder="Drop an editorial photo"></image-slot>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:70px clamp(18px,5vw,40px) 0" data-reveal="">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap;border-bottom:3px double #5D1D21;padding-bottom:12px">
+      <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(22px,3.4vw,30px);font-weight:400">Announcements</h2>
+      <a href="#" onClick="{{ goNews }}" style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700">All news</a>
+    </div>
+    <sc-for list="{{ news }}" as="n" hint-placeholder-count="3">
+      <a href="#" onClick="{{ goNews }}" style="display:grid;grid-template-columns:minmax(84px,150px) minmax(0,1fr) auto;gap:clamp(14px,2vw,26px);align-items:baseline;padding:24px 0;border-bottom:1px solid #E2DACB;color:#241F1E" style-hover="background:#F7F4EF;color:#241F1E">
+        <span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ n.date }}</span>
+        <span><span style="display:block;font-family:'Libre Baskerville',Georgia,serif;font-size:19px;line-height:1.45">{{ n.title }}</span><span style="display:block;margin-top:6px;font-size:14px;line-height:1.7;color:#6E655C">{{ n.blurb }}</span></span>
+        <span style="color:#5D1D21;font-size:18px">→</span>
+      </a>
+    </sc-for>
+  </section>
+
+  <section style="margin-top:76px;background:#5D1D21;color:#F7F4EF" data-reveal="">
+    <div style="max-width:1180px;margin:0 auto;padding:62px clamp(18px,5vw,40px);text-align:center">
+      <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(24px,4.4vw,34px);font-weight:400;line-height:1.35">Have a paper you are proud of?</h2>
+      <p style="margin:16px auto 0;max-width:56ch;font-size:16px;line-height:1.8;color:rgba(247,244,239,.82)">Submissions for Issue 1 close {{ deadline }}. Manuscripts of 3,000–8,000 words in any of the five sections.</p>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:30px">
+        <a href="#" onClick="{{ goSubmit }}" style="padding:14px 30px;background:#C0A265;color:#3F1417;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#D2B67E;color:#3F1417">Start a submission</a>
+        <a href="#" onClick="{{ goSubmit }}" style="padding:14px 30px;border:1px solid rgba(247,244,239,.5);color:#F7F4EF;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="border-color:#F7F4EF;color:#F7F4EF">Author guidelines</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ pgAbout }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="About">
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">About the journal</div>
+    <h1 style="margin:14px 0 0;max-width:26ch;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(27px,5.4vw,44px);line-height:1.22;font-weight:400">An independent journal for student scholarship</h1>
+    <div style="border-bottom:3px double #5D1D21;margin-top:28px"></div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:44px clamp(18px,5vw,40px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(30px,4vw,64px);align-items:start">
+    <div>
+      <p style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:20px;line-height:1.75;color:#3F1417">The International Collegiate Research Review publishes peer-reviewed research by undergraduate and graduate students, from any institution and any country, at no cost to authors or readers.</p>
+      <h2 style="margin:44px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Aims and scope</h2>
+      <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">We consider original research, systematic reviews, replication studies, and case analyses. Work is judged on its question, its method, and the honesty of its conclusions, not on the seniority of its author. Interdisciplinary submissions are welcome.</p>
+      <h2 style="margin:40px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Review policy</h2>
+      <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">All submissions undergo double-blind review by at least two reviewers. Author identities are removed before assessment, and reviewer identities are not disclosed.</p>
+      <h2 style="margin:40px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Publication ethics</h2>
+      <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">We follow COPE principles on authorship, plagiarism, data integrity, and corrections. Authors declare all funding, supervision, and use of generative tools; ethical approval is required for research involving human subjects.</p>
+      <h2 style="margin:40px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Open access and copyright</h2>
+      <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">No submission charges and no processing charges. Authors retain copyright under CC BY 4.0, and every article is issued a persistent identifier and a PDF of record.</p>
+    </div>
+    <aside style="display:flex;flex-direction:column;gap:20px;position:sticky;top:70px;width:100%;max-width:380px;justify-self:start">
+      <div style="border:1px solid #E2DACB;background:#F7F4EF">
+        <div style="background:#5D1D21;color:#F7F4EF;padding:11px 18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700">Journal at a glance</div>
+        <div style="padding:6px 18px 14px">
+          <sc-for list="{{ facts }}" as="f" hint-placeholder-count="6">
+            <div style="display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid #E2DACB;font-size:13.5px"><span style="color:#6E655C">{{ f.k }}</span><span style="font-weight:700;text-align:right">{{ f.v }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div id="contact" style="border:1px solid #E2DACB;padding:20px 18px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Editorial office</div>
+        <p style="margin:10px 0 0;font-size:14px;line-height:1.75;color:#5A524A">Enquiries and submissions<br><a href="mailto:icrrjournal@gmail.com">icrrjournal@gmail.com</a></p>
+      </div>
+    </aside>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgIssue }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Current Issue">
+  <section style="max-width:1180px;margin:0 auto;padding:clamp(38px,6vw,56px) clamp(18px,5vw,40px) 0;text-align:center">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Current issue</div>
+    <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(28px,5.6vw,46px);line-height:1.2;font-weight:400">Volume 1, Issue 1</h1>
+    <p style="margin:12px 0 0;font-size:15px;letter-spacing:.02em;color:#6E655C">Inaugural issue · Publishing {{ expected }}, then at the end of each month</p>
+    <div style="border-top:3px double #5D1D21;border-bottom:1px solid #5D1D21;margin-top:28px;padding:0"></div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:44px clamp(18px,5vw,40px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(30px,4vw,56px);align-items:start">
+    <div>
+      <div style="border:1px solid #C0A265;background:#FBF7EE;padding:26px 28px">
+        <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Status</div>
+        <h2 style="margin:8px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:23px;font-weight:700;color:#5D1D21">Calls for papers are open</h2>
+        <p style="margin:10px 0 0;font-size:15px;line-height:1.8;color:#5A524A">No articles have been published yet. The full table of contents, with abstracts and PDFs, appears here when Issue 1 publishes on {{ expected }}.</p>
+      </div>
+
+      <h2 style="margin:44px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700">Production timeline</h2>
+      <div style="margin-top:20px">
+        <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:26px 1fr;gap:20px;padding-bottom:26px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:50%;background:{{ t.dot }};border:1px solid #5D1D21;margin-top:5px"></span><span style="flex:1;width:1px;background:#E2DACB"></span></div>
+            <div>
+              <div style="display:flex;gap:12px;align-items:baseline;flex-wrap:wrap"><h3 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:18px;font-weight:700">{{ t.title }}</h3><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ t.when }}</span></div>
+              <p style="margin:7px 0 0;font-size:14.5px;line-height:1.75;color:#6E655C">{{ t.body }}</p>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="margin:24px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700">How the table of contents will appear</h2>
+      <p style="margin:10px 0 0;font-size:14.5px;line-height:1.8;color:#6E655C">A preview of the listing, shown with placeholder entries.</p>
+      <div style="margin-top:20px;border-top:1px solid #E2DACB">
+        <sc-for list="{{ tocPreview }}" as="a" hint-placeholder-count="3">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;padding:22px 0;border-bottom:1px solid #E2DACB;opacity:.55">
+            <div>
+              <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ a.section }}</div>
+              <a href="#" onClick="{{ goArticle }}" style="display:block;margin-top:7px;font-family:'Libre Baskerville',Georgia,serif;font-size:20px;line-height:1.45;color:#241F1E">{{ a.title }}</a>
+              <div style="margin-top:6px;font-size:14px;color:#6E655C">{{ a.byline }}</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center"><span style="font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#8A7B5C">{{ a.pages }}</span><a href="#" onClick="{{ wantPdf }}" style="border:1px solid #E2DACB;padding:7px 12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#5D1D21">PDF</a></div>
+          </div>
+        </sc-for>
+      </div>
+      <a href="#" onClick="{{ goArticle }}" style="display:inline-block;margin-top:22px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #C0A265;padding-bottom:3px">View the article page template</a>
+    </div>
+
+    <aside style="display:flex;flex-direction:column;gap:20px;position:sticky;top:70px;width:100%;max-width:380px;justify-self:start">
+      <div style="border:1px solid #E2DACB;background:#F7F4EF;padding:22px 20px;text-align:center">
+        <div style="height:190px;border:1px solid #E2DACB;background:#FDFBF7;margin-bottom:16px"><image-slot id="icrr-cover-v1" shape="rect" fit="cover" placeholder="Drop the issue cover"></image-slot></div>
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:17px;font-weight:700">Issue 1 cover</div>
+        <p style="margin:6px 0 0;font-size:13px;line-height:1.7;color:#6E655C">Cover art to be commissioned.</p>
+      </div>
+      <div style="border:1px solid #E2DACB">
+        <div style="background:#5D1D21;color:#F7F4EF;padding:11px 18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700">Key dates</div>
+        <div style="padding:6px 18px 14px">
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid #E2DACB;font-size:13.5px"><span style="color:#6E655C">Submissions close</span><span style="font-weight:700">{{ deadline }}</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid #E2DACB;font-size:13.5px"><span style="color:#6E655C">Decisions</span><span style="font-weight:700">Mid-Sept 2026</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:11px 0;font-size:13.5px"><span style="color:#6E655C">Publication</span><span style="font-weight:700">{{ expected }}</span></div>
+        </div>
+      </div>
+      <a href="#" onClick="{{ goSubmit }}" style="display:block;text-align:center;padding:14px;background:#5D1D21;color:#F7F4EF;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F;color:#F7F4EF">Submit to this issue</a>
+    </aside>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgArchives }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Archives">
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Archives</div>
+    <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(27px,5.4vw,44px);line-height:1.22;font-weight:400">All volumes and issues</h1>
+    <p style="margin:14px 0 0;max-width:66ch;font-size:16px;line-height:1.8;color:#5A524A">Every issue remains permanently available and free to read. Nothing is paywalled or withdrawn.</p>
+    <div style="border-bottom:3px double #5D1D21;margin-top:28px"></div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:40px clamp(18px,5vw,40px) 0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:24px">
+      <div style="border:1px solid #C0A265;background:#FBF7EE;padding:24px">
+        <div style="height:150px;border:1px solid #E2DACB;background:#FDFBF7;margin-bottom:18px"><image-slot id="icrr-arch-v1" shape="rect" fit="cover" placeholder="Cover"></image-slot></div>
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">In preparation</div>
+        <h3 style="margin:8px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:20px;font-weight:700">Volume 1, Issue 1</h3>
+        <p style="margin:8px 0 0;font-size:13.5px;line-height:1.7;color:#6E655C">Publishing {{ expected }}. Submissions open until {{ deadline }}.</p>
+        <a href="#" onClick="{{ goIssue }}" style="display:inline-block;margin-top:14px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #C0A265;padding-bottom:3px">Issue status</a>
+      </div>
+      <div style="border:1px dashed #E2DACB;padding:24px;display:flex;flex-direction:column;justify-content:center;min-height:300px;text-align:center;color:#8A7B5C">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:19px;color:#6E655C">Volume 1, Issue 2</div>
+        <p style="margin:8px 0 0;font-size:13.5px;line-height:1.7">30 October 2026</p>
+      </div>
+      <div style="border:1px dashed #E2DACB;padding:24px;display:flex;flex-direction:column;justify-content:center;min-height:300px;text-align:center;color:#8A7B5C">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:19px;color:#6E655C">Future issues</div>
+        <p style="margin:8px 0 0;font-size:13.5px;line-height:1.7">Published at the end of each month</p>
+      </div>
+    </div>
+    <div style="margin-top:40px;border-top:1px solid #E2DACB;padding-top:26px;font-size:14.5px;line-height:1.8;color:#6E655C;max-width:74ch">
+      <strong style="color:#241F1E">Indexing and preservation.</strong> Once the first issue is published we will register an ISSN and deposit metadata with relevant indexes, so articles stay citable independently of this website.
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgAuthors }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Authors">
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Authors</div>
+    <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(27px,5.4vw,44px);line-height:1.22;font-weight:400">Contributor directory</h1>
+    <p style="margin:14px 0 0;max-width:70ch;font-size:16px;line-height:1.8;color:#5A524A">Every published author gets a permanent profile listing their affiliation, research interests, and work published with ICRR.</p>
+    <div style="border-bottom:3px double #5D1D21;margin-top:28px"></div>
+  </section>
+
+  <sc-if value="{{ showPreviewNotes }}" hint-placeholder-val="{{ true }}">
+  <section style="max-width:1180px;margin:0 auto;padding:24px clamp(18px,5vw,40px) 0">
+    <div style="border-left:3px solid #C0A265;background:#FBF7EE;padding:14px 18px;font-size:13.5px;line-height:1.7;color:#5A524A">
+      <strong style="color:#5D1D21">Design preview.</strong> The profiles below are placeholders showing how contributor pages will work. Real profiles appear as authors are published in Issue 1.
+    </div>
+  </section>
+  </sc-if>
+
+  <section style="max-width:1180px;margin:0 auto;padding:28px clamp(18px,5vw,40px) 0">
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between;border-bottom:1px solid #E2DACB;padding-bottom:18px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="6">
+          <a href="#" onClick="{{ c.onClick }}" style="padding:8px 15px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</a>
+        </sc-for>
+      </div>
+      <input value="{{ q }}" onChange="{{ setQ }}" placeholder="Search name, institution, or topic" style="width:min(100%,290px);padding:10px 14px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14px;color:#241F1E;outline:none">
+    </div>
+    <div style="padding:16px 0 0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ countLabel }}</div>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:14px clamp(18px,5vw,40px) 0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,296px),1fr));gap:22px">
+      <sc-for list="{{ visibleAuthors }}" as="a" hint-placeholder-count="6">
+        <a href="#" onClick="{{ a.open }}" style="display:grid;grid-template-columns:96px 1fr;gap:18px;border:1px solid #E2DACB;background:#FDFBF7;padding:20px;color:#241F1E;align-items:start" style-hover="border-color:#C0A265;background:#FBF7EE;color:#241F1E">
+          <div style="width:96px;height:120px;border:1px solid #E2DACB;background:#F7F4EF"><image-slot id="{{ a.slot }}" shape="rect" fit="cover" placeholder="Photo"></image-slot></div>
+          <div>
+            <div style="font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ a.discipline }}</div>
+            <h3 style="margin:6px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:19px;line-height:1.35;font-weight:700">{{ a.name }}</h3>
+            <div style="margin-top:4px;font-size:13.5px;line-height:1.6;color:#6E655C">{{ a.role }}</div>
+            <div style="margin-top:2px;font-size:13.5px;line-height:1.6;color:#6E655C">{{ a.affiliation }}</div>
+            <div style="margin-top:12px;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:#5D1D21;font-weight:700">{{ a.pubCount }}</div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+    <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1px dashed #E2DACB;padding:56px 24px;text-align:center;color:#6E655C">
+        <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:20px;color:#241F1E">No contributors match that search</div>
+        <p style="margin:8px 0 0;font-size:14px">Try a different name, institution, or section.</p>
+        <a href="#" onClick="{{ clearFilters }}" style="display:inline-block;margin-top:16px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #C0A265;padding-bottom:3px">Clear filters</a>
+      </div>
+    </sc-if>
+  </section>
+
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="background:#F7F4EF;border:1px solid #E2DACB;padding:clamp(22px,3.4vw,34px) clamp(20px,3.4vw,38px);display:flex;gap:34px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+      <div style="max-width:60ch">
+        <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Publish with us and get a profile</h2>
+        <p style="margin:10px 0 0;font-size:15px;line-height:1.8;color:#5A524A">Accepted authors receive a citable article of record and a permanent, ORCID-linked profile they can point to in applications.</p>
+      </div>
+      <a href="#" onClick="{{ goSubmit }}" style="padding:14px 28px;background:#5D1D21;color:#F7F4EF;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;flex:none" style-hover="background:#7C2A2F;color:#F7F4EF">Submit a manuscript</a>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgAuthor }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Author profile">
+  <section style="max-width:1180px;margin:0 auto;padding:34px clamp(18px,5vw,40px) 0">
+    <a href="#" onClick="{{ goAuthors }}" style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">← All contributors</a>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:26px clamp(18px,5vw,40px) 0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:clamp(24px,4vw,44px);align-items:start;border-bottom:3px double #5D1D21;padding-bottom:36px">
+      <div style="width:100%;max-width:200px;aspect-ratio:4/5;height:auto;border:1px solid #E2DACB;background:#F7F4EF"><image-slot id="{{ author.slot }}" shape="rect" fit="cover" placeholder="Author photograph"></image-slot></div>
+      <div>
+        <div style="font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ author.discipline }}</div>
+        <h1 style="margin:10px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(26px,5vw,40px);line-height:1.2;font-weight:400">{{ author.name }}</h1>
+        <p style="margin:10px 0 0;font-size:16px;line-height:1.7;color:#5A524A">{{ author.role }} · {{ author.affiliation }}</p>
+        <p style="margin:2px 0 0;font-size:15px;line-height:1.7;color:#6E655C">{{ author.location }}</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px">
+          <a href="#" onClick="{{ wantPdf }}" style="padding:10px 18px;border:1px solid #E2DACB;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#5D1D21" style-hover="border-color:#C0A265;color:#5D1D21">ORCID {{ author.orcid }}</a>
+          <a href="#" onClick="{{ wantPdf }}" style="padding:10px 18px;border:1px solid #E2DACB;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#5D1D21" style-hover="border-color:#C0A265;color:#5D1D21">Email author</a>
+          <a href="#" onClick="{{ wantPdf }}" style="padding:10px 18px;border:1px solid #E2DACB;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#5D1D21" style-hover="border-color:#C0A265;color:#5D1D21">Download all PDFs</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:40px clamp(18px,5vw,40px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(30px,4vw,56px);align-items:start">
+    <div>
+      <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:22px;font-weight:700;color:#5D1D21">Biography</h2>
+      <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">{{ author.bio }}</p>
+      <h2 style="margin:38px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:22px;font-weight:700;color:#5D1D21">Publications with ICRR</h2>
+      <div style="margin-top:16px;border-top:1px solid #E2DACB">
+        <sc-for list="{{ author.publications }}" as="p" hint-placeholder-count="2">
+          <div style="padding:22px 0;border-bottom:1px solid #E2DACB">
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ p.section }}</span><span style="font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#C0A265;font-weight:700">{{ p.status }}</span></div>
+            <a href="#" onClick="{{ goArticle }}" style="display:block;margin-top:8px;font-family:'Libre Baskerville',Georgia,serif;font-size:20px;line-height:1.45;color:#241F1E">{{ p.title }}</a>
+            <p style="margin:8px 0 0;font-size:14px;line-height:1.75;color:#6E655C">{{ p.abstract }}</p>
+            <div style="display:flex;gap:14px;align-items:center;margin-top:12px;font-size:12px;color:#8A7B5C"><span>{{ p.cite }}</span><a href="#" onClick="{{ wantPdf }}" style="letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#5D1D21">PDF</a></div>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ author.noPubs }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px dashed #E2DACB;padding:34px;text-align:center;color:#6E655C;font-size:14.5px">No published articles yet. This author has work under review for Issue 1.</div>
+      </sc-if>
+    </div>
+    <aside style="display:flex;flex-direction:column;gap:20px;position:sticky;top:70px;width:100%;max-width:380px;justify-self:start">
+      <div style="border:1px solid #E2DACB;background:#F7F4EF">
+        <div style="background:#5D1D21;color:#F7F4EF;padding:11px 18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700">Research interests</div>
+        <div style="padding:16px 18px;display:flex;flex-wrap:wrap;gap:8px">
+          <sc-for list="{{ author.interests }}" as="i" hint-placeholder-count="4">
+            <span style="border:1px solid #E2DACB;background:#FDFBF7;padding:6px 12px;font-size:12.5px;color:#5A524A">{{ i }}</span>
+          </sc-for>
+        </div>
+      </div>
+      <div style="border:1px solid #E2DACB;padding:20px 18px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Affiliation</div>
+        <p style="margin:10px 0 0;font-size:14px;line-height:1.75;color:#5A524A">{{ author.affiliation }}<br>{{ author.department }}<br>{{ author.location }}</p>
+      </div>
+    </aside>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgBoard }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Our Team">
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Our team</div>
+    <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(27px,5.4vw,44px);line-height:1.22;font-weight:400">The people behind the journal</h1>
+    <p style="margin:14px 0 0;max-width:70ch;font-size:16px;line-height:1.8;color:#5A524A">A small team runs ICRR: editorial, technical, and communications. The section editorships are being appointed ahead of Issue 1.</p>
+    <div style="border-bottom:3px double #5D1D21;margin-top:28px"></div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:36px clamp(18px,5vw,40px) 0">
+    <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700">Core team</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:22px;margin-top:22px">
+      <sc-for list="{{ team }}" as="t" hint-placeholder-count="3">
+        <div style="border:1px solid #E2DACB;background:#FDFBF7;padding:24px">
+          <div style="width:100%;max-width:150px;aspect-ratio:4/5;border:1px solid #E2DACB;background:#F7F4EF"><image-slot id="{{ t.slot }}" shape="rect" fit="cover" placeholder="Photo"></image-slot></div>
+          <div style="margin-top:18px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ t.role }}</div>
+          <h3 style="margin:7px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:20px;line-height:1.35;font-weight:700">{{ t.name }}</h3>
+          <p style="margin:10px 0 0;font-size:13.5px;line-height:1.75;color:#6E655C">{{ t.duty }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:48px clamp(18px,5vw,40px) 0">
+    <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700">Editorial roles</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:0;margin-top:20px;border-top:1px solid #E2DACB">
+      <sc-for list="{{ roles }}" as="r" hint-placeholder-count="6">
+        <div style="padding:24px 26px 24px 0;border-bottom:1px solid #E2DACB">
+          <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:18px;font-weight:700;color:#241F1E">{{ r.title }}</div>
+          <div style="margin-top:6px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:{{ r.color }}">{{ r.holder }}</div>
+          <p style="margin:9px 0 0;font-size:13.5px;line-height:1.75;color:#6E655C">{{ r.duty }}</p>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:48px clamp(18px,5vw,40px) 0">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px">
+      <div style="border:1px solid #C0A265;background:#FBF7EE;padding:clamp(20px,3vw,30px) clamp(18px,3vw,32px)">
+        <h3 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:21px;font-weight:700;color:#5D1D21">Join the reviewer panel</h3>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.8;color:#5A524A">We are recruiting reviewers across all five sections: graduate students, postdocs, and faculty. Two manuscripts a month, three-week turnaround.</p>
+        <a href="#" onClick="{{ wantPdf }}" style="display:inline-block;margin-top:18px;padding:12px 22px;background:#5D1D21;color:#F7F4EF;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F;color:#F7F4EF">Apply as a reviewer</a>
+      </div>
+      <div style="border:1px solid #E2DACB;padding:clamp(20px,3vw,30px) clamp(18px,3vw,32px)">
+        <h3 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:21px;font-weight:700">Editorial independence</h3>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.8;color:#5A524A">Editors recuse themselves from any manuscript involving their own institution, supervisor, or collaborators. Decisions rest on reviewer reports; the managing editor arbitrates only where reports conflict.</p>
+      </div>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgSubmit }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Submit">
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">For authors</div>
+    <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(27px,5.4vw,44px);line-height:1.22;font-weight:400">Submit a manuscript</h1>
+    <p style="margin:14px 0 0;max-width:68ch;font-size:16px;line-height:1.8;color:#5A524A">Submissions for Volume 1, Issue 1 close {{ deadline }}. There are no fees at any stage.</p>
+    <div style="border-bottom:3px double #5D1D21;margin-top:28px"></div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:40px clamp(18px,5vw,40px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(30px,4vw,56px);align-items:start">
+    <div>
+      <h2 style="margin:0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Eligibility</h2>
+      <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">At least one author must be a current undergraduate or graduate student, or have graduated within the last twelve months. Faculty may appear as co-authors where they contributed substantively.</p>
+
+      <h2 style="margin:38px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Manuscript requirements</h2>
+      <div style="margin-top:16px;border-top:1px solid #E2DACB">
+        <sc-for list="{{ reqs }}" as="r" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:clamp(14px,2vw,24px);padding:14px 0;border-bottom:1px solid #E2DACB;font-size:14.5px;line-height:1.7">
+            <span style="font-weight:700;color:#241F1E">{{ r.k }}</span><span style="color:#5A524A">{{ r.v }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <h2 style="margin:38px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Before you submit</h2>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ checklist }}" as="c" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;align-items:flex-start;font-size:14.5px;line-height:1.75;color:#5A524A"><span style="color:#C0A265;font-weight:700;flex:none">✓</span><span>{{ c }}</span></div>
+        </sc-for>
+      </div>
+
+      <h2 id="form" style="margin:44px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:24px;font-weight:700;color:#5D1D21">Submission form</h2>
+      <div style="margin-top:18px;border:1px solid #E2DACB;background:#F7F4EF;padding:clamp(20px,3vw,30px) clamp(18px,3vw,32px)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:20px">
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#5A524A">Corresponding author</span><input placeholder="Full name" style="padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14.5px;outline:none"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#5A524A">Email</span><input placeholder="you@university.edu" style="padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14.5px;outline:none"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#5A524A">Institution</span><input placeholder="University or college" style="padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14.5px;outline:none"></label>
+          <label style="display:flex;flex-direction:column;gap:7px"><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#5A524A">Section</span><select style="padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14.5px;outline:none"><option>Natural Sciences</option><option>Business &amp; Economics</option><option>Law &amp; Policy</option><option>Humanities</option><option>Social Sciences</option></select></label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:7px;margin-top:20px"><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#5A524A">Manuscript title</span><input placeholder="Working title" style="padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14.5px;outline:none"></label>
+        <label style="display:flex;flex-direction:column;gap:7px;margin-top:20px"><span style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:#5A524A">Abstract (250 words max)</span><textarea rows="5" placeholder="State the question, method, and principal finding." style="padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14.5px;outline:none;resize:vertical"></textarea></label>
+        <div style="margin-top:20px;border:1px dashed #C0A265;background:#FBF7EE;padding:22px;text-align:center">
+          <div style="font-family:'Libre Baskerville',Georgia,serif;font-size:16px;color:#5D1D21">Attach anonymised manuscript</div>
+          <p style="margin:6px 0 0;font-size:13px;color:#6E655C">PDF or DOCX · max 20 MB · no author names in the file</p>
+        </div>
+        <label style="display:flex;gap:11px;align-items:flex-start;margin-top:20px;font-size:13.5px;line-height:1.7;color:#5A524A"><input type="checkbox" style="margin-top:3px"><span>I confirm the work is original, unpublished, not under consideration elsewhere, and that all authors have approved this submission.</span></label>
+        <a href="#" onClick="{{ submitForm }}" style="display:inline-block;margin-top:22px;padding:14px 30px;background:#5D1D21;color:#F7F4EF;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F;color:#F7F4EF">Submit manuscript</a>
+      </div>
+    </div>
+    <aside style="display:flex;flex-direction:column;gap:20px;position:sticky;top:70px;width:100%;max-width:380px;justify-self:start">
+      <div style="border:1px solid #E2DACB">
+        <div style="background:#5D1D21;color:#F7F4EF;padding:11px 18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700">What happens next</div>
+        <div style="padding:16px 18px">
+          <sc-for list="{{ steps }}" as="s" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:24px 1fr;gap:12px;padding:9px 0"><span style="font-family:'Libre Baskerville',Georgia,serif;font-size:12px;color:#C0A265;padding-top:2px">{{ s.n }}</span><span><span style="display:block;font-size:14px;font-weight:700">{{ s.title }}</span><span style="display:block;font-size:12.5px;color:#6E655C;margin-top:2px">{{ s.time }}</span></span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="border:1px solid #E2DACB;padding:20px 18px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Templates</div>
+        <p style="margin:10px 0 0;font-size:13.5px;line-height:1.75;color:#5A524A">Manuscript and cover-letter templates will be posted before the deadline.</p>
+        <a href="#" onClick="{{ wantPdf }}" style="display:inline-block;margin-top:12px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #C0A265;padding-bottom:3px">Download template</a>
+      </div>
+      <div style="border:1px solid #E2DACB;padding:20px 18px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Questions</div>
+        <p style="margin:10px 0 0;font-size:13.5px;line-height:1.75;color:#5A524A">Write to <a href="mailto:icrrjournal@gmail.com">icrrjournal@gmail.com</a> and an editor will reply within five working days.</p>
+      </div>
+    </aside>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgNews }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="News">
+  <section style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 0">
+    <div style="font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Announcements</div>
+    <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(27px,5.4vw,44px);line-height:1.22;font-weight:400">News from the editorial office</h1>
+    <div style="border-bottom:3px double #5D1D21;margin-top:28px"></div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:36px clamp(18px,5vw,40px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(30px,4vw,56px);align-items:start">
+    <div>
+      <sc-for list="{{ news }}" as="n" hint-placeholder-count="3">
+        <article style="padding:28px 0;border-bottom:1px solid #E2DACB">
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">{{ n.date }}</span><span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#C0A265;font-weight:700">{{ n.tag }}</span></div>
+          <h2 style="margin:10px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(21px,3vw,26px);line-height:1.35;font-weight:400">{{ n.title }}</h2>
+          <p style="margin:12px 0 0;font-size:15.5px;line-height:1.85;color:#5A524A">{{ n.body }}</p>
+          <a href="#" onClick="{{ n.cta }}" style="display:inline-block;margin-top:14px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;border-bottom:1px solid #C0A265;padding-bottom:3px">{{ n.ctaLabel }}</a>
+        </article>
+      </sc-for>
+    </div>
+    <aside style="border:1px solid #E2DACB;background:#F7F4EF;padding:24px 22px;position:sticky;top:70px;width:100%;max-width:380px;justify-self:start">
+      <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Stay informed</div>
+      <p style="margin:10px 0 0;font-size:14px;line-height:1.75;color:#5A524A">Get issue announcements by email, one message a month at most.</p>
+      <input placeholder="you@university.edu" style="width:100%;margin-top:14px;padding:11px 13px;border:1px solid #E2DACB;background:#FDFBF7;font-size:14px;outline:none">
+      <a href="#" onClick="{{ subscribe }}" style="display:block;text-align:center;margin-top:10px;padding:12px;background:#5D1D21;color:#F7F4EF;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F;color:#F7F4EF">Subscribe</a>
+    </aside>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ pgArticle }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Article page">
+  <sc-if value="{{ showPreviewNotes }}" hint-placeholder-val="{{ true }}">
+  <section style="max-width:1180px;margin:0 auto;padding:24px clamp(18px,5vw,40px) 0">
+    <div style="border-left:3px solid #C0A265;background:#FBF7EE;padding:14px 18px;font-size:13.5px;line-height:1.7;color:#5A524A"><strong style="color:#5D1D21">Template preview.</strong> This shows how a published article will read. No articles have been published yet.</div>
+  </section>
+  </sc-if>
+  <section style="max-width:1180px;margin:0 auto;padding:30px clamp(18px,5vw,40px) 0">
+    <div style="max-width:74ch">
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Social Sciences</span><span style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#C0A265;font-weight:700">Original research</span></div>
+      <h1 style="margin:14px 0 0;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(24px,4.6vw,38px);line-height:1.28;font-weight:400">Article title appears here, set to run across two or three lines at most</h1>
+      <p style="margin:16px 0 0;font-size:16px;line-height:1.7;color:#5A524A">Author Name¹, Second Author²</p>
+      <p style="margin:4px 0 0;font-size:13.5px;line-height:1.7;color:#8A7B5C">¹ Institution, Department · ² Institution, Department</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:22px;border-top:1px solid #E2DACB">
+        <a href="#" onClick="{{ wantPdf }}" style="padding:11px 20px;background:#5D1D21;color:#F7F4EF;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700" style-hover="background:#7C2A2F;color:#F7F4EF">Download PDF</a>
+        <a href="#" onClick="{{ wantPdf }}" style="padding:11px 20px;border:1px solid #E2DACB;color:#5D1D21;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700" style-hover="border-color:#C0A265;color:#5D1D21">Cite</a>
+        <a href="#" onClick="{{ wantPdf }}" style="padding:11px 20px;border:1px solid #E2DACB;color:#5D1D21;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700" style-hover="border-color:#C0A265;color:#5D1D21">Share</a>
+      </div>
+    </div>
+  </section>
+  <section style="max-width:1180px;margin:0 auto;padding:36px clamp(18px,5vw,40px) 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(30px,4vw,60px);align-items:start">
+    <article style="max-width:74ch;font-family:'Libre Baskerville',Georgia,serif">
+      <div style="background:#F7F4EF;border-left:3px solid #5D1D21;padding:24px 26px">
+        <div style="font-family:'Lato',sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Abstract</div>
+        <p style="margin:10px 0 0;font-size:15.5px;line-height:1.85;color:#3F3733">The abstract states the research question, the method used, the principal findings, and what those findings mean for the field. It runs to no more than 250 words and avoids citations, so it can be read on its own.</p>
+        <div style="margin-top:16px;font-family:'Lato',sans-serif;font-size:13px;color:#6E655C"><strong style="color:#241F1E">Keywords:</strong> keyword, second keyword, third keyword, fourth keyword</div>
+      </div>
+      <h2 style="margin:38px 0 0;font-size:22px;font-weight:700;color:#5D1D21">1. Introduction</h2>
+      <p style="margin:12px 0 0;font-size:16px;line-height:1.9;color:#3F3733">Body text is set in the journal's primary serif at a comfortable measure of roughly seventy characters, so that long passages of argument remain readable on screen and in print. Paragraphs are separated by space rather than indentation.</p>
+      <p style="margin:16px 0 0;font-size:16px;line-height:1.9;color:#3F3733">Citations appear in the journal's house style with a numbered reference list at the end of the article. Figures and tables are numbered in sequence and captioned below.</p>
+      <div style="margin:30px 0 0">
+        <div style="height:300px;border:1px solid #E2DACB;background:#F7F4EF"><image-slot id="icrr-fig-1" shape="rect" fit="contain" placeholder="Drop Figure 1"></image-slot></div>
+        <p style="margin:10px 0 0;font-family:'Lato',sans-serif;font-size:13px;line-height:1.7;color:#6E655C"><strong style="color:#241F1E">Figure 1.</strong> Caption describing what the figure shows and where the data came from.</p>
+      </div>
+      <h2 style="margin:38px 0 0;font-size:22px;font-weight:700;color:#5D1D21">2. Method</h2>
+      <p style="margin:12px 0 0;font-size:16px;line-height:1.9;color:#3F3733">The method section describes the design, participants or materials, procedure, and analysis in enough detail for another researcher to repeat the study.</p>
+      <h2 style="margin:38px 0 0;font-size:22px;font-weight:700;color:#5D1D21">3. Results</h2>
+      <p style="margin:12px 0 0;font-size:16px;line-height:1.9;color:#3F3733">Results are reported without interpretation, with effect sizes and uncertainty stated alongside any test statistics.</p>
+      <h2 style="margin:38px 0 0;font-size:22px;font-weight:700;color:#5D1D21">4. Discussion</h2>
+      <p style="margin:12px 0 0;font-size:16px;line-height:1.9;color:#3F3733">The discussion returns to the question set out in the introduction, states what the study can and cannot support, and names its limitations plainly.</p>
+      <h2 style="margin:38px 0 0;font-size:22px;font-weight:700;color:#5D1D21">References</h2>
+      <ol style="margin:14px 0 0;padding-left:22px;font-size:14.5px;line-height:1.85;color:#5A524A">
+        <li style="margin-bottom:8px">Author, A. (Year). Title of the work. <em>Journal Name</em>, volume(issue), pages.</li>
+        <li style="margin-bottom:8px">Author, B., &amp; Author, C. (Year). Title of the work. <em>Journal Name</em>, volume(issue), pages.</li>
+      </ol>
+    </article>
+    <aside style="display:flex;flex-direction:column;gap:20px;position:sticky;top:70px;width:100%;max-width:380px;justify-self:start">
+      <div style="border:1px solid #E2DACB;background:#F7F4EF;padding:20px 18px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">Article information</div>
+        <div style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #E2DACB;font-size:13px"><span style="color:#6E655C">Received</span><span style="font-weight:700">TBA</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #E2DACB;font-size:13px"><span style="color:#6E655C">Accepted</span><span style="font-weight:700">TBA</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid #E2DACB;font-size:13px"><span style="color:#6E655C">Published</span><span style="font-weight:700">TBA</span></div>
+          <div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;font-size:13px"><span style="color:#6E655C">Licence</span><span style="font-weight:700">CC BY 4.0</span></div>
+        </div>
+      </div>
+      <div style="border:1px solid #E2DACB;padding:20px 18px">
+        <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8A7B5C;font-weight:700">On this page</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px;font-size:13.5px"><span style="color:#5D1D21">Abstract</span><span style="color:#5D1D21">1. Introduction</span><span style="color:#5D1D21">2. Method</span><span style="color:#5D1D21">3. Results</span><span style="color:#5D1D21">4. Discussion</span><span style="color:#5D1D21">References</span></div>
+      </div>
+    </aside>
+  </section>
+</div>
+</sc-if>
+
+</main>
+
+<footer style="margin-top:88px;background:#5D1D21;color:rgba(247,244,239,.78)">
+  <div style="max-width:1180px;margin:0 auto;padding:56px clamp(18px,5vw,40px) 30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:clamp(28px,4vw,44px)">
+    <div>
+      <div style="display:flex;align-items:center;gap:18px"><img src="assets/icrr_mark.png" alt="ICRR" style="width:clamp(58px,12vw,74px);height:clamp(58px,12vw,74px);display:block;flex:none"><div style="border-left:1px solid rgba(192,162,101,.55);padding-left:18px;font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(11px,1.2vw,12.5px);letter-spacing:.16em;line-height:1.7;text-transform:uppercase;color:#F7F4EF">International Collegiate<br>Research Review</div></div>
+      <p style="margin:18px 0 0;font-size:13.5px;line-height:1.8;max-width:34ch">An independent, open-access journal for student research. Free to read, free to publish.</p>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#C0A265;font-weight:700">The journal</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;font-size:14px">
+        <a href="#" onClick="{{ goAbout }}" style="color:rgba(247,244,239,.78)">About</a>
+        <a href="#" onClick="{{ goIssue }}" style="color:rgba(247,244,239,.78)">Current issue</a>
+        <a href="#" onClick="{{ goArchives }}" style="color:rgba(247,244,239,.78)">Archives</a>
+        <a href="#" onClick="{{ goBoard }}" style="color:rgba(247,244,239,.78)">Our team</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#C0A265;font-weight:700">For authors</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;font-size:14px">
+        <a href="#" onClick="{{ goSubmit }}" style="color:rgba(247,244,239,.78)">Submit a manuscript</a>
+        <a href="#" onClick="{{ goSubmit }}" style="color:rgba(247,244,239,.78)">Author guidelines</a>
+        <a href="#" onClick="{{ goAuthors }}" style="color:rgba(247,244,239,.78)">Contributor directory</a>
+        <a href="#" onClick="{{ goNews }}" style="color:rgba(247,244,239,.78)">Announcements</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#C0A265;font-weight:700">Contact</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;font-size:14px">
+        <a href="mailto:icrrjournal@gmail.com" style="color:rgba(247,244,239,.78)">icrrjournal@gmail.com</a>
+        <span>ISSN pending</span>
+      </div>
+    </div>
+  </div>
+  <div style="border-top:1px solid rgba(247,244,239,.18)">
+    <div style="max-width:1180px;margin:0 auto;padding:20px clamp(16px,5vw,40px);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:12.5px">
+      <span>© 2026 International Collegiate Research Review</span>
+      <span style="display:flex;gap:22px"><a href="#" onClick="{{ goAbout }}" style="color:rgba(247,244,239,.78)">Publication ethics</a><a href="#" onClick="{{ goAbout }}" style="color:rgba(247,244,239,.78)">Open access policy</a><span>Articles licensed CC BY 4.0</span></span>
+    </div>
+  </div>
+</footer>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:80;background:#241F1E;color:#F7F4EF;padding:14px 24px;font-size:14px;box-shadow:0 10px 30px rgba(36,31,30,.28);animation:icrrUp .3s ease both;max-width:min(560px,90vw);text-align:center">{{ toast }}</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showPreviewNotes&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Content&quot;},&quot;deadline&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;31 August 2026&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;},&quot;expected&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;30 September 2026&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+const DISCIPLINES = [
+  { name: 'Natural Sciences', blurb: 'Biology, chemistry, physics, earth and environmental science.' },
+  { name: 'Business & Economics', blurb: 'Markets, organisations, finance, and applied economics.' },
+  { name: 'Law & Policy', blurb: 'Doctrinal analysis, comparative law, regulation, and governance.' },
+  { name: 'Humanities', blurb: 'History, literature, philosophy, languages, and the arts.' },
+  { name: 'Social Sciences', blurb: 'Psychology, sociology, anthropology, and political science.' }
+];
+
+const AUTHORS = [
+  { id: 'a1', name: 'Amara Okonkwo', role: 'MSc candidate, Environmental Science', affiliation: 'University of Edinburgh', department: 'School of GeoSciences', location: 'Edinburgh, United Kingdom', discipline: 'Natural Sciences', orcid: '0000-0002-1825-0097',
+    bio: 'Amara studies how urban tree canopy affects summer surface temperatures in mid-sized European cities. Her work combines satellite thermal imagery with ground sensor networks, and she is interested in making municipal climate data usable by the councils that collect it.',
+    interests: ['Urban climate', 'Remote sensing', 'Environmental policy', 'Open data'],
+    publications: [{ section: 'Natural Sciences', status: 'Under review', title: 'Canopy cover and summer surface temperature in mid-sized European cities', abstract: 'A comparison of thermal imagery and ground sensor readings across eleven cities, testing whether canopy targets translate into measurable cooling.', cite: 'ICRR, Vol. 1, Issue 1 (forthcoming)' }] },
+  { id: 'a2', name: 'Daniel Reyes', role: 'Undergraduate, Economics', affiliation: 'Universidad de Chile', department: 'Facultad de Economía y Negocios', location: 'Santiago, Chile', discipline: 'Business & Economics', orcid: '0000-0001-5109-3700',
+    bio: 'Daniel works on informal labour markets and household credit access in Latin America. He is assembling a panel dataset on microloan repayment drawn from three national household surveys.',
+    interests: ['Informal labour', 'Household finance', 'Development economics'],
+    publications: [{ section: 'Business & Economics', status: 'Under review', title: 'Microloan repayment and informal income volatility', abstract: 'Tests whether income volatility, rather than income level, predicts default among informally employed borrowers.', cite: 'ICRR, Vol. 1, Issue 1 (forthcoming)' }] },
+  { id: 'a3', name: 'Sofia Almeida', role: 'LLM candidate, Public Law', affiliation: 'Universidade de Lisboa', department: 'Faculdade de Direito', location: 'Lisbon, Portugal', discipline: 'Law & Policy', orcid: '0000-0003-4471-2288',
+    bio: 'Sofia researches how national courts apply proportionality review to emergency legislation, with a focus on measures introduced under time pressure and later left in force.',
+    interests: ['Constitutional law', 'Proportionality', 'Emergency powers', 'Comparative law'],
+    publications: [] },
+  { id: 'a4', name: 'Kenji Watanabe', role: 'Undergraduate, History', affiliation: 'University of Tokyo', department: 'Faculty of Letters', location: 'Tokyo, Japan', discipline: 'Humanities', orcid: '0000-0002-9931-4410',
+    bio: 'Kenji works on port-city trade correspondence in the nineteenth century, reading merchant letters as evidence of how commercial trust was established between parties who never met.',
+    interests: ['Economic history', 'Archival method', 'Port cities'],
+    publications: [{ section: 'Humanities', status: 'Under review', title: 'Letters of credit and letters of trust in the treaty ports', abstract: 'Reads a corpus of merchant correspondence to trace how reputation substituted for enforceable contract.', cite: 'ICRR, Vol. 1, Issue 1 (forthcoming)' }] },
+  { id: 'a5', name: 'Priya Nair', role: 'PhD candidate, Social Psychology', affiliation: 'University of Toronto', department: 'Department of Psychology', location: 'Toronto, Canada', discipline: 'Social Sciences', orcid: '0000-0001-7742-6013',
+    bio: 'Priya studies how students judge the credibility of peers in group work, and whether those judgements track actual competence. Her current project is a pre-registered replication across four institutions.',
+    interests: ['Group dynamics', 'Credibility judgement', 'Replication', 'Pre-registration'],
+    publications: [{ section: 'Social Sciences', status: 'Under review', title: 'Perceived and actual competence in student project groups: a four-site replication', abstract: 'A pre-registered replication testing whether confident speech predicts assigned credibility more strongly than demonstrated accuracy.', cite: 'ICRR, Vol. 1, Issue 1 (forthcoming)' }] },
+  { id: 'a6', name: 'Lukas Brenner', role: 'MSc candidate, Chemistry', affiliation: 'ETH Zürich', department: 'Department of Chemistry and Applied Biosciences', location: 'Zürich, Switzerland', discipline: 'Natural Sciences', orcid: '0000-0002-3308-9915',
+    bio: 'Lukas develops low-cost colorimetric assays for detecting heavy metals in drinking water, with an emphasis on methods that can be run without laboratory instrumentation.',
+    interests: ['Analytical chemistry', 'Water quality', 'Low-cost instrumentation'],
+    publications: [] }
+];
+
+const ANNOUNCEMENTS = [
+  'Call for Papers: Issue 1 closes 31 August 2026.',
+  'Issue 1 publishes 30 September 2026, and at the end of each month thereafter.',
+  'We are recruiting peer reviewers across all five sections.'
+];
+
+const NEWS = [
+  { date: '15 July 2026', tag: 'Call for papers', title: 'Call for Papers: Volume 1, Issue 1', blurb: 'Submissions open in all five sections until 31 August 2026.',
+    body: 'ICRR invites original research, reviews, replication studies, and case analyses of 3,000–8,000 words from students at any institution. Submissions for Issue 1 close 31 August 2026; the issue publishes 30 September 2026, and at the end of each month thereafter. There are no fees at any stage.', ctaLabel: 'Read the guidelines', ctaKey: 'submit' },
+  { date: '2 July 2026', tag: 'Editorial', title: 'Reviewer recruitment for the inaugural cycle', blurb: 'Graduate students, postdocs, and faculty are invited to join the review panel.',
+    body: 'Each section is building a panel of reviewers with subject expertise. Reviewers assess up to two manuscripts a month with a three-week turnaround, and are credited on the team page unless they ask not to be.', ctaLabel: 'Meet the team', ctaKey: 'board' },
+  { date: '20 June 2026', tag: 'Journal', title: 'The journal is established', blurb: 'ICRR is founded as an independent, open-access outlet for student research.',
+    body: 'ICRR was established to give early-career researchers a properly reviewed, permanently citable place to publish. Articles are licensed CC BY 4.0 and authors retain copyright; ISSN registration follows the first issue.', ctaLabel: 'About the journal', ctaKey: 'about' }
+];
+
+const STEPS = [
+  { n: '1', time: 'Day 1', title: 'Submission', body: 'Upload an anonymised manuscript and a short cover letter.' },
+  { n: '2', time: 'Week 1', title: 'Editorial screening', body: 'An editor checks scope, eligibility, and similarity.' },
+  { n: '3', time: 'Weeks 1–3', title: 'Double-blind review', body: 'At least two subject reviewers return written reports.' },
+  { n: '4', time: 'Week 4', title: 'Decision and copyediting', body: 'Accepted papers are copyedited for the next issue.' }
+];
+
+const TIMELINE = [
+  { title: 'Submissions open', when: 'Now', body: 'Rolling. Papers enter the next available monthly cycle.', dot: '#C0A265' },
+  { title: 'Issue 1 submissions close', when: '31 Aug 2026', body: 'Later submissions are held for the October issue.', dot: '#FDFBF7' },
+  { title: 'Peer review', when: '2–3 weeks', body: 'Double-blind assessment by at least two reviewers.', dot: '#FDFBF7' },
+  { title: 'Decisions returned', when: 'Mid-Sept 2026', body: 'Accept, revise, or decline, based on the reviewer reports.', dot: '#FDFBF7' },
+  { title: 'Publication', when: '30 Sept 2026', body: 'Issue 1 published open access, then at the end of each month.', dot: '#FDFBF7' }
+];
+
+const TOC_PREVIEW = [
+  { section: 'Natural Sciences', title: 'Article title as it will appear in the table of contents', byline: 'Author Name, Institution', pages: 'pp. 1–18' },
+  { section: 'Business & Economics', title: 'A second article, showing a title that runs to two lines in the listing', byline: 'Author Name, Institution', pages: 'pp. 19–34' },
+  { section: 'Humanities', title: 'A third article entry', byline: 'Author Name, Institution', pages: 'pp. 35–52' }
+];
+
+const FACTS = [
+  { k: 'Founded', v: '2026' }, { k: 'Access', v: 'Open, CC BY 4.0' }, { k: 'Author fees', v: 'None' },
+  { k: 'Review', v: 'Double-blind' }, { k: 'Frequency', v: 'Monthly, at month end' }, { k: 'ISSN', v: 'Pending' }
+];
+
+const TEAM = [
+  { slot: 'icrr-team-ayla', name: 'Ayla Ahmadova', role: 'founder & editor\n', duty: 'Founded the journal and leads editorial direction, scope, and final decisions on submissions.' },
+  { slot: 'icrr-team-kanan', name: 'Kanan Hajiyev', role: 'technical director\n', duty: 'Builds and maintains the journal platform, submission workflow, and article archive.' },
+  { slot: 'icrr-team-gunel', name: 'Gunel Ahmadova', role: 'chief marketing officer', duty: 'Runs calls for papers, announcements, and outreach to student researchers and institutions.' }
+];
+
+const ROLES = [
+  { title: 'Managing Editor', holder: 'Appointment pending', duty: 'Runs the review cycle, correspondence, and production schedule.', color: '#8A7B5C' },
+  { title: 'Section Editor, Natural Sciences', holder: 'Recruiting', duty: 'Assigns reviewers and arbitrates conflicting reports in the sciences.', color: '#5D1D21' },
+  { title: 'Section Editor, Business & Economics', holder: 'Recruiting', duty: 'Oversees review in economics, finance, and organisational research.', color: '#5D1D21' },
+  { title: 'Section Editor, Law & Policy', holder: 'Recruiting', duty: 'Handles doctrinal, comparative, and regulatory submissions.', color: '#5D1D21' },
+  { title: 'Section Editor, Humanities', holder: 'Recruiting', duty: 'Oversees history, literature, philosophy, and the arts.', color: '#5D1D21' },
+  { title: 'Section Editor, Social Sciences', holder: 'Recruiting', duty: 'Oversees psychology, sociology, anthropology, and politics.', color: '#5D1D21' },
+  { title: 'Copyeditor', holder: 'Recruiting', duty: 'House style, references, and proofing of accepted manuscripts.', color: '#5D1D21' }
+];
+
+const REQS = [
+  { k: 'Length', v: '3,000–8,000 words excluding references and appendices.' },
+  { k: 'File format', v: 'PDF or DOCX, single column, 1.5 line spacing, numbered pages.' },
+  { k: 'Anonymisation', v: 'No author names, affiliations, or acknowledgements in the manuscript file.' },
+  { k: 'Abstract', v: '250 words maximum, plus four to six keywords.' },
+  { k: 'References', v: 'Consistent style throughout: APA, Chicago, or OSCOLA.' },
+  { k: 'Figures', v: 'Numbered, captioned, and legible in greyscale at print size.' }
+];
+
+const CHECKLIST = [
+  'At least one author is a current student or graduated within the last twelve months.',
+  'The manuscript is anonymised and contains no identifying information.',
+  'The work is original, unpublished, and not under consideration elsewhere.',
+  'Ethical approval is attached where human subjects are involved.',
+  'Funding, supervision, and use of generative tools are declared in the cover letter.'
+];
+
+const PAGES = ['home', 'about', 'issue', 'archives', 'authors', 'author', 'board', 'submit', 'news', 'article'];
+
+const PAGE_TITLES = {
+  home: '', about: 'About', issue: 'Current Issue', archives: 'Archives', authors: 'Authors',
+  author: 'Contributor', board: 'Our Team', submit: 'Submit', news: 'Announcements', article: 'Article'
+};
+
+class Component extends DCLogic {
+  state = { page: 'home', authorId: null, filter: 'All', q: '', ann: 0, toast: '', narrow: false, menuOpen: false };
+
+  componentDidMount() {
+    this._lastPage = this.state.page;
+    this._t = setInterval(() => this.setState(s => ({ ann: (s.ann + 1) % ANNOUNCEMENTS.length })), 6000);
+    this._mq = window.matchMedia('(max-width: 860px)');
+    this._onMq = e => this.setState({ narrow: e.matches, menuOpen: e.matches ? this.state.menuOpen : false });
+    this.setState({ narrow: this._mq.matches });
+    this._mq.addEventListener ? this._mq.addEventListener('change', this._onMq) : this._mq.addListener(this._onMq);
+    this._reveal();
+  }
+  componentDidUpdate() {
+    if (this._lastPage !== this.state.page) {
+      this._lastPage = this.state.page;
+      window.scrollTo(0, 0);
+      this._reveal();
+    }
+  }
+  componentWillUnmount() {
+    clearInterval(this._t);
+    if (this._io) this._io.disconnect();
+    if (this._mq) this._mq.removeEventListener ? this._mq.removeEventListener('change', this._onMq) : this._mq.removeListener(this._onMq);
+  }
+
+  _reveal() {
+    if (this._io) this._io.disconnect();
+    if (!('IntersectionObserver' in window)) return;
+    const els = Array.from(document.querySelectorAll('[data-reveal]'));
+    this._io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.style.transition = 'opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1)';
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'none';
+        obs.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px' });
+    els.forEach(el => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.92) return;
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      this._io.observe(el);
+    });
+  }
+
+  nav(page) { return e => { if (e) e.preventDefault(); this.setState({ page, menuOpen: false, authorId: page === 'author' ? this.state.authorId : null }); }; }
+  toggleMenu = e => { if (e) e.preventDefault(); this.setState(s => ({ menuOpen: !s.menuOpen })); };
+  closeMenu = e => { if (e) { e.preventDefault(); e.stopPropagation(); } this.setState({ menuOpen: false }); };
+  note(msg) { return e => { if (e) e.preventDefault(); clearTimeout(this._toast); this.setState({ toast: msg }); this._toast = setTimeout(() => this.setState({ toast: '' }), 3600); }; }
+
+  renderVals() {
+    const { page, filter, q } = this.state;
+    const deadline = this.props.deadline ?? '31 August 2026';
+    const expected = this.props.expected ?? '30 September 2026';
+    const gold = '#C0A265', clear = 'transparent';
+    const v = {};
+    PAGES.forEach(p => { v['pg' + p.charAt(0).toUpperCase() + p.slice(1)] = page === p; });
+
+    const needle = q.trim().toLowerCase();
+    const matches = a => {
+      if (filter !== 'All' && a.discipline !== filter) return false;
+      if (!needle) return true;
+      const hay = [a.name, a.affiliation, a.discipline, a.role, a.bio, a.interests.join(' '), a.publications.map(p => p.title).join(' ')].join(' ').toLowerCase();
+      return hay.includes(needle);
+    };
+    const visible = AUTHORS.filter(matches);
+    const chips = ['All'].concat(DISCIPLINES.map(d => d.name)).map(label => ({
+      label: label === 'All' ? 'All sections' : label,
+      onClick: e => { e.preventDefault(); this.setState({ filter: label }); },
+      bg: filter === label ? '#5D1D21' : '#FDFBF7',
+      fg: filter === label ? '#F7F4EF' : '#5A524A',
+      bd: filter === label ? '#5D1D21' : '#E2DACB'
+    }));
+
+    const sel = AUTHORS.find(a => a.id === this.state.authorId) || AUTHORS[0];
+    const author = Object.assign({}, sel, {
+      slot: 'icrr-author-' + sel.id,
+      noPubs: sel.publications.length === 0,
+      publications: sel.publications
+    });
+
+    return Object.assign(v, {
+      wideNav: !this.state.narrow, narrowNav: this.state.narrow,
+      menuOpen: this.state.narrow && this.state.menuOpen,
+      toggleMenu: this.toggleMenu, closeMenu: this.closeMenu,
+      stopClick: e => e.stopPropagation(),
+      menuLabel: this.state.menuOpen ? 'Close' : 'Menu',
+      barTop: this.state.menuOpen ? 'translateY(5.5px) rotate(45deg)' : 'none',
+      barMid: this.state.menuOpen ? '0' : '1',
+      barBot: this.state.menuOpen ? 'translateY(-5.5px) rotate(-45deg)' : 'none',
+      pageTitle: PAGE_TITLES[page] || '',
+      menuItems: [
+        ['home', 'Home'], ['about', 'About'], ['issue', 'Current Issue'], ['archives', 'Archives'],
+        ['authors', 'Authors'], ['board', 'Our Team'], ['news', 'Announcements']
+      ].map(([key, label]) => ({
+        label, go: this.nav(key),
+        color: (page === key || (key === 'authors' && page === 'author')) ? '#5D1D21' : '#241F1E',
+        mark: (page === key || (key === 'authors' && page === 'author')) ? 'Current' : ''
+      })),
+      goHome: this.nav('home'), goAbout: this.nav('about'), goIssue: this.nav('issue'),
+      goArchives: this.nav('archives'), goAuthors: this.nav('authors'), goBoard: this.nav('board'),
+      goSubmit: this.nav('submit'), goNews: this.nav('news'), goArticle: this.nav('article'),
+      uHome: page === 'home' ? gold : clear, uAbout: page === 'about' ? gold : clear,
+      uIssue: page === 'issue' ? gold : clear, uArchives: page === 'archives' ? gold : clear,
+      uAuthors: (page === 'authors' || page === 'author') ? gold : clear, uBoard: page === 'board' ? gold : clear,
+
+      issueLabel: 'Volume 1 · Issue 1 · Publishing 30 September 2026',
+      deadline, expected,
+      showPreviewNotes: this.props.showPreviewNotes ?? true,
+      annText: ANNOUNCEMENTS[this.state.ann],
+      disciplines: DISCIPLINES, steps: STEPS, timeline: TIMELINE, tocPreview: TOC_PREVIEW,
+      facts: FACTS, roles: ROLES, team: TEAM, reqs: REQS, checklist: CHECKLIST,
+      news: NEWS.map(n => ({ ...n, cta: this.nav(n.ctaKey) })),
+
+      chips, q,
+      setQ: e => this.setState({ q: e.target.value }),
+      visibleAuthors: visible.map(a => ({
+        ...a,
+        slot: 'icrr-author-' + a.id,
+        pubCount: a.publications.length === 0 ? 'Under review for Issue 1' : a.publications.length + (a.publications.length === 1 ? ' article' : ' articles'),
+        open: e => { e.preventDefault(); this.setState({ page: 'author', authorId: a.id }); }
+      })),
+      noResults: visible.length === 0,
+      countLabel: visible.length === AUTHORS.length ? AUTHORS.length + ' contributors' : visible.length + ' of ' + AUTHORS.length + ' contributors',
+      clearFilters: e => { e.preventDefault(); this.setState({ filter: 'All', q: '' }); },
+      author,
+
+      wantPdf: this.note('Not available yet. PDFs and author links go live with Issue 1.'),
+      submitForm: this.note('Submission portal opens with the call for papers. Email icrrjournal@gmail.com in the meantime.'),
+      subscribe: this.note('Thanks. You will receive our calls for papers and issue announcements.'),
+      hasToast: !!this.state.toast, toast: this.state.toast
+    });
+  }
+}
+</script>
+</body>
+</html>
