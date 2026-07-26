@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ICRR Journal
 
-## Getting Started
+The public website for the **International Collegiate Research Review**, an independent,
+open-access journal publishing undergraduate and graduate research across five sections.
 
-First, run the development server:
+Ten views: home, about, current issue, archives, contributor directory, author profiles, our team,
+submit, announcements, and the article reading page.
+
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+```bash
+npm run build        # production build
+npm start            # serve the production build
+npm test             # unit tests (Vitest)
+npm run test:e2e     # browser tests (Playwright, desktop + mobile)
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Playwright starts its own server, so `npm run test:e2e` works from a clean checkout after
+`npx playwright install chromium`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How it is put together
 
-## Learn More
+- **Next.js App Router**, TypeScript strict, Tailwind v4 with CSS-first `@theme` tokens.
+- **Server components by default.** Four client islands carry all the interactivity: the nav
+  (matchMedia variant switching and the drawer), the authors browser, the announcement rotator,
+  and the toast provider.
+- **All content is reached through `src/lib/content/`.** No page imports a data source directly.
+  Today those accessors read typed seed files; they are `async` already so the Supabase
+  implementation can replace their bodies without touching a single view.
+- **Images render through `<ImageSlot>`.** A null path produces an on-brand labelled placeholder,
+  so filling a slot is a data change rather than a code change.
 
-To learn more about Next.js, take a look at the following resources:
+## Design source of truth
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`design-reference/` holds the approved design handoff. `ICRR Journal.dc.html` is the prototype and
+is authoritative on every visual question; `design-reference/README.md` documents the tokens and
+intent. Where the two disagree, the HTML wins.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Two editorial constraints are enforced by tests and must be preserved:
 
-## Deploy on Vercel
+1. **No em dashes** in site copy. En dashes in numeric ranges are correct.
+2. **Never promise reviewer feedback to authors.** The journal cannot guarantee it.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Two visual constraints likewise: no border radius anywhere except the announcement dot and the
+timeline rail dots, and exactly one shadow in the whole design, on the toast.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Branch policy
+
+Rebuild work lives on `rebuild`. `main` still serves the earlier site until this one is ready to
+go live.
+
+## What is not built yet
+
+Placeholder actions (PDF downloads, ORCID, cite, share, the submission form, newsletter signup)
+show an explanatory toast rather than failing silently. Every message lives in `src/lib/toasts.ts`,
+marked `TODO(plan-3)`.
+
+Still to come, each with its own plan under `docs/superpowers/plans/`:
+
+- **Plan 2:** Supabase schema, RLS, storage, and the hidden admin panel.
+- **Plan 3:** real submissions with manuscript upload, Resend notifications, and the newsletter.
+
+## Documents
+
+- `docs/superpowers/specs/2026-07-26-icrr-journal-website-design.md` — the approved design spec
+- `docs/superpowers/plans/2026-07-26-icrr-public-site.md` — the plan this repo implements
