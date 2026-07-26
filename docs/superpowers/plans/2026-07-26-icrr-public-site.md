@@ -203,12 +203,43 @@ describe('design tokens', () => {
     expect(css).toMatch(new RegExp(`--color-${name}:\\s*${hex};`, 'i'))
   })
 
-  it.each(['icrrUp', 'icrrIn', 'icrrDraw', 'icrrPlate', 'icrrPulse', 'icrrDrawer'])(
-    'defines the %s keyframes',
-    (name) => {
-      expect(css).toContain(`@keyframes ${name}`)
-    },
-  )
+// Whitespace-normalised keyframe bodies. Asserting the body, not just the
+// name, is what stops a later task silently altering a motion curve.
+const KEYFRAMES: Record<string, string> = {
+  icrrUp: 'from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}',
+  icrrIn: 'from{opacity:0;}to{opacity:1;}',
+  icrrDraw: 'from{width:0;}to{width:96px;}',
+  icrrPlate: 'from{opacity:0;transform:translateY(10px) scale(0.985);}to{opacity:1;transform:none;}',
+  icrrPulse: '0%,100%{opacity:0.35;}50%{opacity:1;}',
+  icrrDrawer: 'from{transform:translateX(100%);}to{transform:none;}',
+}
+
+/** Pulls one @keyframes block out of the stylesheet and strips formatting. */
+function keyframeBody(source: string, name: string): string {
+  const start = source.indexOf(`@keyframes ${name}`)
+  if (start === -1) return ''
+  const open = source.indexOf('{', start)
+  let depth = 0
+  let end = open
+  for (let i = open; i < source.length; i += 1) {
+    if (source[i] === '{') depth += 1
+    if (source[i] === '}') {
+      depth -= 1
+      if (depth === 0) {
+        end = i
+        break
+      }
+    }
+  }
+  return source
+    .slice(open + 1, end)
+    .replace(/\s+/g, '')
+    .replace(/;?}/g, ';}')
+}
+
+  it.each(Object.entries(KEYFRAMES))('defines %s with the exact body', (name, body) => {
+    expect(keyframeBody(css, name)).toBe(body)
+  })
 
   it('declares the one permitted shadow and no other', () => {
     const shadows = css.match(/box-shadow:[^;]+;/g) ?? []
