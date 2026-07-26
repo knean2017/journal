@@ -2290,8 +2290,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {message ? (
         <div
           role="status"
-          className="fixed left-1/2 bottom-[30px] -translate-x-1/2 z-[80] bg-ink text-cream px-6 py-[14px] text-[14px] text-center max-w-[min(560px,90vw)]"
-          style={{ boxShadow: '0 10px 30px rgba(36, 31, 30, 0.28)', animation: 'icrrUp .3s ease both' }}
+          className="toast fixed left-1/2 bottom-[30px] -translate-x-1/2 z-[80] bg-ink text-cream px-6 py-[14px] text-[14px] text-center max-w-[min(560px,90vw)]"
+          style={{ animation: 'icrrUp .3s ease both' }}
         >
           {message}
         </div>
@@ -2301,7 +2301,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 }
 ```
 
-Note: this is the only `box-shadow` permitted in the codebase, and it is written inline rather than in `globals.css` so the task 1 shadow test, which scopes its assertion to `globals.css` only, keeps passing. Task 17 audits shadows across all of `src/` and expects this one file.
+Note: the shadow itself lives in the `.toast` component class created in task 1, alongside the other component classes. This component only applies that class. There must be no `boxShadow` inline style here, or the codebase would carry two declarations of the one permitted shadow.
 
 `src/components/chrome/RevealArmer.tsx` — client island.
 
@@ -3125,7 +3125,7 @@ describe('design audit', () => {
 
   it('declares exactly one box shadow across the codebase', () => {
     const found = FILES.flatMap((file) => (read(file).match(/box-?[Ss]hadow/g) ?? []).map(() => file))
-    expect(found).toEqual(['src/components/chrome/ToastProvider.tsx'])
+    expect(found).toEqual(['src/styles/globals.css'])
   })
 
   it('contains no em dash in any source file', () => {
