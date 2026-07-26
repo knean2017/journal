@@ -54,18 +54,56 @@ timeline rail dots, and exactly one shadow in the whole design, on the toast.
 Rebuild work lives on `rebuild`. `main` still serves the earlier site until this one is ready to
 go live.
 
-## What is not built yet
+## Connecting Supabase
 
-Placeholder actions (PDF downloads, ORCID, cite, share, the submission form, newsletter signup)
-show an explanatory toast rather than failing silently. Every message lives in `src/lib/toasts.ts`,
-marked `TODO(plan-3)`.
+The site runs without a database, on its seed content. These steps switch it over.
 
-Still to come, each with its own plan under `docs/superpowers/plans/`:
+1. **Create the project**, then copy `.env.example` to `.env.local` and fill in the project URL,
+   the anon key, and the service-role key. Pick your own `ADMIN_PATH` while you are there.
 
-- **Plan 2:** Supabase schema, RLS, storage, and the hidden admin panel.
-- **Plan 3:** real submissions with manuscript upload, Resend notifications, and the newsletter.
+2. **Run the migration.** Paste `supabase/migrations/0001_init.sql` into the Supabase SQL editor,
+   or apply it with the Supabase CLI. It creates every table, the RLS policies, and the three
+   storage buckets.
+
+3. **Load the content:** `npm run seed`. Idempotent, so running it twice changes nothing. It does
+   overwrite rows it owns, so seed before editing in the admin, not after.
+
+4. **Create the one admin account** by hand in the Supabase dashboard, under Authentication →
+   Users → Add user. There is no signup route by design.
+
+5. **Optional, for submission emails:** set `RESEND_API_KEY`, and `RESEND_FROM` once you have a
+   verified sender. Without it submissions still store; only the notification is skipped.
+
+The admin then answers at `/{ADMIN_PATH}`, for example `/editorial-office`.
+
+## The admin panel
+
+Site settings, sections, team, editorial roles, authors, issues, articles, announcements, the home
+ticker, a media library, and the submissions inbox.
+
+Security, in short:
+
+- RLS default-denies. Anonymous callers get `SELECT` only, and only on published rows.
+  `submissions` and `newsletter_subscribers` have no public policy at all.
+- Every write goes through a server action on the service-role key, which is server-only and
+  guarded by a `server-only` import so exposing it is a build error.
+- `ADMIN_PATH` is a second layer, not the control. The session check is. Middleware gates the
+  route tree and every page and action re-checks, because middleware does not protect a direct
+  POST. A direct request to the internal `/admin/*` tree 404s.
+- Uploads are checked server-side for type and size, and filenames are regenerated. Manuscripts
+  live in a private bucket and are reached only through five-minute signed URLs.
+
+## Still open
+
+- **Photographs.** Hero, editorial photo, team portraits, author portraits, issue cover, article
+  figures are all labelled placeholders. Upload through the admin's media library.
+- **Real authors.** The six profiles are the handoff's placeholders and are labelled as such.
+  Turn off the design-preview banners in Site settings once they are replaced.
+- **Article bodies** render placeholder prose. The `body` column stores rich-text JSON and the
+  admin exposes it as a raw field for now; a WYSIWYG editor is the remaining piece.
+- PDF download, ORCID, cite, and share still toast. Messages live in `src/lib/toasts.ts`.
 
 ## Documents
 
 - `docs/superpowers/specs/2026-07-26-icrr-journal-website-design.md` — the approved design spec
-- `docs/superpowers/plans/2026-07-26-icrr-public-site.md` — the plan this repo implements
+- `docs/superpowers/plans/2026-07-26-icrr-public-site.md` — the public-site plan
