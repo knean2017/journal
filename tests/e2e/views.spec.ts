@@ -10,11 +10,23 @@ test.describe('home', () => {
     await expect(page.getByRole('link', { name: 'Read the Call for Papers' })).toBeVisible()
   })
 
-  test('announcement bar rotates', async ({ page }) => {
+  /**
+   * The bar slides rather than swapping one line for another, so nothing is
+   * replaced half way through being read. What this asserts is movement: the
+   * track drifts left, and every announcement is on it the whole time.
+   */
+  test('announcement bar slides its announcements past', async ({ page }) => {
     await page.goto('/')
-    const ticker = page.locator('[aria-live="polite"]')
-    const first = await ticker.textContent()
-    await expect(ticker).not.toHaveText(first ?? '', { timeout: 9000 })
+    const track = page.locator('.ticker-track')
+
+    await expect(track).toContainText('Call for Papers')
+    await expect(track).toContainText('recruiting reviewers')
+
+    const start = await track.boundingBox()
+    await page.waitForTimeout(1200)
+    const later = await track.boundingBox()
+
+    expect(later?.x ?? 0).toBeLessThan(start?.x ?? 0)
   })
 
   test('closing CTA carries the only gold-filled button', async ({ page }) => {
@@ -60,11 +72,14 @@ test.describe('about', () => {
     }
   })
 
-  test('review policy does not promise author feedback', async ({ page }) => {
+  test('review policy promises neither author feedback nor a review model', async ({ page }) => {
     await page.goto('/about')
     const body = (await page.locator('main').textContent()) ?? ''
-    expect(body).toContain('reviewer identities are not disclosed')
+    expect(body).toContain('nothing is published without that review')
     expect(body.toLowerCase()).not.toContain('written feedback')
+    // The journal reviews what it publishes and runs neither of these.
+    expect(body.toLowerCase()).not.toContain('double-blind')
+    expect(body.toLowerCase()).not.toContain('peer review')
   })
 
   test('journal at a glance lists all six facts', async ({ page }) => {
@@ -83,7 +98,7 @@ test.describe('current issue', () => {
     for (const title of [
       'Submissions open',
       'Issue 1 submissions close',
-      'Peer review',
+      'Review',
       'Decisions returned',
       'Publication',
     ]) {
@@ -212,6 +227,12 @@ test.describe('our team', () => {
 test.describe('submit', () => {
   test('lists all six manuscript requirements', async ({ page }) => {
     await page.goto('/submit')
+    // Scoped to the requirements table: "Abstract" is also a field label on
+    // the form, and an unscoped exact match would find both.
+    const requirements = page
+      .locator('h2', { hasText: 'Manuscript requirements' })
+      .locator('xpath=following-sibling::div[1]')
+
     for (const key of [
       'Length',
       'File format',
@@ -220,7 +241,7 @@ test.describe('submit', () => {
       'References',
       'Figures',
     ]) {
-      await expect(page.getByText(key, { exact: true })).toBeVisible()
+      await expect(requirements.getByText(key, { exact: true })).toBeVisible()
     }
   })
 
@@ -232,13 +253,14 @@ test.describe('submit', () => {
   /**
    * Which message comes back depends on whether Supabase is configured: without
    * it the form answers with the pre-launch toast, with it an empty form fails
-   * validation. Both are correct, so assert the form always answers.
+   * validation and the toast names the fields. Both are correct.
+   * tests/e2e/forms.spec.ts covers the naming and the highlighting in detail.
    */
   test('submitting always answers with a toast', async ({ page }) => {
     await page.goto('/submit')
     await page.getByRole('button', { name: 'Submit manuscript' }).click()
     await expect(page.getByRole('status')).toContainText(
-      /Submission portal opens with the call for papers|Please check the highlighted fields/,
+      /Submission portal opens with the call for papers|Please check /,
     )
   })
 })

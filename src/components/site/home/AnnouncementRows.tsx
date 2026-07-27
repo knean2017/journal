@@ -12,10 +12,15 @@ export function AnnouncementRows({ announcements }: { announcements: Announcemen
       </div>
 
       {announcements.map((announcement) => (
+        /*
+         * Date over title on a phone, beside it from 640px up. Held in three
+         * columns the title had a third of the screen and broke a five-word
+         * headline across four lines.
+         */
         <Link
           key={announcement.slug}
           href="/news"
-          className="grid [grid-template-columns:minmax(84px,150px)_minmax(0,1fr)_auto] gap-[clamp(14px,2vw,26px)] items-baseline py-6 border-b border-rule text-ink hover:bg-cream hover:text-ink"
+          className="grid gap-[10px] sm:[grid-template-columns:minmax(84px,150px)_minmax(0,1fr)_auto] sm:gap-[clamp(14px,2vw,26px)] items-baseline py-6 border-b border-rule text-ink hover:bg-cream hover:text-ink"
         >
           <span className="text-[11.5px] tracking-[0.14em] uppercase text-gold-muted font-bold">
             {announcement.publishedOn}
@@ -28,7 +33,8 @@ export function AnnouncementRows({ announcements }: { announcements: Announcemen
               {announcement.blurb}
             </span>
           </span>
-          <span className="text-maroon text-[18px]">→</span>
+          {/* The whole row is the link on a phone; the arrow is desktop chrome. */}
+          <span className="hidden sm:block text-maroon text-[18px]">→</span>
         </Link>
       ))}
     </section>

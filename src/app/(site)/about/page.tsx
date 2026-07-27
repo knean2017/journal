@@ -9,9 +9,14 @@ const SECTIONS = [
     body: 'We consider original research, systematic reviews, replication studies, and case analyses. Work is judged on its question, its method, and the honesty of its conclusions, not on the seniority of its author. Interdisciplinary submissions are welcome.',
   },
   {
-    // This copy must not promise author feedback. The journal cannot guarantee it.
+    /*
+     * This copy must not promise author feedback. The journal cannot guarantee
+     * it. Nor may it name a review model: the journal reviews what it
+     * publishes, but it does not run double-blind or formal peer review, and
+     * saying either would promise a process that does not exist.
+     */
     heading: 'Review policy',
-    body: 'All submissions undergo double-blind review by at least two reviewers. Author identities are removed before assessment, and reviewer identities are not disclosed.',
+    body: 'Every submission is reviewed before a decision is made, and nothing is published without that review. Editors recuse themselves from work involving their own institution, supervisor, or collaborators.',
   },
   {
     heading: 'Publication ethics',
@@ -33,7 +38,7 @@ export default async function AboutPage() {
       <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-11 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,64px)] items-start">
         <div>
           <p className="m-0 font-serif text-[20px] leading-[1.75] text-maroon-deep">
-            The International Collegiate Research Review publishes peer-reviewed research by
+            The International Collegiate Research Review publishes reviewed research by
             undergraduate and graduate students, from any institution and any country, at no cost to
             authors or readers.
           </p>

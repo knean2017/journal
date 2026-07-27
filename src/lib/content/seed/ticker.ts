@@ -6,5 +6,5 @@ export const tickerLines: TickerLine[] = [
     text: 'Issue 1 publishes 30 September 2026, and at the end of each month thereafter.',
     sortOrder: 2,
   },
-  { text: 'We are recruiting peer reviewers across all five sections.', sortOrder: 3 },
+  { text: 'We are recruiting reviewers across all five sections.', sortOrder: 3 },
 ]

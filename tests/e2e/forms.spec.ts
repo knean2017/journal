@@ -56,6 +56,94 @@ test.describe('contact', () => {
   })
 })
 
+test.describe('rejected fields', () => {
+  test('the submission form names them and marks them, one at a time', async ({ page }) => {
+    await page.goto('/submit')
+
+    // Everything filled except the abstract, which is below its minimum.
+    await page.locator('[name="author"]').fill('Ada Lovelace')
+    await page.locator('[name="email"]').fill('ada@university.edu')
+    await page.locator('[name="institution"]').fill('University of London')
+    await page.locator('[name="section"]').selectOption({ index: 1 })
+    await page.locator('[name="title"]').fill('On the Analytical Engine')
+    await page.locator('[name="abstract"]').fill('Too short.')
+    await page.locator('[name="originality"]').check()
+    await page.getByRole('button', { name: 'Submit manuscript' }).click()
+
+    await expect(page.getByRole('status')).toContainText('the abstract')
+    await expect(page.locator('[name="abstract"]')).toHaveAttribute('aria-invalid', 'true')
+    await expect(page.locator('[name="title"]')).not.toHaveAttribute('aria-invalid', 'true')
+    await expect(page.locator('[name="abstract"]')).toHaveCSS(
+      'border-left-color',
+      'rgb(93, 29, 33)',
+    )
+  })
+
+  test('an unticked originality box is named, not left silent', async ({ page }) => {
+    await page.goto('/submit')
+    await page.getByRole('button', { name: 'Submit manuscript' }).click()
+    await expect(page.getByRole('status')).toContainText('the originality confirmation')
+  })
+
+  /**
+   * A rejected form keeps what was typed. React empties a form once its action
+   * returns, which used to throw away a finished abstract because a box was
+   * left unticked; the select and the checkbox are here by name because React
+   * restores a text input after that reset but not either of those.
+   */
+  test('a rejected submission keeps every answer, including the select', async ({ page }) => {
+    await page.goto('/submit')
+
+    await page.locator('[name="author"]').fill('Ada Lovelace')
+    await page.locator('[name="email"]').fill('ada@university.edu')
+    await page.locator('[name="institution"]').fill('University of London')
+    await page.locator('[name="section"]').selectOption({ index: 1 })
+    await page.locator('[name="title"]').fill('On the Analytical Engine')
+    await page.locator('[name="abstract"]').fill('Too short.')
+    await page.locator('[name="originality"]').check()
+
+    const section = await page.locator('[name="section"]').inputValue()
+    await page.getByRole('button', { name: 'Submit manuscript' }).click()
+    await expect(page.locator('[name="abstract"]')).toHaveAttribute('aria-invalid', 'true')
+
+    await expect(page.locator('[name="author"]')).toHaveValue('Ada Lovelace')
+    await expect(page.locator('[name="email"]')).toHaveValue('ada@university.edu')
+    await expect(page.locator('[name="institution"]')).toHaveValue('University of London')
+    await expect(page.locator('[name="title"]')).toHaveValue('On the Analytical Engine')
+    await expect(page.locator('[name="abstract"]')).toHaveValue('Too short.')
+    await expect(page.locator('[name="section"]')).toHaveValue(section)
+    await expect(page.locator('[name="originality"]')).toBeChecked()
+  })
+
+  test('the contact form keeps its answers too', async ({ page }) => {
+    await page.goto('/contact')
+    await page.locator('[name="name"]').fill('Ada Lovelace')
+    await page.locator('[name="topic"]').selectOption({ index: 1 })
+    await page.locator('[name="message"]').fill('Short')
+
+    await page.getByRole('button', { name: 'Send message' }).click()
+    await expect(page.getByText('Please say a little more so we can answer properly.')).toBeVisible()
+
+    await expect(page.locator('[name="name"]')).toHaveValue('Ada Lovelace')
+    await expect(page.locator('[name="message"]')).toHaveValue('Short')
+    await expect(page.locator('[name="topic"]')).not.toHaveValue('')
+  })
+})
+
+test.describe('character counts', () => {
+  test('the abstract counts towards its minimum, then towards its ceiling', async ({ page }) => {
+    await page.goto('/submit')
+    const count = page.locator('form').getByText(/\/ (40 minimum|3000)$/)
+
+    await expect(count).toHaveText('0 / 40 minimum')
+    await page.locator('[name="abstract"]').fill('Only a few words here.')
+    await expect(count).toHaveText('22 / 40 minimum')
+
+    await page.locator('[name="abstract"]').fill('x'.repeat(80))
+    await expect(count).toHaveText('80 / 3000')
+  })
+})
+
 test.describe('manuscript attachment', () => {
   const FILE = {
     name: 'anonymised-manuscript.pdf',
@@ -88,5 +176,36 @@ test.describe('manuscript attachment', () => {
 
     const count = await input.evaluate((el) => (el as HTMLInputElement).files?.length ?? -1)
     expect(count).toBe(0)
+  })
+
+  /**
+   * Anything up to 20 MB is accepted, and the file goes straight from the
+   * browser to storage rather than through a Server Action, which is what
+   * makes that possible. Over the limit is refused on sight: nobody should
+   * spend a long upload to be told afterwards.
+   */
+  test('a file over 20 MB is refused before anything is uploaded', async ({ page }) => {
+    await page.goto('/submit')
+    await page.locator('input[name="manuscript"]').setInputFiles({
+      name: 'far-too-long.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.alloc(21 * 1024 * 1024),
+    })
+
+    await expect(page.getByText('That file is 21.0 MB. The limit is 20 MB.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Submit manuscript' })).toBeDisabled()
+  })
+
+  test('a file well over the old 1 MB action limit is accepted', async ({ page }) => {
+    await page.goto('/submit')
+    await page.locator('input[name="manuscript"]').setInputFiles({
+      name: 'eight-megabytes.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.alloc(8 * 1024 * 1024),
+    })
+
+    await expect(page.getByText('8.0 MB')).toBeVisible()
+    await expect(page.getByText('The limit is 20 MB.')).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Submit manuscript' })).toBeEnabled()
   })
 })

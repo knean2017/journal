@@ -14,10 +14,15 @@ export const processSteps: ProcessStep[] = [
     body: 'An editor checks scope, eligibility, and similarity.',
   },
   {
+    /*
+     * No review model is named here or anywhere else. The journal reviews what
+     * it publishes and does not run double-blind or formal peer review, so a
+     * named model would promise a process that does not exist.
+     */
     number: '3',
     time: 'Weeks 1–3',
-    title: 'Double-blind review',
-    body: 'At least two subject reviewers return written reports.',
+    title: 'Review',
+    body: 'The manuscript is reviewed on its method and its evidence.',
   },
   {
     number: '4',
@@ -41,15 +46,15 @@ export const timeline: TimelineEntry[] = [
     filled: false,
   },
   {
-    title: 'Peer review',
+    title: 'Review',
     when: '2–3 weeks',
-    body: 'Double-blind assessment by at least two reviewers.',
+    body: 'Each manuscript is reviewed before it goes to a decision.',
     filled: false,
   },
   {
     title: 'Decisions returned',
     when: 'Mid-Sept 2026',
-    body: 'Accept, revise, or decline, based on the reviewer reports.',
+    body: 'Accept, revise, or decline, based on the review.',
     filled: false,
   },
   {
@@ -85,7 +90,7 @@ export const facts: Fact[] = [
   { key: 'Founded', value: '2026' },
   { key: 'Access', value: 'Open, CC BY 4.0' },
   { key: 'Author fees', value: 'None' },
-  { key: 'Review', value: 'Double-blind' },
+  { key: 'Review', value: 'Before publication' },
   { key: 'Frequency', value: 'Monthly, at month end' },
   { key: 'ISSN', value: 'Pending' },
 ]

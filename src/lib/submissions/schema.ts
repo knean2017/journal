@@ -1,11 +1,16 @@
 import { z } from 'zod'
 
-export const MAX_MANUSCRIPT_BYTES = 20 * 1024 * 1024
-
-export const MANUSCRIPT_TYPES = new Set([
-  'application/pdf',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-])
+/**
+ * A storage path this server issued: a UUID and one of two extensions, nothing
+ * else. The client hands the path back after uploading, so it is input, and a
+ * path is used to read and delete an object.
+ */
+export const manuscriptPathSchema = z
+  .string()
+  .regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(pdf|docx)$/,
+    'The upload could not be matched to your submission. Please attach the file again.',
+  )
 
 export const submissionSchema = z.object({
   correspondingAuthor: z.string().trim().min(2, 'Please give the corresponding author’s name.'),
@@ -17,7 +22,7 @@ export const submissionSchema = z.object({
     .string()
     .trim()
     .min(40, 'Please give an abstract of at least a few sentences.')
-    .max(3000, 'That abstract is longer than 250 words.'),
+    .max(3000, 'That abstract is longer than 3000 characters.'),
   originality: z.literal(true, { message: 'Please confirm the originality statement.' }),
 })
 

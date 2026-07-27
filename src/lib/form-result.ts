@@ -14,6 +14,28 @@ export type FormResult = {
   fieldErrors?: Record<string, string>
 }
 
+/**
+ * A manuscript submission's first half: the one-time credentials the browser
+ * needs to put the file into storage itself. Present only when `ok` is true.
+ */
+export type UploadTarget = FormResult & {
+  upload?: { path: string; token: string }
+}
+
+/**
+ * A form value as text, treating a missing field as empty.
+ *
+ * A select whose placeholder option is `disabled` posts nothing at all: the
+ * form data algorithm skips disabled options, so the field is absent rather
+ * than empty. Passing that null through to a string schema produced "Invalid
+ * input: expected string, received null" where the form should have said
+ * "Please choose a section."
+ */
+export function text(form: FormData, key: string): string {
+  const value = form.get(key)
+  return typeof value === 'string' ? value : ''
+}
+
 /** First message per field. Later issues on the same field are noise to a form. */
 export function firstErrors(
   issues: readonly { path: readonly PropertyKey[]; message: string }[],

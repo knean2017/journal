@@ -26,25 +26,22 @@ const COLUMNS = [
 
 export function Footer({ contactEmail }: { contactEmail: string }) {
   return (
-    <footer className="mt-[88px] bg-maroon" style={CREAM_78}>
+    <footer className="mt-[clamp(52px,9vw,88px)] bg-maroon" style={CREAM_78}>
       <div className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] py-[clamp(38px,5vw,54px)] grid gap-[clamp(28px,4vw,44px)] [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
-        {/* Standalone square mark, never the full lockup on a cream plate. */}
-        <div className="flex items-center gap-[18px]">
+        {/*
+         * The stacked lockup drawn for dark grounds: mark and wordmark in one
+         * transparent file, so it needs no cream plate behind it. It carries
+         * the journal's name itself, which is why no wordmark text sits beside
+         * it. The file is cropped to its artwork; padding here is layout's job.
+         */}
+        <div className="flex items-start">
           <Image
-            src="/brand/mark.png"
-            alt=""
-            width={74}
-            height={74}
-            className="w-[clamp(58px,12vw,74px)] h-auto"
+            src="/brand/lockup-stacked-white.png"
+            alt="International Collegiate Research Review"
+            width={956}
+            height={686}
+            className="w-[clamp(132px,17vw,168px)] h-auto"
           />
-          <span
-            className="font-serif uppercase text-cream text-[clamp(11px,1.2vw,12.5px)] tracking-[0.16em] pl-[18px]"
-            style={{ borderLeft: '1px solid rgba(192,162,101,.55)' }}
-          >
-            International Collegiate
-            <br />
-            Research Review
-          </span>
         </div>
 
         {COLUMNS.map((column) => (

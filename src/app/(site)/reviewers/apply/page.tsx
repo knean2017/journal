@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const COMMITMENT = [
   { key: 'Volume', value: 'Up to two manuscripts a month, and you may decline any of them.' },
   { key: 'Turnaround', value: 'Three weeks from assignment to written report.' },
-  { key: 'Format', value: 'Double-blind. Author identities are removed before you see the file.' },
+  { key: 'Format', value: 'You read the manuscript and return your view of it in writing.' },
   { key: 'Credit', value: 'Reviewers are named on the team page unless they ask not to be.' },
 ]
 
@@ -43,9 +43,10 @@ export default async function ReviewerApplyPage() {
           </h2>
           <div className="mt-4 border-t border-rule">
             {COMMITMENT.map((row) => (
+              /* Key over value on a phone, beside it from 640px up. */
               <div
                 key={row.key}
-                className="grid [grid-template-columns:minmax(110px,170px)_minmax(0,1fr)] gap-[clamp(14px,2vw,24px)] py-[14px] border-b border-rule text-[14.5px] leading-[1.7]"
+                className="grid gap-[2px] sm:[grid-template-columns:minmax(110px,170px)_minmax(0,1fr)] sm:gap-[clamp(14px,2vw,24px)] py-[14px] border-b border-rule text-[14.5px] leading-[1.7]"
               >
                 <span className="font-bold text-ink">{row.key}</span>
                 <span className="text-body">{row.value}</span>
@@ -65,9 +66,8 @@ export default async function ReviewerApplyPage() {
               How we assign work
             </div>
             <div className="px-[18px] py-4 text-[14px] leading-[1.8] text-body">
-              A section editor matches each manuscript to two reviewers by subject, then sends the
-              anonymised file with a deadline. You may decline any assignment without giving a
-              reason.
+              A section editor matches each manuscript to a reviewer by subject, then sends the file
+              with a deadline. You may decline any assignment without giving a reason.
             </div>
           </div>
 

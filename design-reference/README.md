@@ -154,11 +154,15 @@ The nav bar is `border-top: 3px double #5D1D21` + `border-bottom: 1px solid #5D1
 ### 1. Top strip
 Full-bleed `#5D1D21`. Cream at `.82` opacity, `11px`, `letter-spacing:.16em`, uppercase.
 `8px` vertical padding. Left: "Open Access · ISSN Pending · Est. 2026". Right: "Contact" (jumps to
-the About page's contact block) and "Announcements". Wraps on narrow screens.
+the About page's contact block) and "Announcements". On a narrow screen the two halves wrap onto
+separate lines and both centre; pushed apart they read as an accidental break.
 
 ### 2. Masthead
-Centered, on `#FDFBF7`. The horizontal ICRR lockup, `~126px` tall, links home. Fades in
-(`icrrIn`, 600ms). Padding `clamp(22px,4vw,34px)` top / `clamp(18px,3vw,26px)` bottom.
+Centered, on `#FDFBF7`. The horizontal ICRR lockup links home and fades in (`icrrIn`, 600ms).
+Sized by height at `clamp(72px,9.5vw,92px)` with `width: auto`, not by a fixed box: the file is
+`2500x600`, and the prototype's `454x126` box did not match that ratio, so `object-contain`
+letterboxed the artwork and it drew smaller than the number implied. Padding
+`clamp(16px,3vw,24px)` top / `clamp(14px,2.5vw,20px)` bottom.
 
 ### 3. Nav — sticky, two variants at 860px
 
@@ -195,12 +199,13 @@ the scrim handler closes it. Hamburger bars morph to an `×` when open — top b
 `#5D1D21`, cream at `.78`. Four columns, `clamp(28px,4vw,44px)` gap, reflowing to fewer columns
 below `180px` per column.
 
-Column 1 is the brand block: the **square ICRR mark** (`clamp(58px,12vw,74px)`, no background plate)
-beside the wordmark "International Collegiate / Research Review" in Libre Baskerville
-`clamp(11px,1.2vw,12.5px)`, `letter-spacing:.16em`, uppercase, cream — separated by a
-`1px solid rgba(192,162,101,.55)` left border with `18px` padding. *Note: an earlier version put a
-cream rectangle behind the full lockup to make it legible on maroon; that was replaced because the
-plate looked pasted on. Do not reintroduce a white box — use the standalone mark.*
+Column 1 is the brand block: the **stacked lockup drawn for dark grounds**,
+`lockup-stacked-white.png`, at `clamp(132px,17vw,168px)` wide. It carries the mark and the
+wordmark in one transparent file, so nothing sits beside it. *Note: the constraint that produced
+the earlier square-mark-plus-text arrangement still holds — do not put a cream or white rectangle
+behind a lockup to make it legible on maroon; the plate looks pasted on. This file needs none,
+because its wordmark is already cream. It is cropped to its artwork, so any breathing room around
+it belongs to the layout, not to the file.*
 
 Columns 2–4: "The journal" (About, Current issue, Archives, Our team), "For authors" (Submit,
 Author guidelines, Contributor directory, Announcements), "Contact" (icrrjournal@gmail.com,
@@ -231,7 +236,9 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
      hover fills `#F7F4EF`)
    - The four elements stagger in via `icrrUp` at 0 / 60 / 140 / 220ms delay.
 
-2. **Hero image band** — `1400px` wide, `clamp(230px, 45vw, 470px)` tall, `1px solid #E2DACB`.
+2. **Hero image band** — `1400px` wide, `clamp(288px, 45vw, 470px)` tall, `1px solid #E2DACB`.
+   The floor is 288 rather than the prototype's 230 because the caption sits over the bottom of
+   the band and at 230 it landed on the placeholder's centred label on a phone.
    Bottom 52% carries the dark gradient. Over it: "Rigorous review. Transparent process. Work that
    stands on its own." in Libre Baskerville `clamp(16px,2.4vw,22px)` cream, and
    "VOLUME 1 IN PREPARATION" right-aligned. Caption layer is `pointer-events: none`.
@@ -240,14 +247,23 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
    it is a drop target.
 
 3. **Announcement bar** — full-bleed maroon, `min-height: 56px`. Gold `6px` dot pulsing
-   (`icrrPulse`, 2.4s, opacity .35 → 1) + "LATEST" + a rotating line + "ALL ANNOUNCEMENTS".
-   **Rotates every 6000ms** through three strings:
+   (`icrrPulse`, 2.4s, opacity .35 → 1) + "LATEST" + the announcements + "ALL ANNOUNCEMENTS".
+   Three strings, separated by a gold `·`:
    - "Call for Papers: Issue 1 closes 31 August 2026."
    - "Issue 1 publishes 30 September 2026, and at the end of each month thereafter."
-   - "We are recruiting peer reviewers across all five sections."
+   - "We are recruiting reviewers across all five sections."
+
+   **The line slides continuously** (`icrrTicker`, linear, infinite), it does not swap every
+   6000ms as the prototype did: a swap takes a line away half way through being read. The track
+   holds the three strings twice over and travels `translateX(-50%)`, so the loop has no seam.
+   Duration is `0.11s` per character of announcement text with a `30s` floor, which keeps the
+   speed the same however much there is to say. It pauses on hover and on focus within the bar,
+   and the ends are softened by a `mask-image` rather than a coloured gradient. Under
+   `prefers-reduced-motion` the global rule collapses the animation and the bar reads as static
+   text.
 
 4. **Three value columns** — numbered `01 / 02 / 03` in Libre Baskerville gold `13px`, h3 in maroon:
-   - Double-blind peer review — "Every submission is assessed by at least two subject-specialist reviewers."
+   - Reviewed before publication — "Every submission is read and reviewed before a decision is made."
    - Open access, no fees — "Free to read and free to publish. Authors retain copyright under CC BY 4.0."
    - Genuinely multidisciplinary — "Five sections and one review board, so interdisciplinary work has somewhere to go."
 
@@ -257,14 +273,16 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
 
 6. **From submission to publication** — four steps in bordered columns. Each: a `26px` gold-outlined
    square with the step number, a gold-muted duration, h3, and a line of body copy.
-   Day 1 Submission → Week 1 Editorial screening → Weeks 1–3 Double-blind review → Week 4 Decision and copyediting.
+   Day 1 Submission → Week 1 Editorial screening → Weeks 1–3 Review → Week 4 Decision and copyediting.
 
 7. **Our position** — `#F7F4EF` panel, two columns. Left: "OUR POSITION" eyebrow, a Libre
    Baskerville italic pull quote in `#3F1417` ("Student research deserves the same editorial care as
    any other scholarship. Not a lower bar, just a fairer door."), a supporting paragraph, and a
    gold-underlined "MORE ABOUT THE JOURNAL" link. Right: a `290px` editorial photo.
 
-8. **Announcements** — three rows, `150px` date column / title + blurb / `→`. Row hover fills `#F7F4EF`.
+8. **Announcements** — three rows, `150px` date column / title + blurb / `→`. Row hover fills
+   `#F7F4EF`. Under 640px the date sits above the title and the arrow goes: the whole row is
+   already the link, and holding three columns on a phone broke five-word headlines over four lines.
 
 9. **Closing CTA** — full-bleed maroon, centered. "Have a paper you are proud of?" + deadline copy +
    a **gold** primary button (`#C0A265` fill, `#3F1417` text, hover `#D2B67E`) and a cream-outline
@@ -279,14 +297,17 @@ Page head, then a `1.6fr / 1fr` split.
 Main column: a Libre Baskerville `20px` `#3F1417` standfirst, then four h2 sections in maroon —
 Aims and scope · Review policy · Publication ethics · Open access and copyright.
 
-**The review policy copy must not promise author feedback.** An earlier draft said every author
-receives written feedback; that was removed because the journal cannot guarantee it. Current text:
-"All submissions undergo double-blind review by at least two reviewers. Author identities are
-removed before assessment, and reviewer identities are not disclosed."
+**The review policy copy must not promise author feedback**, and **must not name a review model**.
+An earlier draft said every author receives written feedback; that was removed because the journal
+cannot guarantee it. The double-blind wording went the same way: the journal reviews what it
+publishes but does not run double-blind or formal peer review, so claiming either promised a
+process that does not exist. Current text: "Every submission is reviewed before a decision is
+made, and nothing is published without that review. Editors recuse themselves from work involving
+their own institution, supervisor, or collaborators."
 
 Sidebar (`position: sticky; top: 70px`, `max-width: 380px`):
 - **Journal at a glance** — cream panel, maroon header bar, six key/value rows:
-  Founded 2026 · Access Open, CC BY 4.0 · Author fees None · Review Double-blind ·
+  Founded 2026 · Access Open, CC BY 4.0 · Author fees None · Review Before publication ·
   Frequency Monthly, at month end · ISSN Pending
 - **Editorial office** — `id="contact"` (the top strip's Contact link targets it):
   "Enquiries and submissions — icrrjournal@gmail.com"
@@ -301,7 +322,7 @@ Main column:
   appears here when Issue 1 publishes.
 - **Production timeline** — five entries with an `11px` circle rail; the first dot is filled gold,
   the rest `#FDFBF7`; a `1px` vertical rule connects them:
-  Submissions open (Now) · Issue 1 submissions close (31 Aug 2026) · Peer review (2–3 weeks) ·
+  Submissions open (Now) · Issue 1 submissions close (31 Aug 2026) · Review (2–3 weeks) ·
   Decisions returned (Mid-Sept 2026) · Publication (30 Sept 2026)
 - **ToC preview** — three placeholder rows at `opacity: .55`, showing section eyebrow, title,
   byline, page range, and a `PDF` chip. Plus a link to the article page template.
@@ -384,8 +405,9 @@ turnaround" + apply button) and **Editorial independence** (recusal policy).
 Head + deadline note, then `1fr / 330px`.
 
 - **Eligibility** paragraph.
-- **Manuscript requirements** — six key/value rows (`170px` label column): Length 3,000–8,000 words ·
-  File format · Anonymisation · Abstract · References · Figures.
+- **Manuscript requirements** — six key/value rows (`170px` label column, stacking under 640px
+  where that column would take half the screen): Length 3,000–8,000 words · File format ·
+  Anonymisation · Abstract · References · Figures.
 - **Before you submit** — four checklist lines, each with a gold `✓`.
 - **Submission form** (`#F7F4EF` panel, `id="form"`): corresponding author, email, institution,
   section select (the five disciplines), title, abstract textarea (5 rows), a dashed gold file
@@ -450,6 +472,7 @@ and never hidden, so nothing above the fold flashes blank. Reproduce that guard.
 | `icrrPlate` | fade + `translateY(10px)` + `scale(.985)` | Hero image band (900ms, 300ms delay) |
 | `icrrPulse` | `opacity .35 → 1 → .35` | Announcement dot (2.4s infinite) |
 | `icrrDrawer` | `translateX(100%) → none` | Mobile drawer (300ms) |
+| `icrrTicker` | `translateX(0) → translateX(-50%)` | Announcement track (linear, infinite, duration per instance) |
 
 Standard easing outside these: `cubic-bezier(.2,.7,.2,1)`.
 
@@ -471,21 +494,46 @@ Every action that has no backend yet shows a toast rather than doing nothing:
 In the real build, wire these up or hide the affordance — don't ship the toasts.
 
 ### Responsive
-Single breakpoint at **860px**, for the nav only. Everything else is fluid:
+Two breakpoints. **860px** switches the nav, and is the only one that changes what is in the DOM.
+**640px** (Tailwind's `sm`) is where a handful of rows that are fixed-width by design stop being
+rows and become stacks. Everything else is fluid:
 - Two-column layouts are `repeat(auto-fit, minmax(min(100%, 420px), 1fr))`, so they collapse
   around 900px. Sidebars then go full-width, capped at `380px`, `justify-self: start`.
 - Card grids use `minmax(min(100%, Npx), 1fr)` so they never overflow on small screens.
 - All type and padding scale with `clamp()`.
-- The hero band shrinks 470 → 230px.
+- The hero band shrinks 470 → 288px.
 - Form fields and footer columns stack.
+
+**Below 640px**, these stop being side-by-side. Each was measured on a 375px screen first: a
+fixed column that is comfortable at 1180px takes half a phone and leaves its content wrapping four
+deep, which is what made the small layout look like a mistake rather than a choice.
+
+| Element | Wide | Under 640px |
+|---|---|---|
+| Announcement rows (home) | `150px` date / title / `→` | Date over title, no arrow |
+| Manuscript requirements, reviewer commitments | `170px` label / value | Label over value |
+| Table-of-contents preview | Entry / pages + PDF | Pages and PDF under the entry |
+| Process steps | Four columns divided by left rules | Stack divided by top rules, `18px` apart |
+| Announcement bar | Label · line · link, one row | Label and link on one row, line full-width below |
+| Hero buttons | Side by side, natural widths | Stacked, matched widths, `320px` cap |
+| Top strip | Pushed to both edges | Centred on two lines |
 
 ### Copy rules
 
-Two editorial constraints the client asked for explicitly. Keep them:
+Three editorial constraints the client asked for explicitly. Keep them:
 
 1. **No em dashes anywhere.** Use commas, colons, or full stops. En dashes in numeric ranges
    (`3,000–8,000`, `2–3 weeks`) are fine.
 2. **Never promise reviewer feedback to authors.** The journal cannot guarantee it.
+3. **Never name a review model, and never put a number of reviewers on a paper.** The journal
+   reviews what it publishes. It does not run double-blind or formal peer review, so "reviewed"
+   is as specific as any page may get. Recruiting copy is exempt from the spirit of this but not
+   the letter: the journal does recruit reviewers and says so, it just does not describe how they
+   work in terms it cannot honour.
+
+The first two are checked by `tests/unit/design-audit.test.ts`, and so is the third: it scans the
+source with comments stripped, so a comment may name the banned phrasing to explain it while the
+shipped copy may not.
 
 Voice: plain, first-person where natural, no marketing inflation. The site says what is true today
 ("Appointment pending", "Recruiting", "TBA") rather than pretending to be established.
@@ -500,7 +548,7 @@ Voice: plain, first-person where natural, no marketing inflation. The site says 
 | `authorId` | string | Becomes the `[slug]` route param. |
 | `filter` | string | Active discipline chip; `'All'` default. Worth putting in the URL. |
 | `q` | string | Search query. Worth putting in the URL. |
-| `ann` | number | Rotating announcement index; `setInterval` 6000ms, clear on unmount. |
+| ~~`ann`~~ | — | Gone. The announcement bar slides in CSS and holds no state. |
 | `toast` | string | Auto-clears after 3600ms; clear the pending timeout when re-triggering. |
 | `narrow` | boolean | From `matchMedia('(max-width: 860px)')`; remove the listener on unmount. |
 | `menuOpen` | boolean | Force-closed when `narrow` goes false and on every navigation. |
@@ -521,9 +569,18 @@ In `assets/`:
 | File | Use |
 |---|---|
 | `icrr_lockup_full_name_transparent.png` | Horizontal lockup — the masthead. Transparent. |
-| `icrr_lockup_stacked_transparent.png` | Stacked lockup — not currently used; keep for print/social. |
-| `icrr_mark.png` | Square mark — the footer brand block. |
+| `icrr_lockup_stacked_transparent.png` | Stacked lockup, dark artwork — for print/social on light grounds. |
+| `icrr_mark.png` | Square mark — kept for favicons and tight spaces. |
 | `Brand Guidelines (ICRR).pdf` | Source of truth for colors and type. |
+
+Shipped in `public/brand/`, which is what the site actually loads:
+
+| File | Use |
+|---|---|
+| `lockup-full.png` | The masthead. `2500x600`. |
+| `lockup-stacked-white.png` | The footer brand block. Cream artwork for maroon grounds, cropped to `956x686`. |
+| `lockup-stacked.png` | Dark stacked lockup. Not currently loaded. |
+| `mark.png` | Square mark. Not currently loaded; the footer used it before the white lockup existed. |
 
 **Needed, not yet supplied** — every one of these is a drop-target placeholder in the prototype:
 - Home hero band (library / reading room / campus interior), `~1400 × 470`

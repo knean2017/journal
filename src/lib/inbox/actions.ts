@@ -3,7 +3,7 @@
 import { headers } from 'next/headers'
 import { contactMessageSchema, reviewerApplicationSchema } from './schema'
 import { notify } from '@/lib/email/resend'
-import { firstErrors, type FormResult } from '@/lib/form-result'
+import { firstErrors, text, type FormResult } from '@/lib/form-result'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
@@ -22,20 +22,15 @@ export async function applyAsReviewer(
 ): Promise<FormResult> {
   if (!isSupabaseConfigured()) return noDatabase('The reviewer panel form')
 
-  const requestHeaders = await headers()
-  if (!rateLimit(clientKey(requestHeaders, 'reviewer'), 3, 60 * 60 * 1000)) {
-    return { ok: false, message: 'Too many applications from this address. Try again later.' }
-  }
-
   const parsed = reviewerApplicationSchema.safeParse({
-    name: form.get('name'),
-    email: form.get('email'),
-    affiliation: form.get('affiliation'),
-    position: form.get('position'),
-    section: form.get('section'),
-    expertise: form.get('expertise'),
-    experience: form.get('experience') ?? '',
-    orcid: form.get('orcid') ?? '',
+    name: text(form, 'name'),
+    email: text(form, 'email'),
+    affiliation: text(form, 'affiliation'),
+    position: text(form, 'position'),
+    section: text(form, 'section'),
+    expertise: text(form, 'expertise'),
+    experience: text(form, 'experience'),
+    orcid: text(form, 'orcid'),
   })
 
   if (!parsed.success) {
@@ -44,6 +39,16 @@ export async function applyAsReviewer(
       message: 'Please check the highlighted fields.',
       fieldErrors: firstErrors(parsed.error.issues),
     }
+  }
+
+  /*
+   * Rate limited here, after validation rather than before it. The limiter
+   * guards the expensive path: upload, insert, and email. Counting rejected
+   * attempts would lock someone out of the form for an hour for mistyping.
+   */
+  const requestHeaders = await headers()
+  if (!rateLimit(clientKey(requestHeaders, 'reviewer'), 3, 60 * 60 * 1000)) {
+    return { ok: false, message: 'Too many applications from this address. Try again later.' }
   }
 
   const supabase = createSupabaseServiceClient()
@@ -105,16 +110,11 @@ export async function sendContactMessage(
 ): Promise<FormResult> {
   if (!isSupabaseConfigured()) return noDatabase('The contact form')
 
-  const requestHeaders = await headers()
-  if (!rateLimit(clientKey(requestHeaders, 'contact'), 5, 60 * 60 * 1000)) {
-    return { ok: false, message: 'Too many messages from this address. Try again later.' }
-  }
-
   const parsed = contactMessageSchema.safeParse({
-    name: form.get('name'),
-    email: form.get('email'),
-    topic: form.get('topic'),
-    message: form.get('message'),
+    name: text(form, 'name'),
+    email: text(form, 'email'),
+    topic: text(form, 'topic'),
+    message: text(form, 'message'),
   })
 
   if (!parsed.success) {
@@ -123,6 +123,16 @@ export async function sendContactMessage(
       message: 'Please check the highlighted fields.',
       fieldErrors: firstErrors(parsed.error.issues),
     }
+  }
+
+  /*
+   * Rate limited here, after validation rather than before it. The limiter
+   * guards the expensive path: upload, insert, and email. Counting rejected
+   * attempts would lock someone out of the form for an hour for mistyping.
+   */
+  const requestHeaders = await headers()
+  if (!rateLimit(clientKey(requestHeaders, 'contact'), 5, 60 * 60 * 1000)) {
+    return { ok: false, message: 'Too many messages from this address. Try again later.' }
   }
 
   const supabase = createSupabaseServiceClient()

@@ -6,7 +6,13 @@ export function HeroBand({ imagePath }: { imagePath: string | null }) {
       className="max-w-[1400px] mx-auto px-[clamp(14px,4vw,40px)] pt-[34px]"
       style={{ animation: 'icrrPlate .9s cubic-bezier(.2,.7,.2,1) .3s both' }}
     >
-      <div className="relative h-[clamp(230px,45vw,470px)] bg-cream border border-rule">
+      {/*
+       * Taller than the prototype's 230px floor on a phone. The caption sits
+       * over the bottom of the band, and at 230px it landed on top of the
+       * placeholder's centred label while this slot is still waiting for a
+       * photograph.
+       */}
+      <div className="relative h-[clamp(288px,45vw,470px)] bg-cream border border-rule">
         <ImageSlot
           src={imagePath}
           label="A library, reading room, or campus interior"
