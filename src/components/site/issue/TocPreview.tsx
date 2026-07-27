@@ -13,9 +13,13 @@ export function TocPreview({
   return (
     <div data-testid="toc-preview" className="mt-5 border-t border-rule">
       {entries.map((entry) => (
+        /*
+         * Page range and PDF button drop under the entry on a phone. Beside it
+         * they took 150px of a 375px screen, and the titles wrapped four deep.
+         */
         <div
           key={entry.title}
-          className="grid [grid-template-columns:1fr_auto] gap-6 items-start py-[22px] border-b border-rule opacity-55"
+          className="grid gap-3 sm:[grid-template-columns:1fr_auto] sm:gap-6 items-start py-[22px] border-b border-rule opacity-55"
         >
           <div>
             <div className="text-[11px] tracking-[0.16em] uppercase text-gold-muted font-bold">

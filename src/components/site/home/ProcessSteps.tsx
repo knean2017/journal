@@ -9,9 +9,18 @@ export function ProcessSteps({ steps }: { steps: ProcessStep[] }) {
         </h2>
       </div>
 
-      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))] mt-[34px]">
+      {/*
+       * The rule that divides the steps runs down their left edge in a row and
+       * across their top in a column. Kept on the left in both, four stacked
+       * steps shared one continuous line with no space between them and read
+       * as a single block of text.
+       */}
+      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))] mt-[34px] border-t border-rule sm:border-t-0">
         {steps.map((step) => (
-          <div key={step.number} className="pr-[26px] pl-[22px] border-l border-rule">
+          <div
+            key={step.number}
+            className="py-[18px] pr-[26px] border-b border-rule sm:py-0 sm:border-b-0 sm:pl-[22px] sm:border-l"
+          >
             <div className="flex items-center gap-[10px]">
               <span className="w-[26px] h-[26px] border border-gold text-maroon flex items-center justify-center font-serif text-[12px]">
                 {step.number}

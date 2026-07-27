@@ -10,6 +10,8 @@ const ROUTES = [
   '/team',
   '/submit',
   '/news',
+  '/contact',
+  '/reviewers/apply',
   '/articles/canopy-cover-and-summer-surface-temperature',
 ]
 

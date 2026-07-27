@@ -26,7 +26,7 @@ const COLUMNS = [
 
 export function Footer({ contactEmail }: { contactEmail: string }) {
   return (
-    <footer className="mt-[88px] bg-maroon" style={CREAM_78}>
+    <footer className="mt-[clamp(52px,9vw,88px)] bg-maroon" style={CREAM_78}>
       <div className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] py-[clamp(38px,5vw,54px)] grid gap-[clamp(28px,4vw,44px)] [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))]">
         {/*
          * The stacked lockup drawn for dark grounds: mark and wordmark in one

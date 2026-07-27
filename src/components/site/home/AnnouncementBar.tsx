@@ -25,8 +25,14 @@ export function AnnouncementBar({ lines }: { lines: TickerLine[] }) {
 
   return (
     <section className="mt-14 bg-maroon text-cream">
-      <div className="max-w-[1180px] mx-auto px-[clamp(16px,5vw,40px)] py-4 flex items-center gap-[26px] flex-wrap min-h-[56px]">
-        <span className="flex items-center gap-[9px] text-[11px] tracking-[0.2em] uppercase font-bold text-gold flex-none">
+      {/*
+       * On a phone the label and the link share the top line and the sliding
+       * text gets the full width beneath them. Squeezed onto one row the text
+       * had 240px to move in, which is barely a phrase, and the link was
+       * pushed onto a line of its own looking stranded.
+       */}
+      <div className="max-w-[1180px] mx-auto px-[clamp(16px,5vw,40px)] py-4 flex items-center flex-wrap gap-x-[26px] gap-y-[10px] min-h-[56px]">
+        <span className="flex items-center gap-[9px] text-[11px] tracking-[0.2em] uppercase font-bold text-gold flex-none order-1">
           {/* The one round corner in the design, per the prototype. */}
           <span
             className="w-[6px] h-[6px] bg-gold"
@@ -35,7 +41,14 @@ export function AnnouncementBar({ lines }: { lines: TickerLine[] }) {
           Latest
         </span>
 
-        <div className="ticker flex-1 min-w-[240px]">
+        <Link
+          href="/news"
+          className="text-gold text-[11.5px] tracking-[0.16em] uppercase font-bold flex-none order-2 ml-auto sm:order-3 sm:ml-0"
+        >
+          All announcements
+        </Link>
+
+        <div className="ticker w-full order-3 sm:order-2 sm:w-auto sm:flex-1 sm:min-w-[240px]">
           <div className="ticker-track" style={{ animationDuration: `${duration}s` }}>
             <TickerRun lines={lines} />
             {/*
@@ -46,13 +59,6 @@ export function AnnouncementBar({ lines }: { lines: TickerLine[] }) {
             <TickerRun lines={lines} aria-hidden />
           </div>
         </div>
-
-        <Link
-          href="/news"
-          className="text-gold text-[11.5px] tracking-[0.16em] uppercase font-bold flex-none"
-        >
-          All announcements
-        </Link>
       </div>
     </section>
   )

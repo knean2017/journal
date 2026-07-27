@@ -154,7 +154,8 @@ The nav bar is `border-top: 3px double #5D1D21` + `border-bottom: 1px solid #5D1
 ### 1. Top strip
 Full-bleed `#5D1D21`. Cream at `.82` opacity, `11px`, `letter-spacing:.16em`, uppercase.
 `8px` vertical padding. Left: "Open Access · ISSN Pending · Est. 2026". Right: "Contact" (jumps to
-the About page's contact block) and "Announcements". Wraps on narrow screens.
+the About page's contact block) and "Announcements". On a narrow screen the two halves wrap onto
+separate lines and both centre; pushed apart they read as an accidental break.
 
 ### 2. Masthead
 Centered, on `#FDFBF7`. The horizontal ICRR lockup links home and fades in (`icrrIn`, 600ms).
@@ -235,7 +236,9 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
      hover fills `#F7F4EF`)
    - The four elements stagger in via `icrrUp` at 0 / 60 / 140 / 220ms delay.
 
-2. **Hero image band** — `1400px` wide, `clamp(230px, 45vw, 470px)` tall, `1px solid #E2DACB`.
+2. **Hero image band** — `1400px` wide, `clamp(288px, 45vw, 470px)` tall, `1px solid #E2DACB`.
+   The floor is 288 rather than the prototype's 230 because the caption sits over the bottom of
+   the band and at 230 it landed on the placeholder's centred label on a phone.
    Bottom 52% carries the dark gradient. Over it: "Rigorous review. Transparent process. Work that
    stands on its own." in Libre Baskerville `clamp(16px,2.4vw,22px)` cream, and
    "VOLUME 1 IN PREPARATION" right-aligned. Caption layer is `pointer-events: none`.
@@ -277,7 +280,9 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
    any other scholarship. Not a lower bar, just a fairer door."), a supporting paragraph, and a
    gold-underlined "MORE ABOUT THE JOURNAL" link. Right: a `290px` editorial photo.
 
-8. **Announcements** — three rows, `150px` date column / title + blurb / `→`. Row hover fills `#F7F4EF`.
+8. **Announcements** — three rows, `150px` date column / title + blurb / `→`. Row hover fills
+   `#F7F4EF`. Under 640px the date sits above the title and the arrow goes: the whole row is
+   already the link, and holding three columns on a phone broke five-word headlines over four lines.
 
 9. **Closing CTA** — full-bleed maroon, centered. "Have a paper you are proud of?" + deadline copy +
    a **gold** primary button (`#C0A265` fill, `#3F1417` text, hover `#D2B67E`) and a cream-outline
@@ -397,8 +402,9 @@ turnaround" + apply button) and **Editorial independence** (recusal policy).
 Head + deadline note, then `1fr / 330px`.
 
 - **Eligibility** paragraph.
-- **Manuscript requirements** — six key/value rows (`170px` label column): Length 3,000–8,000 words ·
-  File format · Anonymisation · Abstract · References · Figures.
+- **Manuscript requirements** — six key/value rows (`170px` label column, stacking under 640px
+  where that column would take half the screen): Length 3,000–8,000 words · File format ·
+  Anonymisation · Abstract · References · Figures.
 - **Before you submit** — four checklist lines, each with a gold `✓`.
 - **Submission form** (`#F7F4EF` panel, `id="form"`): corresponding author, email, institution,
   section select (the five disciplines), title, abstract textarea (5 rows), a dashed gold file
@@ -485,13 +491,29 @@ Every action that has no backend yet shows a toast rather than doing nothing:
 In the real build, wire these up or hide the affordance — don't ship the toasts.
 
 ### Responsive
-Single breakpoint at **860px**, for the nav only. Everything else is fluid:
+Two breakpoints. **860px** switches the nav, and is the only one that changes what is in the DOM.
+**640px** (Tailwind's `sm`) is where a handful of rows that are fixed-width by design stop being
+rows and become stacks. Everything else is fluid:
 - Two-column layouts are `repeat(auto-fit, minmax(min(100%, 420px), 1fr))`, so they collapse
   around 900px. Sidebars then go full-width, capped at `380px`, `justify-self: start`.
 - Card grids use `minmax(min(100%, Npx), 1fr)` so they never overflow on small screens.
 - All type and padding scale with `clamp()`.
-- The hero band shrinks 470 → 230px.
+- The hero band shrinks 470 → 288px.
 - Form fields and footer columns stack.
+
+**Below 640px**, these stop being side-by-side. Each was measured on a 375px screen first: a
+fixed column that is comfortable at 1180px takes half a phone and leaves its content wrapping four
+deep, which is what made the small layout look like a mistake rather than a choice.
+
+| Element | Wide | Under 640px |
+|---|---|---|
+| Announcement rows (home) | `150px` date / title / `→` | Date over title, no arrow |
+| Manuscript requirements, reviewer commitments | `170px` label / value | Label over value |
+| Table-of-contents preview | Entry / pages + PDF | Pages and PDF under the entry |
+| Process steps | Four columns divided by left rules | Stack divided by top rules, `18px` apart |
+| Announcement bar | Label · line · link, one row | Label and link on one row, line full-width below |
+| Hero buttons | Side by side, natural widths | Stacked, matched widths, `320px` cap |
+| Top strip | Pushed to both edges | Centred on two lines |
 
 ### Copy rules
 

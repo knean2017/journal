@@ -42,9 +42,14 @@ export default async function SubmitPage() {
           </h2>
           <div className="mt-4 border-t border-rule">
             {requirements.map((requirement) => (
+              /*
+               * The key sits over its value on a phone. Side by side it took
+               * 170px of a 375px screen to say "Length", leaving 152px for the
+               * requirement itself.
+               */
               <div
                 key={requirement.key}
-                className="grid [grid-template-columns:minmax(110px,170px)_minmax(0,1fr)] gap-[clamp(14px,2vw,24px)] py-[14px] border-b border-rule text-[14.5px] leading-[1.7]"
+                className="grid gap-[2px] sm:[grid-template-columns:minmax(110px,170px)_minmax(0,1fr)] sm:gap-[clamp(14px,2vw,24px)] py-[14px] border-b border-rule text-[14.5px] leading-[1.7]"
               >
                 <span className="font-bold text-ink">{requirement.key}</span>
                 <span className="text-body">{requirement.value}</span>

@@ -1,13 +1,27 @@
 import Link from 'next/link'
+import { Fragment } from 'react'
 
 export function Hero({ issueLabel }: { issueLabel: string }) {
+  /*
+   * The label breaks between its parts, never inside one. On a phone the whole
+   * of it does not fit on a line, and left to itself it split "Publishing 30 /
+   * September 2026" across the break. The separators stay outside the nowrap
+   * spans, because they are the only places a break is wanted.
+   */
+  const labelParts = issueLabel.split('·').map((part) => part.trim())
+
   return (
     <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-16 pb-[30px] text-center">
       <div
         className="text-[11.5px] tracking-[0.24em] uppercase text-gold-muted font-bold"
         style={{ animation: 'icrrUp .6s ease both' }}
       >
-        {issueLabel}
+        {labelParts.map((part, index) => (
+          <Fragment key={part}>
+            {index > 0 ? ' · ' : null}
+            <span className="whitespace-nowrap">{part}</span>
+          </Fragment>
+        ))}
       </div>
 
       {/*
@@ -37,19 +51,24 @@ export function Hero({ issueLabel }: { issueLabel: string }) {
         five sections. Submissions are open for our first issue.
       </p>
 
+      {/*
+       * Stacked, the two buttons sized themselves to their labels and came out
+       * ragged. On a phone they match each other's width; from 640px up they
+       * sit side by side at their natural size, as before.
+       */}
       <div
-        className="flex gap-[14px] justify-center flex-wrap mt-8"
+        className="flex flex-col sm:flex-row items-center gap-[14px] justify-center mt-8"
         style={{ animation: 'icrrUp .7s ease .22s both' }}
       >
         <Link
           href="/submit"
-          className="btn-base btn-maroon px-[30px] py-[14px] text-[12.5px] tracking-[0.14em]"
+          className="btn-base btn-maroon w-full max-w-[320px] sm:w-auto text-center px-[30px] py-[14px] text-[12.5px] tracking-[0.14em]"
         >
           Submit a Manuscript
         </Link>
         <Link
           href="/news"
-          className="btn-base btn-outline px-[30px] py-[14px] text-[12.5px] tracking-[0.14em]"
+          className="btn-base btn-outline w-full max-w-[320px] sm:w-auto text-center px-[30px] py-[14px] text-[12.5px] tracking-[0.14em]"
         >
           Read the Call for Papers
         </Link>
