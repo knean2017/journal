@@ -64,7 +64,8 @@ The site runs without a database, on its seed content. These steps switch it ove
 2. **Run the migrations**, every file in `supabase/migrations/` in filename order, pasted into the
    Supabase SQL editor or applied with the Supabase CLI. `0001_init.sql` creates every table, the
    RLS policies, and the three storage buckets; `0002` widens the public article read so the first
-   issue's table of contents is visible before that issue is published.
+   issue's table of contents is visible before that issue is published; `0003` adds the reviewer
+   application and contact message tables, which the reviewer and contact forms write to.
 
 3. **Load the content:** `npm run seed`. Idempotent, so running it twice changes nothing. It does
    overwrite rows it owns, so seed before editing in the admin, not after.
@@ -80,7 +81,9 @@ The admin then answers at `/{ADMIN_PATH}`, for example `/editorial-office`.
 ## The admin panel
 
 Site settings, sections, team, editorial roles, authors, issues, articles, announcements, the home
-ticker, a media library, and the submissions inbox.
+ticker, a media library, and three inboxes: submissions, reviewer applications, and messages from
+the contact form. Inbox items are triaged (new, replied, archived) with editorial notes, never
+edited.
 
 Security, in short:
 

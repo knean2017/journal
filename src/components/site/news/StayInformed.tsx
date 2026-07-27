@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
-import { subscribe, type FormResult } from '@/lib/submissions/actions'
+import type { FormResult } from '@/lib/form-result'
+import { subscribe } from '@/lib/submissions/actions'
 
 export function StayInformed() {
   const toast = useToast()

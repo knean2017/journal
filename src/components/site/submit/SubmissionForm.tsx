@@ -1,15 +1,16 @@
 'use client'
 
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
-import { submitManuscript, type FormResult } from '@/lib/submissions/actions'
+import { FIELD_LABEL as LABEL, FieldError } from '@/components/ui/FieldError'
+import type { FormResult } from '@/lib/form-result'
+import { submitManuscript } from '@/lib/submissions/actions'
 import type { Discipline } from '@/lib/content'
 
-const LABEL = 'text-[11.5px] tracking-[0.14em] uppercase font-bold text-body'
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null
-  return <span className="text-[12.5px] text-maroon">{message}</span>
+/** 4_100_000 -> "3.9 MB". Keeps the chip honest about what will be uploaded. */
+function readableSize(bytes: number): string {
+  const mb = bytes / (1024 * 1024)
+  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`
 }
 
 export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
@@ -18,7 +19,15 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
     submitManuscript,
     null,
   )
-  const [fileName, setFileName] = useState('')
+  const fileInput = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<{ name: string; size: number } | null>(null)
+
+  function clearFile() {
+    // Resetting the input's value is what actually empties its FileList, so the
+    // form posts no file. Clearing React state alone would only hide the chip.
+    if (fileInput.current) fileInput.current.value = ''
+    setFile(null)
+  }
 
   useEffect(() => {
     if (state?.message) toast(state.message)
@@ -95,13 +104,43 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
           PDF or DOCX · max 20 MB · no author names in the file
         </p>
         <input
+          ref={fileInput}
+          id="manuscript"
           type="file"
           name="manuscript"
           accept=".pdf,.docx"
-          onChange={(event) => setFileName(event.target.files?.[0]?.name ?? '')}
-          className="text-[13px]"
+          onChange={(event) => {
+            const chosen = event.target.files?.[0]
+            setFile(chosen ? { name: chosen.name, size: chosen.size } : null)
+          }}
+          className="sr-only"
         />
-        {fileName ? <div className="mt-2 text-[12.5px] text-body">{fileName}</div> : null}
+
+        {file ? (
+          <div className="mt-3 inline-flex items-center gap-3 border border-rule bg-page px-3 py-2 text-left max-w-full">
+            <span className="min-w-0 text-[13px] leading-[1.5]">
+              <span className="block truncate text-ink">{file.name}</span>
+              <span className="block text-[12px] text-body-muted">{readableSize(file.size)}</span>
+            </span>
+            <button
+              type="button"
+              onClick={clearFile}
+              aria-label={`Remove ${file.name}`}
+              title="Remove this file"
+              className="flex-none border border-rule px-[9px] py-[3px] text-[13px] leading-none text-body hover:bg-cream hover:text-maroon"
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <label
+            htmlFor="manuscript"
+            className="btn-base btn-outline mt-1 inline-block cursor-pointer px-[22px] py-[10px] text-[11.5px]"
+          >
+            Choose file
+          </label>
+        )}
+
         <FieldError message={errors.manuscript} />
       </div>
 

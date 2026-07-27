@@ -290,4 +290,18 @@ export const WRITABLE_TABLES = new Set([
   ...ENTITIES.map((entity) => entity.table),
   'site_config',
   'submissions',
+  'reviewer_applications',
+  'contact_messages',
 ])
+
+/**
+ * Tables that arrive from public forms. The admin may triage them, never edit
+ * their content, so they are handled by setInboxStatus rather than the generic
+ * record editor.
+ */
+export const INBOX_TABLES = {
+  reviewers: { table: 'reviewer_applications', label: 'Reviewer applications' },
+  messages: { table: 'contact_messages', label: 'Messages' },
+} as const
+
+export type InboxKey = keyof typeof INBOX_TABLES

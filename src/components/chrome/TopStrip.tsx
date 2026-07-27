@@ -8,7 +8,7 @@ export function TopStrip() {
       <div className="max-w-[1180px] mx-auto px-[clamp(16px,5vw,40px)] py-2 flex justify-between gap-5 flex-wrap">
         <span>Open Access · ISSN Pending · Est. 2026</span>
         <span className="flex gap-[22px]">
-          <Link href="/about#contact" style={CREAM_82}>
+          <Link href="/contact" style={CREAM_82}>
             Contact
           </Link>
           <Link href="/news" style={CREAM_82}>

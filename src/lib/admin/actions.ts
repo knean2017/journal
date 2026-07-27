@@ -3,7 +3,14 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAdmin } from './session'
-import { SITE_CONFIG_FIELDS, WRITABLE_TABLES, findEntity, type Field } from './entities'
+import {
+  INBOX_TABLES,
+  SITE_CONFIG_FIELDS,
+  WRITABLE_TABLES,
+  findEntity,
+  type Field,
+  type InboxKey,
+} from './entities'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { adminPath } from '@/lib/supabase/env'
@@ -15,6 +22,8 @@ const DOC_TYPES = new Set([
 ])
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024
 const MAX_DOC_BYTES = 20 * 1024 * 1024
+/** Mirrors the inbox_status enum in migration 0003. */
+const INBOX_STATUSES = new Set(['new', 'replied', 'archived'])
 
 function assertWritable(table: string): void {
   if (!WRITABLE_TABLES.has(table)) throw new Error(`Refusing to write to table "${table}"`)
@@ -181,6 +190,34 @@ export async function setSubmissionStatus(id: string, status: string, notes: str
 
   if (error) throw new Error(`Could not update: ${error.message}`)
   revalidatePath(`/${adminPath()}/submissions`)
+}
+
+/**
+ * Triage for the two public inboxes. The key names the inbox rather than the
+ * table, so a caller can never aim this at an arbitrary table.
+ */
+export async function setInboxStatus(
+  key: InboxKey,
+  id: string,
+  status: string,
+  notes: string,
+): Promise<void> {
+  await requireAdmin()
+
+  const inbox = INBOX_TABLES[key]
+  if (!inbox) throw new Error(`Unknown inbox "${key}"`)
+  assertWritable(inbox.table)
+
+  if (!INBOX_STATUSES.has(status)) throw new Error(`Unknown status "${status}"`)
+
+  const supabase = createSupabaseServiceClient()
+  const { error } = await supabase
+    .from(inbox.table)
+    .update({ status, admin_notes: notes || null })
+    .eq('id', id)
+
+  if (error) throw new Error(`Could not update: ${error.message}`)
+  revalidatePath(`/${adminPath()}/${key}`)
 }
 
 /** Short-lived signed URL. Manuscripts are never public. */

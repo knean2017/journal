@@ -3,23 +3,13 @@
 import { headers } from 'next/headers'
 import { MANUSCRIPT_TYPES, MAX_MANUSCRIPT_BYTES, newsletterSchema, submissionSchema } from './schema'
 import { notify } from '@/lib/email/resend'
+import { firstErrors, type FormResult } from '@/lib/form-result'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 import { SUBMIT_TOAST, SUBSCRIBE_TOAST } from '@/lib/toasts'
 
-export type FormResult = { ok: boolean; message: string; fieldErrors?: Record<string, string> }
-
 const OFFICE_EMAIL = process.env.EDITORIAL_EMAIL ?? 'icrrjournal@gmail.com'
-
-function firstErrors(issues: readonly { path: readonly PropertyKey[]; message: string }[]) {
-  const fieldErrors: Record<string, string> = {}
-  for (const issue of issues) {
-    const key = String(issue.path[0] ?? '')
-    if (key && !fieldErrors[key]) fieldErrors[key] = issue.message
-  }
-  return fieldErrors
-}
 
 export async function submitManuscript(
   _previous: FormResult | null,

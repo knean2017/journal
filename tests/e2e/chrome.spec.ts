@@ -82,9 +82,9 @@ test('footer carries the contact address and the licence line', async ({ page })
   await expect(footer.getByText(/CC BY 4\.0/)).toBeVisible()
 })
 
-test('top strip Contact jumps to the About page contact block', async ({ page }) => {
+test('top strip Contact opens the contact page', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('link', { name: 'Contact' }).click()
-  await expect(page).toHaveURL(/\/about#contact$/)
-  await expect(page.locator('#contact')).toBeVisible()
+  await page.getByRole('link', { name: 'Contact' }).first().click()
+  await expect(page).toHaveURL(/\/contact$/)
+  await expect(page.getByRole('button', { name: 'Send message' })).toBeVisible()
 })

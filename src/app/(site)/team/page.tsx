@@ -1,8 +1,7 @@
+import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
-import { ToastButton } from '@/components/ui/ToastButton'
 import { getEditorialRoles, getTeam } from '@/lib/content'
-import { PDF_TOAST } from '@/lib/toasts'
 
 export default async function TeamPage() {
   const [team, roles] = await Promise.all([getTeam(), getEditorialRoles()])
@@ -73,9 +72,9 @@ export default async function TeamPage() {
               We are recruiting reviewers across all five sections: graduate students, postdocs, and
               faculty. Two manuscripts a month, three-week turnaround.
             </p>
-            <ToastButton message={PDF_TOAST} className="btn-base btn-maroon mt-[18px]">
+            <Link href="/reviewers/apply" className="btn-base btn-maroon mt-[18px]">
               Apply as a reviewer
-            </ToastButton>
+            </Link>
           </div>
 
           <div className="border border-rule px-[clamp(18px,3vw,32px)] py-[clamp(20px,3vw,30px)]">

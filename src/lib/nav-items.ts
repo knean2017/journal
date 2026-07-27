@@ -7,7 +7,11 @@ export const NAV_ITEMS = [
   { href: '/team', label: 'Our Team' },
 ] as const
 
-export const DRAWER_ITEMS = [...NAV_ITEMS, { href: '/news', label: 'Announcements' }] as const
+export const DRAWER_ITEMS = [
+  ...NAV_ITEMS,
+  { href: '/news', label: 'Announcements' },
+  { href: '/contact', label: 'Contact' },
+] as const
 
 export const PAGE_TITLES: Record<string, string> = {
   '/': '',
@@ -18,6 +22,8 @@ export const PAGE_TITLES: Record<string, string> = {
   '/team': 'Our Team',
   '/submit': 'Submit',
   '/news': 'Announcements',
+  '/contact': 'Contact',
+  '/reviewers/apply': 'Reviewer panel',
 }
 
 /** Authors stays highlighted on author profile pages. */

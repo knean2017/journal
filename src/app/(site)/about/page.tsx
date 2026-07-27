@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { JournalAtAGlance } from '@/components/site/about/JournalAtAGlance'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getFacts } from '@/lib/content'
@@ -62,6 +63,12 @@ export default async function AboutPage() {
               <br />
               <a href={`mailto:${config.contactEmail}`}>{config.contactEmail}</a>
             </p>
+            <Link
+              href="/contact"
+              className="inline-block mt-3 text-[11.5px] tracking-[0.12em] uppercase font-bold border-b border-gold pb-[3px]"
+            >
+              Use the contact form
+            </Link>
           </div>
         </aside>
       </section>

@@ -26,6 +26,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     ...ENTITIES.map((entity) => ({ href: `${base}/${entity.slug}`, label: entity.plural })),
     { href: `${base}/media`, label: 'Media' },
     { href: `${base}/submissions`, label: 'Submissions' },
+    { href: `${base}/reviewers`, label: 'Reviewer applications' },
+    { href: `${base}/messages`, label: 'Messages' },
   ]
 
   return (
