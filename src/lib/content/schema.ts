@@ -7,7 +7,6 @@ export const siteConfigSchema = z.object({
   contactEmail: z.string().email(),
   issnStatus: z.string(),
   heroImagePath: z.string().nullable(),
-  positionImagePath: z.string().nullable(),
 })
 
 export const disciplineSchema = z.object({

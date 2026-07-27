@@ -3,7 +3,6 @@ import { AnnouncementRows } from '@/components/site/home/AnnouncementRows'
 import { ClosingCta } from '@/components/site/home/ClosingCta'
 import { Hero } from '@/components/site/home/Hero'
 import { HeroBand } from '@/components/site/home/HeroBand'
-import { OurPosition } from '@/components/site/home/OurPosition'
 import { ProcessSteps } from '@/components/site/home/ProcessSteps'
 import { ValueColumns } from '@/components/site/home/ValueColumns'
 import { WhatWePublish } from '@/components/site/home/WhatWePublish'
@@ -32,7 +31,6 @@ export default async function HomePage() {
       <ValueColumns />
       <WhatWePublish disciplines={disciplines} />
       <ProcessSteps steps={steps} />
-      <OurPosition imagePath={config.positionImagePath} />
       <AnnouncementRows announcements={announcements} />
       <ClosingCta deadline={config.deadline} />
     </>

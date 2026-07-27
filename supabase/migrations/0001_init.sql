@@ -38,7 +38,6 @@ create table site_config (
   contact_email text not null,
   issn_status text not null default 'Pending',
   hero_image_path text,
-  position_image_path text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   -- Singleton: only one row can ever exist.

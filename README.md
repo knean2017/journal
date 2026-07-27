@@ -61,9 +61,10 @@ The site runs without a database, on its seed content. These steps switch it ove
 1. **Create the project**, then copy `.env.example` to `.env.local` and fill in the project URL,
    the anon key, and the service-role key. Pick your own `ADMIN_PATH` while you are there.
 
-2. **Run the migration.** Paste `supabase/migrations/0001_init.sql` into the Supabase SQL editor,
-   or apply it with the Supabase CLI. It creates every table, the RLS policies, and the three
-   storage buckets.
+2. **Run the migrations**, every file in `supabase/migrations/` in filename order, pasted into the
+   Supabase SQL editor or applied with the Supabase CLI. `0001_init.sql` creates every table, the
+   RLS policies, and the three storage buckets; `0002` widens the public article read so the first
+   issue's table of contents is visible before that issue is published.
 
 3. **Load the content:** `npm run seed`. Idempotent, so running it twice changes nothing. It does
    overwrite rows it owns, so seed before editing in the admin, not after.
@@ -95,8 +96,8 @@ Security, in short:
 
 ## Still open
 
-- **Photographs.** Hero, editorial photo, team portraits, author portraits, issue cover, article
-  figures are all labelled placeholders. Upload through the admin's media library.
+- **Photographs.** Hero, team portraits, author portraits, issue cover, and article figures are all
+  labelled placeholders. Upload through the admin's media library.
 - **Real authors.** The six profiles are the handoff's placeholders and are labelled as such.
   Turn off the design-preview banners in Site settings once they are replaced.
 - **Article bodies** render placeholder prose. The `body` column stores rich-text JSON and the

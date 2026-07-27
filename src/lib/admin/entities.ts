@@ -273,7 +273,6 @@ export const SITE_CONFIG_FIELDS: Field[] = [
   { name: 'contact_email', label: 'Contact email', type: 'text', required: true },
   { name: 'issn_status', label: 'ISSN status', type: 'text' },
   { name: 'hero_image_path', label: 'Home hero image', type: 'image' },
-  { name: 'position_image_path', label: '"Our position" photo', type: 'image' },
   {
     name: 'show_preview_notes',
     label: 'Show design-preview banners',

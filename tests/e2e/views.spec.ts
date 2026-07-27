@@ -4,8 +4,8 @@ test.describe('home', () => {
   test('hero renders the headline and both calls to action', async ({ page }) => {
     await page.goto('/')
     const h1 = page.getByRole('heading', { level: 1 })
-    await expect(h1).toContainText('Student research')
-    await expect(h1).toContainText('read closely')
+    await expect(h1).toContainText('Connecting researches')
+    await expect(h1).toContainText('across borders')
     await expect(page.getByRole('link', { name: 'Submit a Manuscript' })).toBeVisible()
     await expect(page.getByRole('link', { name: 'Read the Call for Papers' })).toBeVisible()
   })
@@ -229,11 +229,16 @@ test.describe('submit', () => {
     await expect(page.getByRole('combobox').locator('option')).toHaveCount(6)
   })
 
-  test('submitting shows the interim toast', async ({ page }) => {
+  /**
+   * Which message comes back depends on whether Supabase is configured: without
+   * it the form answers with the pre-launch toast, with it an empty form fails
+   * validation. Both are correct, so assert the form always answers.
+   */
+  test('submitting always answers with a toast', async ({ page }) => {
     await page.goto('/submit')
     await page.getByRole('button', { name: 'Submit manuscript' }).click()
     await expect(page.getByRole('status')).toContainText(
-      'Submission portal opens with the call for papers',
+      /Submission portal opens with the call for papers|Please check the highlighted fields/,
     )
   })
 })

@@ -14,7 +14,7 @@ export function Hero({ issueLabel }: { issueLabel: string }) {
         className="mt-[18px] mx-auto max-w-[22ch] font-serif text-[clamp(29px,6.3vw,52px)] leading-[1.2] font-normal tracking-[-0.01em]"
         style={{ animation: 'icrrUp .7s ease .06s both' }}
       >
-        Student research, <em className="text-maroon">read closely.</em>
+        Connecting researches <em className="text-maroon">across borders.</em>
       </h1>
 
       {/* Draws its own width from zero. */}

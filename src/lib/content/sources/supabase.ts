@@ -149,7 +149,6 @@ export async function getConfig(): Promise<SiteConfig> {
     contactEmail: data.contact_email,
     issnStatus: data.issn_status,
     heroImagePath: mediaUrl(data.hero_image_path),
-    positionImagePath: mediaUrl(data.position_image_path),
   }
 }
 
