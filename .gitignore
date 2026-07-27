@@ -22,7 +22,8 @@ next-env.d.ts
 /blob-report/
 /playwright/.cache/
 .playwright-mcp/
-*.png
-!public/**/*.png
+# No blanket *.png rule here. It once swallowed src/app/icon.png, so the
+# deployed site had no favicon. Playwright's screenshots already live in the
+# ignored directories above.
 test-results/
 playwright-report/

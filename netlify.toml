@@ -4,6 +4,12 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Netlify's secrets scanner fails a build when an environment variable's value
+  # appears in the output. Both of these are meant to reach the browser: Next
+  # inlines every NEXT_PUBLIC_ variable into the client bundle, and the anon key
+  # is a public key whose protection is RLS, not secrecy. SUPABASE_SERVICE_ROLE_KEY
+  # is deliberately absent here and stays scanned.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

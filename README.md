@@ -78,6 +78,30 @@ The site runs without a database, on its seed content. These steps switch it ove
 
 The admin then answers at `/{ADMIN_PATH}`, for example `/editorial-office`.
 
+## Deploying to Netlify
+
+`.env.local` is local only. Netlify needs the same variables set under Site configuration →
+Environment variables, scoped to every context you deploy:
+
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+ADMIN_PATH
+RESEND_API_KEY        # optional
+RESEND_FROM           # optional
+EDITORIAL_EMAIL       # optional, defaults to icrrjournal@gmail.com
+```
+
+Two things to know:
+
+- **Next inlines every `NEXT_PUBLIC_` variable at build time.** Adding them changes nothing until
+  the site is built again, so finish with Deploys → Trigger deploy → **Clear cache and deploy
+  site**. Until then the admin answers 503 and the public pages quietly serve seed content.
+- **Netlify's secrets scanner** would fail the build on those two inlined values. `netlify.toml`
+  exempts them by name, and only them. The service-role key is still scanned, and a build that
+  leaks it should fail.
+
 ## The admin panel
 
 Site settings, sections, team, editorial roles, authors, issues, articles, announcements, the home
