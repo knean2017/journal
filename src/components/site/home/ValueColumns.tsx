@@ -1,8 +1,13 @@
 const VALUES = [
   {
+    /*
+     * Deliberately unspecific about how the review is run. The journal reviews
+     * what it publishes and does not operate double-blind or formal peer
+     * review, so naming either would be a claim it cannot stand behind.
+     */
     number: '01',
-    title: 'Double-blind peer review',
-    body: 'Every submission is assessed by at least two subject-specialist reviewers.',
+    title: 'Reviewed before publication',
+    body: 'Every submission is read and reviewed before a decision is made.',
   },
   {
     number: '02',

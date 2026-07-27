@@ -81,8 +81,8 @@ export default async function TeamPage() {
             <h3 className="m-0 font-serif text-[21px] font-bold">Editorial independence</h3>
             <p className="mt-[10px] mb-0 text-[14.5px] leading-[1.8] text-body">
               Editors recuse themselves from any manuscript involving their own institution,
-              supervisor, or collaborators. Decisions rest on reviewer reports; the managing editor
-              arbitrates only where reports conflict.
+              supervisor, or collaborators. Decisions rest on the review of the work itself; the
+              managing editor arbitrates where opinions differ.
             </p>
           </div>
         </div>

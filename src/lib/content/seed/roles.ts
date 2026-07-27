@@ -15,7 +15,7 @@ export const editorialRoles: EditorialRole[] = [
     title: 'Section Editor, Natural Sciences',
     status: 'recruiting',
     statusLabel: 'Recruiting',
-    duty: 'Assigns reviewers and arbitrates conflicting reports in the sciences.',
+    duty: 'Oversees review and decisions in the sciences.',
     sortOrder: 2,
   },
   {

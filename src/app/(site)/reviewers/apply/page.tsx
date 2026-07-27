@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 const COMMITMENT = [
   { key: 'Volume', value: 'Up to two manuscripts a month, and you may decline any of them.' },
   { key: 'Turnaround', value: 'Three weeks from assignment to written report.' },
-  { key: 'Format', value: 'Double-blind. Author identities are removed before you see the file.' },
+  { key: 'Format', value: 'You read the manuscript and return your view of it in writing.' },
   { key: 'Credit', value: 'Reviewers are named on the team page unless they ask not to be.' },
 ]
 
@@ -66,9 +66,8 @@ export default async function ReviewerApplyPage() {
               How we assign work
             </div>
             <div className="px-[18px] py-4 text-[14px] leading-[1.8] text-body">
-              A section editor matches each manuscript to two reviewers by subject, then sends the
-              anonymised file with a deadline. You may decline any assignment without giving a
-              reason.
+              A section editor matches each manuscript to a reviewer by subject, then sends the file
+              with a deadline. You may decline any assignment without giving a reason.
             </div>
           </div>
 

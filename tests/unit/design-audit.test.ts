@@ -5,6 +5,17 @@ import { describe, expect, it } from 'vitest'
 const FILES = fg.sync('src/**/*.{ts,tsx,css}')
 const read = (file: string) => readFileSync(file, 'utf8')
 
+/**
+ * The same file with its comments removed, for the copy rules below.
+ *
+ * A comment that explains why a phrase is banned contains the phrase, and a
+ * raw text search cannot tell the two apart. Only what ships is checked.
+ */
+const readCopy = (file: string) =>
+  read(file)
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/.*$/gm, '$1')
+
 const ALLOWED_HEX = new Set([
   '#5D1D21',
   '#7C2A2F',
@@ -83,6 +94,32 @@ describe('design audit', () => {
 
   it('never promises written feedback to authors', () => {
     const offenders = FILES.filter((file) => /written feedback/i.test(read(file)))
+    expect(offenders).toEqual([])
+  })
+
+  /**
+   * The journal reviews what it publishes. It does not run double-blind or
+   * formal peer review, and it does not put a number of reviewers on a paper,
+   * so no page may say otherwise. "Reviewer" on its own is fine: the journal
+   * recruits reviewers and says so.
+   */
+  it('claims no review model it does not run', () => {
+    const banned = [
+      /double[- ]blind/i,
+      /peer[- ]review/i,
+      /\b(two|three|2|3) (subject[- ]specialist )?reviewers\b/i,
+      /reviewer reports/i,
+    ]
+
+    const offenders: string[] = []
+    for (const file of FILES) {
+      const copy = readCopy(file)
+      for (const pattern of banned) {
+        const found = copy.match(pattern)
+        if (found) offenders.push(`${file.replace(/\\/g, '/')}: ${found[0]}`)
+      }
+    }
+
     expect(offenders).toEqual([])
   })
 })

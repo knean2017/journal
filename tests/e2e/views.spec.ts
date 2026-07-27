@@ -20,7 +20,7 @@ test.describe('home', () => {
     const track = page.locator('.ticker-track')
 
     await expect(track).toContainText('Call for Papers')
-    await expect(track).toContainText('recruiting peer reviewers')
+    await expect(track).toContainText('recruiting reviewers')
 
     const start = await track.boundingBox()
     await page.waitForTimeout(1200)
@@ -72,11 +72,14 @@ test.describe('about', () => {
     }
   })
 
-  test('review policy does not promise author feedback', async ({ page }) => {
+  test('review policy promises neither author feedback nor a review model', async ({ page }) => {
     await page.goto('/about')
     const body = (await page.locator('main').textContent()) ?? ''
-    expect(body).toContain('reviewer identities are not disclosed')
+    expect(body).toContain('nothing is published without that review')
     expect(body.toLowerCase()).not.toContain('written feedback')
+    // The journal reviews what it publishes and runs neither of these.
+    expect(body.toLowerCase()).not.toContain('double-blind')
+    expect(body.toLowerCase()).not.toContain('peer review')
   })
 
   test('journal at a glance lists all six facts', async ({ page }) => {
@@ -95,7 +98,7 @@ test.describe('current issue', () => {
     for (const title of [
       'Submissions open',
       'Issue 1 submissions close',
-      'Peer review',
+      'Review',
       'Decisions returned',
       'Publication',
     ]) {

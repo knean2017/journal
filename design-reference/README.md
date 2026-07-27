@@ -251,7 +251,7 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
    Three strings, separated by a gold `·`:
    - "Call for Papers: Issue 1 closes 31 August 2026."
    - "Issue 1 publishes 30 September 2026, and at the end of each month thereafter."
-   - "We are recruiting peer reviewers across all five sections."
+   - "We are recruiting reviewers across all five sections."
 
    **The line slides continuously** (`icrrTicker`, linear, infinite), it does not swap every
    6000ms as the prototype did: a swap takes a line away half way through being read. The track
@@ -263,7 +263,7 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
    text.
 
 4. **Three value columns** — numbered `01 / 02 / 03` in Libre Baskerville gold `13px`, h3 in maroon:
-   - Double-blind peer review — "Every submission is assessed by at least two subject-specialist reviewers."
+   - Reviewed before publication — "Every submission is read and reviewed before a decision is made."
    - Open access, no fees — "Free to read and free to publish. Authors retain copyright under CC BY 4.0."
    - Genuinely multidisciplinary — "Five sections and one review board, so interdisciplinary work has somewhere to go."
 
@@ -273,7 +273,7 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
 
 6. **From submission to publication** — four steps in bordered columns. Each: a `26px` gold-outlined
    square with the step number, a gold-muted duration, h3, and a line of body copy.
-   Day 1 Submission → Week 1 Editorial screening → Weeks 1–3 Double-blind review → Week 4 Decision and copyediting.
+   Day 1 Submission → Week 1 Editorial screening → Weeks 1–3 Review → Week 4 Decision and copyediting.
 
 7. **Our position** — `#F7F4EF` panel, two columns. Left: "OUR POSITION" eyebrow, a Libre
    Baskerville italic pull quote in `#3F1417` ("Student research deserves the same editorial care as
@@ -297,14 +297,17 @@ Page head, then a `1.6fr / 1fr` split.
 Main column: a Libre Baskerville `20px` `#3F1417` standfirst, then four h2 sections in maroon —
 Aims and scope · Review policy · Publication ethics · Open access and copyright.
 
-**The review policy copy must not promise author feedback.** An earlier draft said every author
-receives written feedback; that was removed because the journal cannot guarantee it. Current text:
-"All submissions undergo double-blind review by at least two reviewers. Author identities are
-removed before assessment, and reviewer identities are not disclosed."
+**The review policy copy must not promise author feedback**, and **must not name a review model**.
+An earlier draft said every author receives written feedback; that was removed because the journal
+cannot guarantee it. The double-blind wording went the same way: the journal reviews what it
+publishes but does not run double-blind or formal peer review, so claiming either promised a
+process that does not exist. Current text: "Every submission is reviewed before a decision is
+made, and nothing is published without that review. Editors recuse themselves from work involving
+their own institution, supervisor, or collaborators."
 
 Sidebar (`position: sticky; top: 70px`, `max-width: 380px`):
 - **Journal at a glance** — cream panel, maroon header bar, six key/value rows:
-  Founded 2026 · Access Open, CC BY 4.0 · Author fees None · Review Double-blind ·
+  Founded 2026 · Access Open, CC BY 4.0 · Author fees None · Review Before publication ·
   Frequency Monthly, at month end · ISSN Pending
 - **Editorial office** — `id="contact"` (the top strip's Contact link targets it):
   "Enquiries and submissions — icrrjournal@gmail.com"
@@ -319,7 +322,7 @@ Main column:
   appears here when Issue 1 publishes.
 - **Production timeline** — five entries with an `11px` circle rail; the first dot is filled gold,
   the rest `#FDFBF7`; a `1px` vertical rule connects them:
-  Submissions open (Now) · Issue 1 submissions close (31 Aug 2026) · Peer review (2–3 weeks) ·
+  Submissions open (Now) · Issue 1 submissions close (31 Aug 2026) · Review (2–3 weeks) ·
   Decisions returned (Mid-Sept 2026) · Publication (30 Sept 2026)
 - **ToC preview** — three placeholder rows at `opacity: .55`, showing section eyebrow, title,
   byline, page range, and a `PDF` chip. Plus a link to the article page template.
@@ -517,11 +520,20 @@ deep, which is what made the small layout look like a mistake rather than a choi
 
 ### Copy rules
 
-Two editorial constraints the client asked for explicitly. Keep them:
+Three editorial constraints the client asked for explicitly. Keep them:
 
 1. **No em dashes anywhere.** Use commas, colons, or full stops. En dashes in numeric ranges
    (`3,000–8,000`, `2–3 weeks`) are fine.
 2. **Never promise reviewer feedback to authors.** The journal cannot guarantee it.
+3. **Never name a review model, and never put a number of reviewers on a paper.** The journal
+   reviews what it publishes. It does not run double-blind or formal peer review, so "reviewed"
+   is as specific as any page may get. Recruiting copy is exempt from the spirit of this but not
+   the letter: the journal does recruit reviewers and says so, it just does not describe how they
+   work in terms it cannot honour.
+
+The first two are checked by `tests/unit/design-audit.test.ts`, and so is the third: it scans the
+source with comments stripped, so a comment may name the banned phrasing to explain it while the
+shipped copy may not.
 
 Voice: plain, first-person where natural, no marketing inflation. The site says what is true today
 ("Appointment pending", "Recruiting", "TBA") rather than pretending to be established.
