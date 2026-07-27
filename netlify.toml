@@ -9,7 +9,9 @@
   # inlines every NEXT_PUBLIC_ variable into the client bundle, and the anon key
   # is a public key whose protection is RLS, not secrecy. SUPABASE_SERVICE_ROLE_KEY
   # is deliberately absent here and stays scanned.
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
+  # ADMIN_PATH is inlined too: Next resolves process.env in the middleware
+  # bundle at build time. It is obscurity, not a control, so this is not a leak.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,ADMIN_PATH"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"

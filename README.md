@@ -98,9 +98,12 @@ Two things to know:
 - **Next inlines every `NEXT_PUBLIC_` variable at build time.** Adding them changes nothing until
   the site is built again, so finish with Deploys → Trigger deploy → **Clear cache and deploy
   site**. Until then the admin answers 503 and the public pages quietly serve seed content.
-- **Netlify's secrets scanner** would fail the build on those two inlined values. `netlify.toml`
-  exempts them by name, and only them. The service-role key is still scanned, and a build that
-  leaks it should fail.
+- **Do not tick "Contains secret values"** on `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`, or `ADMIN_PATH`. All three are inlined into the build by
+  design, so Netlify's secrets scanner fails the deploy on them and keeps serving the previous
+  one. `netlify.toml` exempts those three by name, but an explicit secret marking in the UI wins
+  over the file. Tick it on `SUPABASE_SERVICE_ROLE_KEY` and `RESEND_API_KEY`, which appear in the
+  output zero times and must keep failing the build if they ever do.
 
 ## The admin panel
 
