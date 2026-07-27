@@ -11,7 +11,16 @@ import * as db from './sources/supabase'
  * failing the page, and the error is logged.
  */
 
-const useDb = () => isSupabaseConfigured()
+/**
+ * CONTENT_SOURCE=seed forces the seed files even when Supabase is configured.
+ *
+ * The browser suite runs with it set. Without it those tests read whatever the
+ * editorial office happens to have published today, so deleting a placeholder
+ * author in the admin turns the suite red for no good reason. Read-side only:
+ * the submission and inbox actions still use the real database, so a test that
+ * completes a form writes a real row.
+ */
+const useDb = () => isSupabaseConfigured() && process.env.CONTENT_SOURCE !== 'seed'
 
 async function fromDb<T>(read: () => Promise<T>, fallback: () => Promise<T>): Promise<T> {
   if (!useDb()) return fallback()

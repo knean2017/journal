@@ -2,7 +2,13 @@
 
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
-import { FIELD_LABEL as LABEL, FieldError } from '@/components/ui/FieldError'
+import {
+  FIELD_LABEL as LABEL,
+  FieldError,
+  invalid,
+  summarise,
+  useFocusFirstError,
+} from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
 import { submitManuscript } from '@/lib/submissions/actions'
 import type { Discipline } from '@/lib/content'
@@ -11,6 +17,17 @@ import type { Discipline } from '@/lib/content'
 function readableSize(bytes: number): string {
   const mb = bytes / (1024 * 1024)
   return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`
+}
+
+const ERROR_LABELS: Record<string, string> = {
+  correspondingAuthor: 'the corresponding author',
+  email: 'the email address',
+  institution: 'the institution',
+  section: 'the section',
+  title: 'the manuscript title',
+  abstract: 'the abstract',
+  originality: 'the originality confirmation',
+  manuscript: 'the attached file',
 }
 
 export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
@@ -30,10 +47,12 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
   }
 
   useEffect(() => {
-    if (state?.message) toast(state.message)
+    if (!state?.message) return
+    toast(summarise(state.fieldErrors ?? {}, ERROR_LABELS, state.message))
   }, [state, toast])
 
   const errors = state?.fieldErrors ?? {}
+  useFocusFirstError(errors)
 
   if (state?.ok) {
     return (
@@ -52,22 +71,38 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
       <div className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-5">
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Corresponding author</span>
-          <input name="author" placeholder="Full name" className="field" />
+          <input
+            name="author"
+            placeholder="Full name"
+            className="field"
+            {...invalid(errors, 'correspondingAuthor')}
+          />
           <FieldError message={errors.correspondingAuthor} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Email</span>
-          <input name="email" type="email" placeholder="you@university.edu" className="field" />
+          <input
+            name="email"
+            type="email"
+            placeholder="you@university.edu"
+            className="field"
+            {...invalid(errors, 'email')}
+          />
           <FieldError message={errors.email} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Institution</span>
-          <input name="institution" placeholder="University or college" className="field" />
+          <input
+            name="institution"
+            placeholder="University or college"
+            className="field"
+            {...invalid(errors, 'institution')}
+          />
           <FieldError message={errors.institution} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Section</span>
-          <select name="section" className="field" defaultValue="">
+          <select name="section" className="field" defaultValue="" {...invalid(errors, 'section')}>
             <option value="" disabled>
               Choose a section
             </option>
@@ -83,17 +118,23 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
 
       <label className="flex flex-col gap-[7px] mt-5">
         <span className={LABEL}>Manuscript title</span>
-        <input name="title" placeholder="Working title" className="field" />
+        <input
+          name="title"
+          placeholder="Working title"
+          className="field"
+          {...invalid(errors, 'title')}
+        />
         <FieldError message={errors.title} />
       </label>
 
       <label className="flex flex-col gap-[7px] mt-5">
-        <span className={LABEL}>Abstract (250 words max)</span>
+        <span className={LABEL}>Abstract (40 characters minimum, 250 words max)</span>
         <textarea
           name="abstract"
           rows={5}
           placeholder="State the question, method, and principal finding."
           className="field resize-y"
+          {...invalid(errors, 'abstract')}
         />
         <FieldError message={errors.abstract} />
       </label>

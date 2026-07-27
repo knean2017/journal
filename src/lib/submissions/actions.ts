@@ -18,11 +18,6 @@ export async function submitManuscript(
   // No database attached yet: keep the honest pre-launch message.
   if (!isSupabaseConfigured()) return { ok: false, message: SUBMIT_TOAST }
 
-  const requestHeaders = await headers()
-  if (!rateLimit(clientKey(requestHeaders, 'submit'), 5, 60 * 60 * 1000)) {
-    return { ok: false, message: 'Too many submissions from this address. Try again later.' }
-  }
-
   const parsed = submissionSchema.safeParse({
     correspondingAuthor: form.get('author'),
     email: form.get('email'),
@@ -54,6 +49,16 @@ export async function submitManuscript(
   }
   if (file.size > MAX_MANUSCRIPT_BYTES) {
     return { ok: false, message: 'That file is larger than 20 MB.' }
+  }
+
+  /*
+   * Rate limited here, after validation rather than before it. The limiter
+   * guards the expensive path: upload, insert, and email. Counting rejected
+   * attempts would lock someone out of the form for an hour for mistyping.
+   */
+  const requestHeaders = await headers()
+  if (!rateLimit(clientKey(requestHeaders, 'submit'), 5, 60 * 60 * 1000)) {
+    return { ok: false, message: 'Too many submissions from this address. Try again later.' }
   }
 
   const supabase = createSupabaseServiceClient()
@@ -126,14 +131,19 @@ export async function subscribe(
 ): Promise<FormResult> {
   if (!isSupabaseConfigured()) return { ok: true, message: SUBSCRIBE_TOAST }
 
-  const requestHeaders = await headers()
-  if (!rateLimit(clientKey(requestHeaders, 'subscribe'), 10, 60 * 60 * 1000)) {
-    return { ok: false, message: 'Too many attempts from this address. Try again later.' }
-  }
-
   const parsed = newsletterSchema.safeParse({ email: form.get('email') })
   if (!parsed.success) {
     return { ok: false, message: parsed.error.issues[0]?.message ?? 'That email looks wrong.' }
+  }
+
+  /*
+   * Rate limited here, after validation rather than before it. The limiter
+   * guards the expensive path: upload, insert, and email. Counting rejected
+   * attempts would lock someone out of the form for an hour for mistyping.
+   */
+  const requestHeaders = await headers()
+  if (!rateLimit(clientKey(requestHeaders, 'subscribe'), 10, 60 * 60 * 1000)) {
+    return { ok: false, message: 'Too many attempts from this address. Try again later.' }
   }
 
   const supabase = createSupabaseServiceClient()

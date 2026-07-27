@@ -189,6 +189,17 @@
   }
 
   /*
+   * A rejected field. The message under a form says "check the highlighted
+   * fields", so something has to actually be highlighted: a hairline rule is
+   * indistinguishable from a valid field at a glance.
+   */
+  .field[aria-invalid='true'] {
+    border-color: var(--color-maroon);
+    border-left-width: 3px;
+    background: var(--color-cream-tint);
+  }
+
+  /*
    * Reserved for the Toast chrome component (a later task): design-reference/README.md
    * "Global chrome / 6. Toast" and prototype line 744 specify this as the one shadow in
    * the whole design. Declared here, shadow-only, because it is a token-level constraint

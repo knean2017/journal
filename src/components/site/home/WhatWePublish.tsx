@@ -5,7 +5,9 @@ export function WhatWePublish({ disciplines }: { disciplines: Discipline[] }) {
   return (
     <section data-reveal className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-16">
       <div className="flex items-baseline justify-between gap-5 flex-wrap rule-double-bottom pb-3">
-        <h2 className="m-0 font-serif text-[clamp(22px,3.4vw,30px)] font-normal">What we publish</h2>
+        <h2 className="m-0 font-serif text-[clamp(22px,3.4vw,30px)] font-normal">
+          What we publish
+        </h2>
         <Link href="/about" className="text-[11.5px] tracking-[0.16em] uppercase font-bold">
           Aims &amp; scope
         </Link>

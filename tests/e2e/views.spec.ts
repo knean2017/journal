@@ -232,13 +232,14 @@ test.describe('submit', () => {
   /**
    * Which message comes back depends on whether Supabase is configured: without
    * it the form answers with the pre-launch toast, with it an empty form fails
-   * validation. Both are correct, so assert the form always answers.
+   * validation and the toast names the fields. Both are correct.
+   * tests/e2e/forms.spec.ts covers the naming and the highlighting in detail.
    */
   test('submitting always answers with a toast', async ({ page }) => {
     await page.goto('/submit')
     await page.getByRole('button', { name: 'Submit manuscript' }).click()
     await expect(page.getByRole('status')).toContainText(
-      /Submission portal opens with the call for papers|Please check the highlighted fields/,
+      /Submission portal opens with the call for papers|Please check /,
     )
   })
 })

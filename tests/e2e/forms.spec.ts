@@ -56,6 +56,36 @@ test.describe('contact', () => {
   })
 })
 
+test.describe('rejected fields', () => {
+  test('the submission form names them and marks them, one at a time', async ({ page }) => {
+    await page.goto('/submit')
+
+    // Everything filled except the abstract, which is below its minimum.
+    await page.locator('[name="author"]').fill('Ada Lovelace')
+    await page.locator('[name="email"]').fill('ada@university.edu')
+    await page.locator('[name="institution"]').fill('University of London')
+    await page.locator('[name="section"]').selectOption({ index: 1 })
+    await page.locator('[name="title"]').fill('On the Analytical Engine')
+    await page.locator('[name="abstract"]').fill('Too short.')
+    await page.locator('[name="originality"]').check()
+    await page.getByRole('button', { name: 'Submit manuscript' }).click()
+
+    await expect(page.getByRole('status')).toContainText('the abstract')
+    await expect(page.locator('[name="abstract"]')).toHaveAttribute('aria-invalid', 'true')
+    await expect(page.locator('[name="title"]')).not.toHaveAttribute('aria-invalid', 'true')
+    await expect(page.locator('[name="abstract"]')).toHaveCSS(
+      'border-left-color',
+      'rgb(93, 29, 33)',
+    )
+  })
+
+  test('an unticked originality box is named, not left silent', async ({ page }) => {
+    await page.goto('/submit')
+    await page.getByRole('button', { name: 'Submit manuscript' }).click()
+    await expect(page.getByRole('status')).toContainText('the originality confirmation')
+  })
+})
+
 test.describe('manuscript attachment', () => {
   const FILE = {
     name: 'anonymised-manuscript.pdf',

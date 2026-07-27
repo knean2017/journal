@@ -2,10 +2,27 @@
 
 import { useActionState, useEffect } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
-import { FIELD_LABEL, FieldError } from '@/components/ui/FieldError'
+import {
+  FIELD_LABEL,
+  FieldError,
+  invalid,
+  summarise,
+  useFocusFirstError,
+} from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
 import { applyAsReviewer } from '@/lib/inbox/actions'
 import type { Discipline } from '@/lib/content'
+
+const ERROR_LABELS: Record<string, string> = {
+  name: 'your name',
+  email: 'the email address',
+  affiliation: 'the institution',
+  position: 'the current position',
+  section: 'the section',
+  expertise: 'the areas of expertise',
+  experience: 'the review experience',
+  orcid: 'the ORCID',
+}
 
 export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
   const toast = useToast()
@@ -15,10 +32,12 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
   )
 
   useEffect(() => {
-    if (state?.message) toast(state.message)
+    if (!state?.message) return
+    toast(summarise(state.fieldErrors ?? {}, ERROR_LABELS, state.message))
   }, [state, toast])
 
   const errors = state?.fieldErrors ?? {}
+  useFocusFirstError(errors)
 
   if (state?.ok) {
     return (
@@ -37,17 +56,33 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
       <div className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-5">
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Full name</span>
-          <input name="name" placeholder="Full name" className="field" />
+          <input
+            name="name"
+            placeholder="Full name"
+            className="field"
+            {...invalid(errors, 'name')}
+          />
           <FieldError message={errors.name} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Email</span>
-          <input name="email" type="email" placeholder="you@university.edu" className="field" />
+          <input
+            name="email"
+            type="email"
+            placeholder="you@university.edu"
+            className="field"
+            {...invalid(errors, 'email')}
+          />
           <FieldError message={errors.email} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Institution</span>
-          <input name="affiliation" placeholder="University or college" className="field" />
+          <input
+            name="affiliation"
+            placeholder="University or college"
+            className="field"
+            {...invalid(errors, 'affiliation')}
+          />
           <FieldError message={errors.affiliation} />
         </label>
         <label className="flex flex-col gap-[7px]">
@@ -56,12 +91,13 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
             name="position"
             placeholder="PhD candidate, postdoc, lecturer"
             className="field"
+            {...invalid(errors, 'position')}
           />
           <FieldError message={errors.position} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Section</span>
-          <select name="section" className="field" defaultValue="">
+          <select name="section" className="field" defaultValue="" {...invalid(errors, 'section')}>
             <option value="" disabled>
               Choose a section
             </option>
@@ -75,7 +111,12 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>ORCID (optional)</span>
-          <input name="orcid" placeholder="0000-0000-0000-0000" className="field" />
+          <input
+            name="orcid"
+            placeholder="0000-0000-0000-0000"
+            className="field"
+            {...invalid(errors, 'orcid')}
+          />
           <FieldError message={errors.orcid} />
         </label>
       </div>
@@ -87,6 +128,7 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
           rows={3}
           placeholder="The topics and methods you can assess confidently."
           className="field resize-y"
+          {...invalid(errors, 'expertise')}
         />
         <FieldError message={errors.expertise} />
       </label>
@@ -98,6 +140,7 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
           rows={4}
           placeholder="Journals or conferences you have reviewed for, and anything else worth knowing. Newcomers are welcome; we pair first-time reviewers with an editor."
           className="field resize-y"
+          {...invalid(errors, 'experience')}
         />
         <FieldError message={errors.experience} />
       </label>

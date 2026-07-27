@@ -33,7 +33,9 @@ export function ValueColumns() {
             }}
           >
             <div className="font-serif text-[13px] text-gold">{value.number}</div>
-            <h3 className="mt-3 mb-0 font-serif text-[21px] font-bold text-maroon">{value.title}</h3>
+            <h3 className="mt-3 mb-0 font-serif text-[21px] font-bold text-maroon">
+              {value.title}
+            </h3>
             <p className="mt-[10px] mb-0 text-[14.5px] leading-[1.8] text-body">{value.body}</p>
           </div>
         ))}

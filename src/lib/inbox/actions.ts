@@ -22,11 +22,6 @@ export async function applyAsReviewer(
 ): Promise<FormResult> {
   if (!isSupabaseConfigured()) return noDatabase('The reviewer panel form')
 
-  const requestHeaders = await headers()
-  if (!rateLimit(clientKey(requestHeaders, 'reviewer'), 3, 60 * 60 * 1000)) {
-    return { ok: false, message: 'Too many applications from this address. Try again later.' }
-  }
-
   const parsed = reviewerApplicationSchema.safeParse({
     name: form.get('name'),
     email: form.get('email'),
@@ -44,6 +39,16 @@ export async function applyAsReviewer(
       message: 'Please check the highlighted fields.',
       fieldErrors: firstErrors(parsed.error.issues),
     }
+  }
+
+  /*
+   * Rate limited here, after validation rather than before it. The limiter
+   * guards the expensive path: upload, insert, and email. Counting rejected
+   * attempts would lock someone out of the form for an hour for mistyping.
+   */
+  const requestHeaders = await headers()
+  if (!rateLimit(clientKey(requestHeaders, 'reviewer'), 3, 60 * 60 * 1000)) {
+    return { ok: false, message: 'Too many applications from this address. Try again later.' }
   }
 
   const supabase = createSupabaseServiceClient()
@@ -105,11 +110,6 @@ export async function sendContactMessage(
 ): Promise<FormResult> {
   if (!isSupabaseConfigured()) return noDatabase('The contact form')
 
-  const requestHeaders = await headers()
-  if (!rateLimit(clientKey(requestHeaders, 'contact'), 5, 60 * 60 * 1000)) {
-    return { ok: false, message: 'Too many messages from this address. Try again later.' }
-  }
-
   const parsed = contactMessageSchema.safeParse({
     name: form.get('name'),
     email: form.get('email'),
@@ -123,6 +123,16 @@ export async function sendContactMessage(
       message: 'Please check the highlighted fields.',
       fieldErrors: firstErrors(parsed.error.issues),
     }
+  }
+
+  /*
+   * Rate limited here, after validation rather than before it. The limiter
+   * guards the expensive path: upload, insert, and email. Counting rejected
+   * attempts would lock someone out of the form for an hour for mistyping.
+   */
+  const requestHeaders = await headers()
+  if (!rateLimit(clientKey(requestHeaders, 'contact'), 5, 60 * 60 * 1000)) {
+    return { ok: false, message: 'Too many messages from this address. Try again later.' }
   }
 
   const supabase = createSupabaseServiceClient()
