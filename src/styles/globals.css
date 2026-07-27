@@ -1,0 +1,211 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-maroon: #5D1D21;
+  --color-maroon-hover: #7C2A2F;
+  --color-maroon-deep: #3F1417;
+  --color-gold: #C0A265;
+  --color-gold-muted: #8A7B5C;
+  --color-cream: #F7F4EF;
+  --color-cream-tint: #FBF7EE;
+  --color-page: #FDFBF7;
+  --color-ink: #241F1E;
+  --color-ink-soft: #3F3733;
+  --color-body: #5A524A;
+  --color-body-muted: #6E655C;
+  --color-rule: #E2DACB;
+  --color-rule-light: #EFE9DF;
+
+  --font-serif: var(--font-libre-baskerville), Georgia, serif;
+  --font-sans: var(--font-lato), system-ui, sans-serif;
+}
+
+/*
+ * Global reset. Prototype lines 16-23.
+ *
+ * This MUST sit inside @layer base. Unlayered CSS outranks every cascade
+ * layer, so an unlayered `a { color }` would beat the button classes in
+ * @layer components and render cream-on-maroon labels invisible.
+ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-radius: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-maroon-hover);
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
+@layer base {
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-family: inherit;
+  }
+}
+
+/* Keyframes. Prototype lines 24-29. */
+@keyframes icrrUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes icrrIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes icrrDraw {
+  from { width: 0; }
+  to { width: 96px; }
+}
+@keyframes icrrPlate {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes icrrPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+@keyframes icrrDrawer {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+
+@layer components {
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--color-gold-muted);
+  }
+
+  .rule-double {
+    border-top: 3px double var(--color-maroon);
+  }
+
+  .rule-double-bottom {
+    border-bottom: 3px double var(--color-maroon);
+  }
+
+  .btn-base {
+    display: inline-block;
+    padding: 12px 22px;
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-maroon {
+    background: var(--color-maroon);
+    color: var(--color-cream);
+  }
+  .btn-maroon:hover {
+    background: var(--color-maroon-hover);
+    color: var(--color-cream);
+  }
+
+  .btn-gold {
+    background: var(--color-gold);
+    color: var(--color-maroon-deep);
+  }
+  .btn-gold:hover {
+    background: #D2B67E;
+    color: var(--color-maroon-deep);
+  }
+
+  .btn-outline {
+    border: 1px solid var(--color-maroon);
+    color: var(--color-maroon);
+  }
+  .btn-outline:hover {
+    background: var(--color-cream);
+  }
+
+  .btn-outline-cream {
+    border: 1px solid rgba(247, 244, 239, 0.5);
+    color: var(--color-cream);
+  }
+  .btn-outline-cream:hover {
+    background: rgba(247, 244, 239, 0.1);
+    color: var(--color-cream);
+  }
+
+  .panel {
+    background: var(--color-cream);
+    border: 1px solid var(--color-rule);
+  }
+
+  .card {
+    border: 1px solid var(--color-rule);
+    background: var(--color-page);
+  }
+
+  .callout-gold {
+    border: 1px solid var(--color-gold);
+    background: var(--color-cream-tint);
+  }
+
+  .field {
+    width: 100%;
+    background: var(--color-page);
+    border: 1px solid var(--color-rule);
+    padding: 11px 13px;
+    font-size: 14.5px;
+    color: var(--color-ink);
+    outline: none;
+  }
+
+  /*
+   * Reserved for the Toast chrome component (a later task): design-reference/README.md
+   * "Global chrome / 6. Toast" and prototype line 744 specify this as the one shadow in
+   * the whole design. Declared here, shadow-only, because it is a token-level constraint
+   * this task must satisfy; full positioning/color/animation belongs to the chrome task.
+   */
+  .toast {
+    box-shadow: 0 10px 30px rgba(36, 31, 30, 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

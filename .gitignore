@@ -6,3 +6,23 @@ out/
 .netlify/
 .DS_Store
 *.log
+.superpowers/
+
+# next.js scaffold additions
+/build
+/coverage
+*.pem
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.playwright-mcp/
+*.png
+!public/**/*.png
+test-results/
+playwright-report/

@@ -56,10 +56,20 @@ publishing 30 September 2026", "Appointment pending", "Recruiting"). Preserve th
 
 ---
 
-## 3. Repository layout
+## 3. Repository and branching
 
-The current handoff folder becomes the project root. The handoff files move to
-`design-reference/` so the repo root is the application. Git is initialized here.
+**Repository** `https://github.com/knean2017/journal`. It already held a first-pass vanilla
+JS site (`app.js`, `index.html`, `styles.css`) using Inter and Playfair Display, with "Editorial
+Board" in the nav. That predates this handoff. Its history was merged rather than force-pushed, so
+it remains recoverable at commit `a0e45eb`; the three files are **deleted in phase 1** when the
+Next.js app lands.
+
+**Branching** All rebuild work happens on `rebuild`. `main` keeps serving the existing site through
+Netlify, untouched, until the new build is ready to go live. Netlify deploy previews on `rebuild`
+give a reviewable URL throughout. `rebuild` merges to `main` at phase 8.
+
+**Layout** The handoff folder is the project root. The handoff files move to `design-reference/`
+so the repo root is the application.
 
 ```
 /
@@ -499,7 +509,7 @@ Voice: plain, first-person where natural, no marketing inflation. The site says 
 Each phase ends in a working, reviewable state.
 
 1. **Scaffold** — Next.js, TypeScript, Tailwind v4, fonts, tokens, global styles, repo layout,
-   handoff moved to `design-reference/`, git initialized.
+   handoff moved to `design-reference/`, old prototype files deleted.
 2. **Schema** — migrations, RLS policies, storage buckets, generated types, seed with the handoff's
    real copy. Content accessors in `src/lib/content/` return real typed data.
 3. **Chrome** — top strip, masthead, nav both variants, drawer, footer, toast, `(site)` layout.
@@ -510,7 +520,8 @@ Each phase ends in a working, reviewable state.
 6. **Admin** — auth, middleware rewrite and gate, then each admin section.
 7. **Submissions** — upload, storage, Resend, rate limiting, newsletter.
 8. **Verify and deploy** — Playwright side-by-side against the prototype at 1440px and 375px,
-   token audit, copy audit, Netlify deploy with environment variables.
+   token audit, copy audit, Netlify environment variables and build settings, then `rebuild`
+   merges to `main` and the new site goes live.
 
 ---
 
