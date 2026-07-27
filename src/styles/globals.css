@@ -73,6 +73,29 @@
   button {
     font-family: inherit;
   }
+
+  /*
+   * Anything you can operate says so under the pointer. Links already do this;
+   * buttons, selects and boxes do not by default, which makes a form feel
+   * inert even when it works.
+   */
+  button,
+  select,
+  summary,
+  label[for],
+  [type='button'],
+  [type='submit'],
+  [type='reset'],
+  [type='checkbox'],
+  [type='radio'],
+  [type='file'] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [type='submit']:disabled {
+    cursor: not-allowed;
+  }
 }
 
 /* Keyframes. Prototype lines 24-29. */
@@ -100,6 +123,11 @@
   from { transform: translateX(100%); }
   to { transform: none; }
 }
+/* Slides the announcement track by exactly one of its two identical runs. */
+@keyframes icrrTicker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
 
 @layer components {
   .eyebrow {
@@ -118,7 +146,9 @@
     border-bottom: 3px double var(--color-maroon);
   }
 
+  /* Buttons are sometimes an <a> or a <label>, which the base rule cannot see. */
   .btn-base {
+    cursor: pointer;
     display: inline-block;
     padding: 12px 22px;
     font-size: 11.5px;
@@ -176,6 +206,36 @@
   .callout-gold {
     border: 1px solid var(--color-gold);
     background: var(--color-cream-tint);
+  }
+
+  /*
+   * The sliding announcement bar. The mask softens both ends so text enters and
+   * leaves instead of being cut off against the maroon. `black` rather than a
+   * hex value: a mask reads alpha only, and the palette has no black.
+   */
+  .ticker {
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 24px,
+      black calc(100% - 24px),
+      transparent
+    );
+  }
+
+  .ticker-track {
+    display: flex;
+    width: max-content;
+    white-space: nowrap;
+    /* Duration is set per instance, from how much text there is to read. */
+    animation: icrrTicker linear infinite;
+  }
+
+  /* Hovering or tabbing into the bar stops it, so a line can be finished. */
+  .ticker:hover .ticker-track,
+  .ticker:focus-within .ticker-track {
+    animation-play-state: paused;
   }
 
   .field {

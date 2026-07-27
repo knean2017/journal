@@ -3,15 +3,29 @@
 import { useActionState, useEffect } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
 import {
+  CharCount,
   FIELD_LABEL,
   FieldError,
+  LabelRow,
   invalid,
   summarise,
   useFocusFirstError,
+  useFormFields,
 } from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
 import { applyAsReviewer } from '@/lib/inbox/actions'
 import type { Discipline } from '@/lib/content'
+
+const FIELDS = [
+  'name',
+  'email',
+  'affiliation',
+  'position',
+  'section',
+  'orcid',
+  'expertise',
+  'experience',
+] as const
 
 const ERROR_LABELS: Record<string, string> = {
   name: 'your name',
@@ -30,6 +44,7 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
     applyAsReviewer,
     null,
   )
+  const { values, field, formRef } = useFormFields(FIELDS)
 
   useEffect(() => {
     if (!state?.message) return
@@ -50,6 +65,7 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
 
   return (
     <form
+      ref={formRef}
       action={action}
       className="mt-[18px] border border-rule bg-cream px-[clamp(18px,3vw,32px)] py-[clamp(20px,3vw,30px)]"
     >
@@ -57,9 +73,9 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Full name</span>
           <input
-            name="name"
             placeholder="Full name"
             className="field"
+            {...field('name')}
             {...invalid(errors, 'name')}
           />
           <FieldError message={errors.name} />
@@ -67,10 +83,10 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Email</span>
           <input
-            name="email"
             type="email"
             placeholder="you@university.edu"
             className="field"
+            {...field('email')}
             {...invalid(errors, 'email')}
           />
           <FieldError message={errors.email} />
@@ -78,9 +94,9 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Institution</span>
           <input
-            name="affiliation"
             placeholder="University or college"
             className="field"
+            {...field('affiliation')}
             {...invalid(errors, 'affiliation')}
           />
           <FieldError message={errors.affiliation} />
@@ -88,16 +104,16 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Current position</span>
           <input
-            name="position"
             placeholder="PhD candidate, postdoc, lecturer"
             className="field"
+            {...field('position')}
             {...invalid(errors, 'position')}
           />
           <FieldError message={errors.position} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Section</span>
-          <select name="section" className="field" defaultValue="" {...invalid(errors, 'section')}>
+          <select className="field" {...field('section')} {...invalid(errors, 'section')}>
             <option value="" disabled>
               Choose a section
             </option>
@@ -112,9 +128,9 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>ORCID (optional)</span>
           <input
-            name="orcid"
             placeholder="0000-0000-0000-0000"
             className="field"
+            {...field('orcid')}
             {...invalid(errors, 'orcid')}
           />
           <FieldError message={errors.orcid} />
@@ -122,24 +138,30 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
       </div>
 
       <label className="flex flex-col gap-[7px] mt-5">
-        <span className={FIELD_LABEL}>Areas of expertise</span>
+        <LabelRow>
+          <span className={FIELD_LABEL}>Areas of expertise</span>
+          <CharCount value={values.expertise} min={10} max={600} />
+        </LabelRow>
         <textarea
-          name="expertise"
           rows={3}
           placeholder="The topics and methods you can assess confidently."
           className="field resize-y"
+          {...field('expertise')}
           {...invalid(errors, 'expertise')}
         />
         <FieldError message={errors.expertise} />
       </label>
 
       <label className="flex flex-col gap-[7px] mt-5">
-        <span className={FIELD_LABEL}>Review experience (optional)</span>
+        <LabelRow>
+          <span className={FIELD_LABEL}>Review experience (optional)</span>
+          <CharCount value={values.experience} max={2000} />
+        </LabelRow>
         <textarea
-          name="experience"
           rows={4}
           placeholder="Journals or conferences you have reviewed for, and anything else worth knowing. Newcomers are welcome; we pair first-time reviewers with an editor."
           className="field resize-y"
+          {...field('experience')}
           {...invalid(errors, 'experience')}
         />
         <FieldError message={errors.experience} />

@@ -157,8 +157,11 @@ Full-bleed `#5D1D21`. Cream at `.82` opacity, `11px`, `letter-spacing:.16em`, up
 the About page's contact block) and "Announcements". Wraps on narrow screens.
 
 ### 2. Masthead
-Centered, on `#FDFBF7`. The horizontal ICRR lockup, `~126px` tall, links home. Fades in
-(`icrrIn`, 600ms). Padding `clamp(22px,4vw,34px)` top / `clamp(18px,3vw,26px)` bottom.
+Centered, on `#FDFBF7`. The horizontal ICRR lockup links home and fades in (`icrrIn`, 600ms).
+Sized by height at `clamp(72px,9.5vw,92px)` with `width: auto`, not by a fixed box: the file is
+`2500x600`, and the prototype's `454x126` box did not match that ratio, so `object-contain`
+letterboxed the artwork and it drew smaller than the number implied. Padding
+`clamp(16px,3vw,24px)` top / `clamp(14px,2.5vw,20px)` bottom.
 
 ### 3. Nav — sticky, two variants at 860px
 
@@ -195,12 +198,13 @@ the scrim handler closes it. Hamburger bars morph to an `×` when open — top b
 `#5D1D21`, cream at `.78`. Four columns, `clamp(28px,4vw,44px)` gap, reflowing to fewer columns
 below `180px` per column.
 
-Column 1 is the brand block: the **square ICRR mark** (`clamp(58px,12vw,74px)`, no background plate)
-beside the wordmark "International Collegiate / Research Review" in Libre Baskerville
-`clamp(11px,1.2vw,12.5px)`, `letter-spacing:.16em`, uppercase, cream — separated by a
-`1px solid rgba(192,162,101,.55)` left border with `18px` padding. *Note: an earlier version put a
-cream rectangle behind the full lockup to make it legible on maroon; that was replaced because the
-plate looked pasted on. Do not reintroduce a white box — use the standalone mark.*
+Column 1 is the brand block: the **stacked lockup drawn for dark grounds**,
+`lockup-stacked-white.png`, at `clamp(132px,17vw,168px)` wide. It carries the mark and the
+wordmark in one transparent file, so nothing sits beside it. *Note: the constraint that produced
+the earlier square-mark-plus-text arrangement still holds — do not put a cream or white rectangle
+behind a lockup to make it legible on maroon; the plate looks pasted on. This file needs none,
+because its wordmark is already cream. It is cropped to its artwork, so any breathing room around
+it belongs to the layout, not to the file.*
 
 Columns 2–4: "The journal" (About, Current issue, Archives, Our team), "For authors" (Submit,
 Author guidelines, Contributor directory, Announcements), "Contact" (icrrjournal@gmail.com,
@@ -240,11 +244,20 @@ Fixed, bottom `30px`, centered, `z-index: 80`. `#241F1E` fill, cream text, `14px
    it is a drop target.
 
 3. **Announcement bar** — full-bleed maroon, `min-height: 56px`. Gold `6px` dot pulsing
-   (`icrrPulse`, 2.4s, opacity .35 → 1) + "LATEST" + a rotating line + "ALL ANNOUNCEMENTS".
-   **Rotates every 6000ms** through three strings:
+   (`icrrPulse`, 2.4s, opacity .35 → 1) + "LATEST" + the announcements + "ALL ANNOUNCEMENTS".
+   Three strings, separated by a gold `·`:
    - "Call for Papers: Issue 1 closes 31 August 2026."
    - "Issue 1 publishes 30 September 2026, and at the end of each month thereafter."
    - "We are recruiting peer reviewers across all five sections."
+
+   **The line slides continuously** (`icrrTicker`, linear, infinite), it does not swap every
+   6000ms as the prototype did: a swap takes a line away half way through being read. The track
+   holds the three strings twice over and travels `translateX(-50%)`, so the loop has no seam.
+   Duration is `0.11s` per character of announcement text with a `30s` floor, which keeps the
+   speed the same however much there is to say. It pauses on hover and on focus within the bar,
+   and the ends are softened by a `mask-image` rather than a coloured gradient. Under
+   `prefers-reduced-motion` the global rule collapses the animation and the bar reads as static
+   text.
 
 4. **Three value columns** — numbered `01 / 02 / 03` in Libre Baskerville gold `13px`, h3 in maroon:
    - Double-blind peer review — "Every submission is assessed by at least two subject-specialist reviewers."
@@ -450,6 +463,7 @@ and never hidden, so nothing above the fold flashes blank. Reproduce that guard.
 | `icrrPlate` | fade + `translateY(10px)` + `scale(.985)` | Hero image band (900ms, 300ms delay) |
 | `icrrPulse` | `opacity .35 → 1 → .35` | Announcement dot (2.4s infinite) |
 | `icrrDrawer` | `translateX(100%) → none` | Mobile drawer (300ms) |
+| `icrrTicker` | `translateX(0) → translateX(-50%)` | Announcement track (linear, infinite, duration per instance) |
 
 Standard easing outside these: `cubic-bezier(.2,.7,.2,1)`.
 
@@ -500,7 +514,7 @@ Voice: plain, first-person where natural, no marketing inflation. The site says 
 | `authorId` | string | Becomes the `[slug]` route param. |
 | `filter` | string | Active discipline chip; `'All'` default. Worth putting in the URL. |
 | `q` | string | Search query. Worth putting in the URL. |
-| `ann` | number | Rotating announcement index; `setInterval` 6000ms, clear on unmount. |
+| ~~`ann`~~ | — | Gone. The announcement bar slides in CSS and holds no state. |
 | `toast` | string | Auto-clears after 3600ms; clear the pending timeout when re-triggering. |
 | `narrow` | boolean | From `matchMedia('(max-width: 860px)')`; remove the listener on unmount. |
 | `menuOpen` | boolean | Force-closed when `narrow` goes false and on every navigation. |
@@ -521,9 +535,18 @@ In `assets/`:
 | File | Use |
 |---|---|
 | `icrr_lockup_full_name_transparent.png` | Horizontal lockup — the masthead. Transparent. |
-| `icrr_lockup_stacked_transparent.png` | Stacked lockup — not currently used; keep for print/social. |
-| `icrr_mark.png` | Square mark — the footer brand block. |
+| `icrr_lockup_stacked_transparent.png` | Stacked lockup, dark artwork — for print/social on light grounds. |
+| `icrr_mark.png` | Square mark — kept for favicons and tight spaces. |
 | `Brand Guidelines (ICRR).pdf` | Source of truth for colors and type. |
+
+Shipped in `public/brand/`, which is what the site actually loads:
+
+| File | Use |
+|---|---|
+| `lockup-full.png` | The masthead. `2500x600`. |
+| `lockup-stacked-white.png` | The footer brand block. Cream artwork for maroon grounds, cropped to `956x686`. |
+| `lockup-stacked.png` | Dark stacked lockup. Not currently loaded. |
+| `mark.png` | Square mark. Not currently loaded; the footer used it before the white lockup existed. |
 
 **Needed, not yet supplied** — every one of these is a drop-target placeholder in the prototype:
 - Home hero band (library / reading room / campus interior), `~1400 × 470`

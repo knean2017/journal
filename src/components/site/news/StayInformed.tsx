@@ -2,12 +2,27 @@
 
 import { useActionState, useEffect } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
+import { useFormFields } from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
 import { subscribe } from '@/lib/submissions/actions'
 
 export function StayInformed() {
   const toast = useToast()
-  const [state, action, pending] = useActionState<FormResult | null, FormData>(subscribe, null)
+  const { field, formRef, reset } = useFormFields(['email'] as const)
+
+  /*
+   * This form stays on screen after it works, unlike the others, which are
+   * replaced by a confirmation. So it clears itself: the address is now state,
+   * and state survives the reset React does on its own.
+   */
+  const [state, action, pending] = useActionState<FormResult | null, FormData>(
+    async (previous, form) => {
+      const result = await subscribe(previous, form)
+      if (result.ok) reset()
+      return result
+    },
+    null,
+  )
 
   useEffect(() => {
     if (state?.message) toast(state.message)
@@ -22,13 +37,13 @@ export function StayInformed() {
         Get issue announcements by email, one message a month at most.
       </p>
 
-      <form action={action}>
+      <form ref={formRef} action={action}>
         <input
           type="email"
-          name="email"
           aria-label="Email address"
           placeholder="you@university.edu"
           className="field mt-[14px] text-[14px]"
+          {...field('email')}
         />
         <button
           type="submit"

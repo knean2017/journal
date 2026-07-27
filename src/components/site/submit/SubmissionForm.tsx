@@ -3,21 +3,26 @@
 import { useActionState, useEffect, useRef, useState } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
 import {
+  CharCount,
   FIELD_LABEL as LABEL,
   FieldError,
+  LabelRow,
   invalid,
   summarise,
   useFocusFirstError,
+  useFormFields,
 } from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
-import { submitManuscript } from '@/lib/submissions/actions'
+import { createManuscriptUpload, submitManuscript } from '@/lib/submissions/actions'
+import {
+  MAX_MANUSCRIPT_BYTES,
+  manuscriptExtension,
+  readableSize,
+} from '@/lib/submissions/manuscript'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import type { Discipline } from '@/lib/content'
 
-/** 4_100_000 -> "3.9 MB". Keeps the chip honest about what will be uploaded. */
-function readableSize(bytes: number): string {
-  const mb = bytes / (1024 * 1024)
-  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`
-}
+const FIELDS = ['author', 'email', 'institution', 'section', 'title', 'abstract'] as const
 
 const ERROR_LABELS: Record<string, string> = {
   correspondingAuthor: 'the corresponding author',
@@ -30,20 +35,99 @@ const ERROR_LABELS: Record<string, string> = {
   manuscript: 'the attached file',
 }
 
+/** The same checks the server runs, run early so a bad file is caught at once. */
+function fileProblem(file: File): string | null {
+  if (!manuscriptExtension(file.name, file.type)) return 'Only PDF and DOCX files are accepted.'
+  if (file.size > MAX_MANUSCRIPT_BYTES) {
+    return `That file is ${readableSize(file.size)}. The limit is 20 MB.`
+  }
+  return null
+}
+
 export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
   const toast = useToast()
+  const fileInput = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [fileError, setFileError] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const { values, field, checkbox, formRef } = useFormFields(FIELDS)
+
+  /*
+   * The action runs here in the browser rather than being the Server Action
+   * itself, because the file has to go straight to storage: see the note at
+   * the top of lib/submissions/actions.ts. Only text ever reaches the server.
+   *
+   * The chosen file is read from state, not from the form. React empties a
+   * form once its action returns, which empties the file input with it; state
+   * is what keeps the attachment through a rejected submission.
+   */
   const [state, action, pending] = useActionState<FormResult | null, FormData>(
-    submitManuscript,
+    async (_previous, form) => {
+      const chosen = file
+
+      // Everything except the file. The file is described, not carried.
+      const fields = new FormData()
+      for (const [key, value] of Array.from(form.entries())) {
+        if (typeof value === 'string') fields.set(key, value)
+      }
+      if (chosen) {
+        fields.set('manuscriptName', chosen.name)
+        fields.set('manuscriptType', chosen.type)
+        fields.set('manuscriptSize', String(chosen.size))
+      }
+
+      try {
+        /*
+         * The missing file is reported by the server along with the text, and
+         * after it, so a form with three empty boxes and no attachment names
+         * all four rather than only the attachment.
+         */
+        const target = await createManuscriptUpload(null, fields)
+        if (!target.ok || !target.upload) return target
+        if (!chosen) {
+          return {
+            ok: false,
+            message: 'Please attach the anonymised manuscript.',
+            fieldErrors: { manuscript: 'A PDF or DOCX file is required.' },
+          }
+        }
+
+        setUploading(true)
+        const supabase = createSupabaseBrowserClient()
+        const { error } = await supabase.storage
+          .from('manuscripts')
+          .uploadToSignedUrl(target.upload.path, target.upload.token, chosen, {
+            contentType: chosen.type || undefined,
+          })
+
+        if (error) {
+          console.error('[submit] upload to storage failed:', error)
+          return {
+            ok: false,
+            message: 'The upload did not finish. Please check your connection and try again.',
+            fieldErrors: { manuscript: 'The file did not reach us.' },
+          }
+        }
+
+        fields.set('manuscriptPath', target.upload.path)
+        return await submitManuscript(null, fields)
+      } finally {
+        setUploading(false)
+      }
+    },
     null,
   )
-  const fileInput = useRef<HTMLInputElement>(null)
-  const [file, setFile] = useState<{ name: string; size: number } | null>(null)
+
+  function chooseFile(chosen: File | null) {
+    setFile(chosen)
+    setFileError(chosen ? fileProblem(chosen) : null)
+  }
 
   function clearFile() {
     // Resetting the input's value is what actually empties its FileList, so the
     // form posts no file. Clearing React state alone would only hide the chip.
     if (fileInput.current) fileInput.current.value = ''
-    setFile(null)
+    chooseFile(null)
   }
 
   useEffect(() => {
@@ -65,6 +149,7 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
 
   return (
     <form
+      ref={formRef}
       action={action}
       className="mt-[18px] border border-rule bg-cream px-[clamp(18px,3vw,32px)] py-[clamp(20px,3vw,30px)]"
     >
@@ -72,9 +157,9 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Corresponding author</span>
           <input
-            name="author"
             placeholder="Full name"
             className="field"
+            {...field('author')}
             {...invalid(errors, 'correspondingAuthor')}
           />
           <FieldError message={errors.correspondingAuthor} />
@@ -82,10 +167,10 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Email</span>
           <input
-            name="email"
             type="email"
             placeholder="you@university.edu"
             className="field"
+            {...field('email')}
             {...invalid(errors, 'email')}
           />
           <FieldError message={errors.email} />
@@ -93,16 +178,16 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Institution</span>
           <input
-            name="institution"
             placeholder="University or college"
             className="field"
+            {...field('institution')}
             {...invalid(errors, 'institution')}
           />
           <FieldError message={errors.institution} />
         </label>
         <label className="flex flex-col gap-[7px]">
           <span className={LABEL}>Section</span>
-          <select name="section" className="field" defaultValue="" {...invalid(errors, 'section')}>
+          <select className="field" {...field('section')} {...invalid(errors, 'section')}>
             <option value="" disabled>
               Choose a section
             </option>
@@ -119,21 +204,24 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
       <label className="flex flex-col gap-[7px] mt-5">
         <span className={LABEL}>Manuscript title</span>
         <input
-          name="title"
           placeholder="Working title"
           className="field"
+          {...field('title')}
           {...invalid(errors, 'title')}
         />
         <FieldError message={errors.title} />
       </label>
 
       <label className="flex flex-col gap-[7px] mt-5">
-        <span className={LABEL}>Abstract (40 characters minimum, 250 words max)</span>
+        <LabelRow>
+          <span className={LABEL}>Abstract</span>
+          <CharCount value={values.abstract} min={40} max={3000} />
+        </LabelRow>
         <textarea
-          name="abstract"
           rows={5}
           placeholder="State the question, method, and principal finding."
           className="field resize-y"
+          {...field('abstract')}
           {...invalid(errors, 'abstract')}
         />
         <FieldError message={errors.abstract} />
@@ -150,10 +238,7 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
           type="file"
           name="manuscript"
           accept=".pdf,.docx"
-          onChange={(event) => {
-            const chosen = event.target.files?.[0]
-            setFile(chosen ? { name: chosen.name, size: chosen.size } : null)
-          }}
+          onChange={(event) => chooseFile(event.target.files?.[0] ?? null)}
           className="sr-only"
         />
 
@@ -176,17 +261,18 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
         ) : (
           <label
             htmlFor="manuscript"
-            className="btn-base btn-outline mt-1 inline-block cursor-pointer px-[22px] py-[10px] text-[11.5px]"
+            className="btn-base btn-outline mt-1 inline-block px-[22px] py-[10px] text-[11.5px]"
           >
             Choose file
           </label>
         )}
 
-        <FieldError message={errors.manuscript} />
+        {/* Rejected on sight, before anything is uploaded. */}
+        <FieldError message={fileError ?? errors.manuscript} />
       </div>
 
       <label className="flex gap-[11px] items-start mt-5 text-[13.5px] leading-[1.7] text-body">
-        <input type="checkbox" name="originality" className="mt-[3px]" />
+        <input type="checkbox" className="mt-[3px]" {...checkbox('originality')} />
         <span>
           I confirm the work is original, unpublished, not under consideration elsewhere, and that
           all authors have approved this submission.
@@ -196,10 +282,10 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
 
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || Boolean(fileError)}
         className="btn-base btn-maroon mt-[22px] px-[30px] py-[14px] text-[12px]"
       >
-        {pending ? 'Sending…' : 'Submit manuscript'}
+        {!pending ? 'Submit manuscript' : uploading ? 'Uploading…' : 'Sending…'}
       </button>
     </form>
   )

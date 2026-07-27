@@ -3,15 +3,20 @@
 import { useActionState, useEffect } from 'react'
 import { useToast } from '@/components/chrome/ToastProvider'
 import {
+  CharCount,
   FIELD_LABEL,
   FieldError,
+  LabelRow,
   invalid,
   summarise,
   useFocusFirstError,
+  useFormFields,
 } from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
 import { sendContactMessage } from '@/lib/inbox/actions'
 import { CONTACT_TOPICS } from '@/lib/inbox/schema'
+
+const FIELDS = ['name', 'email', 'topic', 'message'] as const
 
 const ERROR_LABELS: Record<string, string> = {
   name: 'your name',
@@ -26,6 +31,7 @@ export function ContactForm() {
     sendContactMessage,
     null,
   )
+  const { values, field, formRef } = useFormFields(FIELDS)
 
   useEffect(() => {
     if (!state?.message) return
@@ -46,6 +52,7 @@ export function ContactForm() {
 
   return (
     <form
+      ref={formRef}
       action={action}
       className="border border-rule bg-cream px-[clamp(18px,3vw,32px)] py-[clamp(20px,3vw,30px)]"
     >
@@ -53,9 +60,9 @@ export function ContactForm() {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Your name</span>
           <input
-            name="name"
             placeholder="Full name"
             className="field"
+            {...field('name')}
             {...invalid(errors, 'name')}
           />
           <FieldError message={errors.name} />
@@ -63,10 +70,10 @@ export function ContactForm() {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Email</span>
           <input
-            name="email"
             type="email"
             placeholder="you@university.edu"
             className="field"
+            {...field('email')}
             {...invalid(errors, 'email')}
           />
           <FieldError message={errors.email} />
@@ -75,7 +82,7 @@ export function ContactForm() {
 
       <label className="flex flex-col gap-[7px] mt-5">
         <span className={FIELD_LABEL}>Topic</span>
-        <select name="topic" className="field" defaultValue="" {...invalid(errors, 'topic')}>
+        <select className="field" {...field('topic')} {...invalid(errors, 'topic')}>
           <option value="" disabled>
             Choose a topic
           </option>
@@ -89,12 +96,15 @@ export function ContactForm() {
       </label>
 
       <label className="flex flex-col gap-[7px] mt-5">
-        <span className={FIELD_LABEL}>Message</span>
+        <LabelRow>
+          <span className={FIELD_LABEL}>Message</span>
+          <CharCount value={values.message} min={20} max={4000} />
+        </LabelRow>
         <textarea
-          name="message"
           rows={7}
           placeholder="Tell us what you need. If your message is about a manuscript already with us, include its title."
           className="field resize-y"
+          {...field('message')}
           {...invalid(errors, 'message')}
         />
         <FieldError message={errors.message} />

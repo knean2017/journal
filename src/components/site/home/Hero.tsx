@@ -10,11 +10,17 @@ export function Hero({ issueLabel }: { issueLabel: string }) {
         {issueLabel}
       </div>
 
+      {/*
+         Two block spans, not a line break inside one line of text: the second
+         half must start its own row at every width, and a wrap point would let
+         a wide viewport pull "across borders." back up beside the first half.
+      */}
       <h1
         className="mt-[18px] mx-auto max-w-[22ch] font-serif text-[clamp(29px,6.3vw,52px)] leading-[1.2] font-normal tracking-[-0.01em]"
         style={{ animation: 'icrrUp .7s ease .06s both' }}
       >
-        Connecting researches <em className="text-maroon">across borders.</em>
+        <span className="block">Connecting researches</span>
+        <em className="block text-maroon">across borders.</em>
       </h1>
 
       {/* Draws its own width from zero. */}

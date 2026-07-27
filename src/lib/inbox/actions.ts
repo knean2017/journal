@@ -3,7 +3,7 @@
 import { headers } from 'next/headers'
 import { contactMessageSchema, reviewerApplicationSchema } from './schema'
 import { notify } from '@/lib/email/resend'
-import { firstErrors, type FormResult } from '@/lib/form-result'
+import { firstErrors, text, type FormResult } from '@/lib/form-result'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
@@ -23,14 +23,14 @@ export async function applyAsReviewer(
   if (!isSupabaseConfigured()) return noDatabase('The reviewer panel form')
 
   const parsed = reviewerApplicationSchema.safeParse({
-    name: form.get('name'),
-    email: form.get('email'),
-    affiliation: form.get('affiliation'),
-    position: form.get('position'),
-    section: form.get('section'),
-    expertise: form.get('expertise'),
-    experience: form.get('experience') ?? '',
-    orcid: form.get('orcid') ?? '',
+    name: text(form, 'name'),
+    email: text(form, 'email'),
+    affiliation: text(form, 'affiliation'),
+    position: text(form, 'position'),
+    section: text(form, 'section'),
+    expertise: text(form, 'expertise'),
+    experience: text(form, 'experience'),
+    orcid: text(form, 'orcid'),
   })
 
   if (!parsed.success) {
@@ -111,10 +111,10 @@ export async function sendContactMessage(
   if (!isSupabaseConfigured()) return noDatabase('The contact form')
 
   const parsed = contactMessageSchema.safeParse({
-    name: form.get('name'),
-    email: form.get('email'),
-    topic: form.get('topic'),
-    message: form.get('message'),
+    name: text(form, 'name'),
+    email: text(form, 'email'),
+    topic: text(form, 'topic'),
+    message: text(form, 'message'),
   })
 
   if (!parsed.success) {

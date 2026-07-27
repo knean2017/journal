@@ -26,9 +26,14 @@ Playwright starts its own server, so `npm run test:e2e` works from a clean check
 ## How it is put together
 
 - **Next.js App Router**, TypeScript strict, Tailwind v4 with CSS-first `@theme` tokens.
-- **Server components by default.** Four client islands carry all the interactivity: the nav
-  (matchMedia variant switching and the drawer), the authors browser, the announcement rotator,
-  and the toast provider.
+- **Server components by default.** Three client islands carry all the interactivity: the nav
+  (matchMedia variant switching and the drawer), the authors browser, and the toast provider.
+  The announcement bar used to be a fourth; it now slides in CSS and holds no state.
+- **The public forms keep what was typed.** Every field is React state, driven through
+  `useFormFields` in `src/components/ui/FieldError.tsx`, so a rejected submission comes back
+  filled in with only the bad fields marked. React empties a form once its action returns, and it
+  restores a controlled text input afterwards but not a `<select>` or a checkbox, so that hook
+  puts those two back itself.
 - **All content is reached through `src/lib/content/`.** No page imports a data source directly.
   Today those accessors read typed seed files; they are `async` already so the Supabase
   implementation can replace their bodies without touching a single view.
@@ -75,6 +80,23 @@ The site runs without a database, on its seed content. These steps switch it ove
 
 5. **Optional, for submission emails:** set `RESEND_API_KEY`, and `RESEND_FROM` once you have a
    verified sender. Without it submissions still store; only the notification is skipped.
+
+### How a manuscript gets to storage
+
+A manuscript can be 20 MB, and a Server Action cannot carry one. Next caps a Server Action body at
+1 MB by default, and raising that only moves the wall: on Netlify these actions run as functions,
+whose request payload limit is a few megabytes whatever Next is configured to allow.
+
+So the file never passes through the server. `createManuscriptUpload` checks the form, then signs a
+one-time upload URL for a single path in the `manuscripts` bucket; the browser uploads to storage
+directly; `submitManuscript` is then handed the path, confirms the object arrived and is within
+size, and records the row. Both halves validate the same fields, because the second is reachable on
+its own. If the insert fails, the object is removed again.
+
+`next.config.ts` still raises `serverActions.bodySizeLimit` to 10 MB, for the admin media library,
+which does upload through an action. That is the one remaining path where the deploy target's own
+payload limit applies: an image near the admin's 8 MB ceiling may need the same treatment as
+manuscripts.
 
 The admin then answers at `/{ADMIN_PATH}`, for example `/editorial-office`.
 

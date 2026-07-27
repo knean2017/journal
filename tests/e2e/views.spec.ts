@@ -10,11 +10,23 @@ test.describe('home', () => {
     await expect(page.getByRole('link', { name: 'Read the Call for Papers' })).toBeVisible()
   })
 
-  test('announcement bar rotates', async ({ page }) => {
+  /**
+   * The bar slides rather than swapping one line for another, so nothing is
+   * replaced half way through being read. What this asserts is movement: the
+   * track drifts left, and every announcement is on it the whole time.
+   */
+  test('announcement bar slides its announcements past', async ({ page }) => {
     await page.goto('/')
-    const ticker = page.locator('[aria-live="polite"]')
-    const first = await ticker.textContent()
-    await expect(ticker).not.toHaveText(first ?? '', { timeout: 9000 })
+    const track = page.locator('.ticker-track')
+
+    await expect(track).toContainText('Call for Papers')
+    await expect(track).toContainText('recruiting peer reviewers')
+
+    const start = await track.boundingBox()
+    await page.waitForTimeout(1200)
+    const later = await track.boundingBox()
+
+    expect(later?.x ?? 0).toBeLessThan(start?.x ?? 0)
   })
 
   test('closing CTA carries the only gold-filled button', async ({ page }) => {
@@ -212,6 +224,12 @@ test.describe('our team', () => {
 test.describe('submit', () => {
   test('lists all six manuscript requirements', async ({ page }) => {
     await page.goto('/submit')
+    // Scoped to the requirements table: "Abstract" is also a field label on
+    // the form, and an unscoped exact match would find both.
+    const requirements = page
+      .locator('h2', { hasText: 'Manuscript requirements' })
+      .locator('xpath=following-sibling::div[1]')
+
     for (const key of [
       'Length',
       'File format',
@@ -220,7 +238,7 @@ test.describe('submit', () => {
       'References',
       'Figures',
     ]) {
-      await expect(page.getByText(key, { exact: true })).toBeVisible()
+      await expect(requirements.getByText(key, { exact: true })).toBeVisible()
     }
   })
 
