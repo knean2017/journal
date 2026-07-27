@@ -25,7 +25,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero issueLabel={`Volume 1 · Issue 1 · Publishing ${config.expected}`} />
+      <Hero issueLabel={`Volume 1 · Issue 1 · ${config.expected}`} />
       <HeroBand imagePath={config.heroImagePath} />
       <AnnouncementBar lines={tickerLines} />
       <ValueColumns />
