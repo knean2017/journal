@@ -1,13 +1,40 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { ToastButton } from '@/components/ui/ToastButton'
 import { getArticlesByAuthor, getAuthorBySlug, getAuthors } from '@/lib/content'
+import { absolute } from '@/lib/site'
 import { PDF_TOAST } from '@/lib/toasts'
 
 export async function generateStaticParams() {
   const authors = await getAuthors()
   return authors.map((author) => ({ slug: author.slug }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const author = await getAuthorBySlug(slug)
+  if (!author) return { title: 'Contributor not found' }
+
+  const description = `${author.role} at ${author.affiliation}. Work published in the ${author.disciplineName} section of the International Collegiate Research Review.`
+
+  return {
+    title: author.name,
+    description,
+    alternates: { canonical: `/authors/${author.slug}` },
+    openGraph: {
+      type: 'profile',
+      title: author.name,
+      description,
+      url: absolute(`/authors/${author.slug}`),
+    },
+    twitter: { card: 'summary_large_image', title: author.name, description },
+  }
 }
 
 const CHIP =
@@ -39,6 +66,7 @@ export default async function AuthorProfilePage({
               src={author.portraitPath}
               label="Author photograph"
               ratio="4/5"
+              sizes="200px"
               className="h-full w-full border-0"
             />
           </div>

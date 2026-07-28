@@ -20,8 +20,10 @@ npm test             # unit tests (Vitest)
 npm run test:e2e     # browser tests (Playwright, desktop + mobile)
 ```
 
-Playwright starts its own server, so `npm run test:e2e` works from a clean checkout after
-`npx playwright install chromium`.
+Playwright builds and serves the site itself, so `npm run test:e2e` works from a clean checkout
+after `npx playwright install chromium`. It builds rather than only serving because the public
+pages are prerendered: `CONTENT_SOURCE=seed` has to be set for the build that writes the HTML, not
+just for the server that hands it out.
 
 ## How it is put together
 
@@ -35,10 +37,37 @@ Playwright starts its own server, so `npm run test:e2e` works from a clean check
   restores a controlled text input afterwards but not a `<select>` or a checkbox, so that hook
   puts those two back itself.
 - **All content is reached through `src/lib/content/`.** No page imports a data source directly.
-  Today those accessors read typed seed files; they are `async` already so the Supabase
-  implementation can replace their bodies without touching a single view.
+  Each accessor picks Supabase or the seed files at call time, and each is wrapped in React's
+  `cache`, so a render that asks for the site config in the layout and again in the page pays for
+  one query.
+- **Every public page is prerendered.** They show the same thing to everybody, so none of them
+  needs to be built per visit. The content reads go through a cookieless anon client
+  (`src/lib/supabase/public.ts`) precisely to keep it that way: one `cookies()` call anywhere in a
+  render marks the whole route dynamic, and reading content through the request-bound client used
+  to do exactly that on every page. Pages refresh on a five-minute timer, and the admin calls
+  `revalidatePath('/', 'layout')` on save, so an edit is live immediately.
 - **Images render through `<ImageSlot>`.** A null path produces an on-brand labelled placeholder,
   so filling a slot is a data change rather than a code change.
+
+## Policies and discoverability
+
+`/privacy`, `/terms` and `/ethics` are written to match what the site actually does rather than
+from a template. The privacy notice names all five forms and the exact fields each one asks for,
+the three suppliers that see the data, and the fact that visitors are set no cookies at all,
+because they are not. Keep it true: **a change to any public form is a change to that page.**
+
+Two facts nobody but the journal can supply are marked in the pages themselves, in a bordered
+maroon box that is impossible to miss. Both are the registered legal name and postal address, one
+on `/privacy` and one on `/terms`. Search for `ToFill` to find them.
+
+The three copy rules the tests enforce apply here as anywhere: no em dashes, never "Editorial
+Board", and no claim to a review model the journal does not run. The ethics page says a submission
+is "reviewed" and never says by how many people or under what blinding.
+
+Articles carry Highwire Press `citation_*` tags, which is what Google Scholar reads. Values are
+emitted only when known: no ISSN tag appears while the ISSN is pending, and no page numbers appear
+until an article has them. `sitemap.xml` is generated from the content layer, so publishing an
+article lists it.
 
 ## Design source of truth
 
@@ -70,7 +99,9 @@ The site runs without a database, on its seed content. These steps switch it ove
    Supabase SQL editor or applied with the Supabase CLI. `0001_init.sql` creates every table, the
    RLS policies, and the three storage buckets; `0002` widens the public article read so the first
    issue's table of contents is visible before that issue is published; `0003` adds the reviewer
-   application and contact message tables, which the reviewer and contact forms write to.
+   application and contact message tables, which the reviewer and contact forms write to; `0004`
+   adds the editor application table behind `/editors/apply`. An existing install needs `0004`
+   run against it, or that form answers with a database error.
 
 3. **Load the content:** `npm run seed`. Idempotent, so running it twice changes nothing. It does
    overwrite rows it owns, so seed before editing in the admin, not after.
@@ -110,6 +141,7 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ADMIN_PATH
+NEXT_PUBLIC_SITE_URL  # optional on Netlify, which sets URL itself
 RESEND_API_KEY        # optional
 RESEND_FROM           # optional
 EDITORIAL_EMAIL       # optional, defaults to icrrjournal@gmail.com
@@ -130,9 +162,23 @@ Two things to know:
 ## The admin panel
 
 Site settings, sections, team, editorial roles, authors, issues, articles, announcements, the home
-ticker, a media library, and three inboxes: submissions, reviewer applications, and messages from
-the contact form. Inbox items are triaged (new, replied, archived) with editorial notes, never
-edited.
+ticker, a media library, and four inboxes: submissions, reviewer applications, editor applications,
+and messages from the contact form. Inbox items are triaged (new, replied, archived) with editorial
+notes, never edited.
+
+It is written for an editor, not a developer. Values the panel can work out are worked out, and the
+ones it cannot are asked for in plain words:
+
+- **Web addresses are written from the title**, not typed. Authors and articles are the only records
+  with a public page of their own, so they are the only ones that show a URL and warn that changing
+  it breaks existing links. Elsewhere the slug is an internal name and stays under "Advanced".
+- **Status wording follows the status** while it is still the standard wording, and stops following
+  the moment somebody edits it. That is how an issue can sit "In preparation" while reading
+  "Scheduled" on the site.
+- **Order is set with arrows** on the list pages. The underlying number is still there, under
+  "Advanced", for when it needs correcting by hand.
+- **A rejected save comes back to the form** with everything still in it and a message that names
+  what to change, rather than putting the Postgres text on an error page.
 
 Security, in short:
 
@@ -148,13 +194,23 @@ Security, in short:
 
 ## Still open
 
-- **Photographs.** Hero, team portraits, author portraits, issue cover, and article figures are all
-  labelled placeholders. Upload through the admin's media library.
+- **Photographs.** Team portraits, author portraits, issue cover, and article figures are all
+  labelled placeholders. Upload through the admin's media library. The home page no longer has an
+  image band: it held a placeholder nobody intended to fill, so it was removed along with its
+  uploader. `site_config.hero_image_path` is still there if it ever comes back.
 - **Real authors.** The six profiles are the handoff's placeholders and are labelled as such.
   Turn off the design-preview banners in Site settings once they are replaced.
-- **Article bodies** render placeholder prose. The `body` column stores rich-text JSON and the
-  admin exposes it as a raw field for now; a WYSIWYG editor is the remaining piece.
+- **Article bodies** render placeholder prose. The `body` column is still there and still holds
+  rich-text JSON, but the admin no longer exposes it: it was a monospace box that demanded raw JSON,
+  threw a 500 on anything else, and fed a renderer that does not exist yet. A WYSIWYG editor writing
+  that column is the remaining piece, and the field comes back with it.
 - PDF download, ORCID, cite, and share still toast. Messages live in `src/lib/toasts.ts`.
+- **The mobile nav arrives after hydration.** The two nav variants are different DOM switched by
+  `matchMedia`, per the prototype, so a phone is served the desktop bar and swaps to the menu
+  button once JavaScript runs. Rendering both and hiding one with a media query would remove the
+  shift, at the cost of the "replaces the links" behaviour the chrome tests assert.
+- **`middleware.ts` should become `proxy.ts`.** Next 16 deprecated the filename; the build says so
+  on every run. A rename, no behaviour change, not yet done.
 
 ## Documents
 

@@ -98,6 +98,7 @@ export function AuthorsBrowser({
                     src={card.portraitPath}
                     label="Photo"
                     ratio="96/120"
+                    sizes="96px"
                     className="h-full w-full border-0"
                   />
                 </div>

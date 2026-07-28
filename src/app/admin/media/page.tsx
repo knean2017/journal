@@ -26,8 +26,9 @@ export default async function MediaPage() {
       <div className="rule-double mt-5 mb-7" />
 
       <p className="mt-0 mb-7 text-[14px] leading-[1.75] text-body max-w-[70ch]">
-        Everything uploaded to the public media bucket. Upload here to get a path you can paste into
-        an image field, or upload directly from the field itself.
+        Every picture on the site lives here. You do not have to use this page to add one: each
+        photo and cover field uploads its own. This is where you come to see what is already
+        uploaded, or to delete something for good.
       </p>
 
       {error ? (

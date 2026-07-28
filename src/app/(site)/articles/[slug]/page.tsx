@@ -1,13 +1,81 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArticleBody } from '@/components/site/article/ArticleBody'
 import { PreviewBanner } from '@/components/ui/PreviewBanner'
 import { ToastButton } from '@/components/ui/ToastButton'
-import { getArticleBySlug, getArticles, getConfig } from '@/lib/content'
+import { getArticleBySlug, getArticles, getConfig, getIssues } from '@/lib/content'
+import { absolute } from '@/lib/site'
 import { PDF_TOAST } from '@/lib/toasts'
 
 export async function generateStaticParams() {
   const articles = await getArticles()
   return articles.map((article) => ({ slug: article.slug }))
+}
+
+/** A sentence or two of the abstract, cut on a word. */
+function summarise(abstract: string, limit = 165): string {
+  const clean = abstract.replace(/\s+/g, ' ').trim()
+  if (clean.length <= limit) return clean
+  return `${clean.slice(0, clean.lastIndexOf(' ', limit))}…`
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const article = await getArticleBySlug(slug)
+  if (!article) return { title: 'Article not found' }
+
+  const [config, issues] = await Promise.all([getConfig(), getIssues()])
+  const issue = issues.find((candidate) => candidate.slug === article.issueSlug)
+  const names = article.authors.map((author) => author.authorName)
+
+  /*
+   * Highwire Press tags. These are what Google Scholar reads, and an academic
+   * journal that omits them does not appear there at all, however good its
+   * ordinary metadata is. Every value is emitted only when it is actually
+   * known: a guessed page number or a placeholder ISSN is worse than a missing
+   * tag, because indexers keep what they first read.
+   */
+  const citation: Record<string, string | string[]> = {
+    citation_title: article.title,
+    citation_journal_title: 'International Collegiate Research Review',
+  }
+  if (names.length) citation.citation_author = names
+  if (article.publishedOn) citation.citation_publication_date = article.publishedOn
+  if (issue) {
+    citation.citation_volume = String(issue.volume)
+    citation.citation_issue = String(issue.number)
+  }
+  if (article.pageStart) citation.citation_firstpage = String(article.pageStart)
+  if (article.pageEnd) citation.citation_lastpage = String(article.pageEnd)
+  if (article.pdfPath) citation.citation_pdf_url = article.pdfPath
+  if (config.issnStatus && !/pending/i.test(config.issnStatus)) {
+    citation.citation_issn = config.issnStatus
+  }
+
+  const description = summarise(article.abstract)
+
+  return {
+    title: article.title,
+    description,
+    authors: names.map((name) => ({ name })),
+    keywords: article.keywords,
+    alternates: { canonical: `/articles/${article.slug}` },
+    openGraph: {
+      type: 'article',
+      title: article.title,
+      description,
+      url: absolute(`/articles/${article.slug}`),
+      publishedTime: article.publishedOn ?? undefined,
+      authors: names,
+      tags: article.keywords,
+    },
+    twitter: { card: 'summary_large_image', title: article.title, description },
+    other: citation,
+  }
 }
 
 const CONTENTS = [

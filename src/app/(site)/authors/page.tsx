@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { AuthorsBrowser } from '@/components/site/authors/AuthorsBrowser'
@@ -5,6 +6,13 @@ import { PageHead } from '@/components/ui/PageHead'
 import { PreviewBanner } from '@/components/ui/PreviewBanner'
 import { buildAuthorCards } from '@/lib/authors/filter'
 import { getArticles, getAuthors, getConfig, getDisciplines } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'Contributors',
+  description:
+    'Everyone the International Collegiate Research Review has published, searchable by section, subject interest and institution.',
+  alternates: { canonical: '/authors' },
+}
 
 export default async function AuthorsPage() {
   const [config, authors, articles, disciplines] = await Promise.all([

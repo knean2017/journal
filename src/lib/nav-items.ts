@@ -24,6 +24,10 @@ export const PAGE_TITLES: Record<string, string> = {
   '/news': 'Announcements',
   '/contact': 'Contact',
   '/reviewers/apply': 'Reviewer panel',
+  '/editors/apply': 'Editorial roles',
+  '/ethics': 'Publication ethics',
+  '/terms': 'Terms of use',
+  '/privacy': 'Privacy',
 }
 
 /** Authors stays highlighted on author profile pages. */

@@ -22,6 +22,15 @@ const COLUMNS = [
       { href: '/news', label: 'Announcements' },
     ],
   },
+  {
+    head: 'Policies',
+    links: [
+      { href: '/ethics', label: 'Publication ethics' },
+      { href: '/terms', label: 'Terms of use' },
+      { href: '/privacy', label: 'Privacy' },
+      { href: '/contact', label: 'Contact' },
+    ],
+  },
 ]
 
 export function Footer({ contactEmail }: { contactEmail: string }) {
@@ -77,7 +86,19 @@ export function Footer({ contactEmail }: { contactEmail: string }) {
         style={{ borderTop: '1px solid rgba(247,244,239,.18)' }}
       >
         <span>© 2026 International Collegiate Research Review</span>
-        <span>Publication ethics · Open access policy · Articles licensed CC BY 4.0</span>
+        {/*
+         * This line used to name "Publication ethics" and an "Open access
+         * policy" as plain text, claiming two documents that did not exist.
+         * The ethics policy exists now and is linked from the column above;
+         * the open-access position lives on the About page, which is what this
+         * points at rather than inventing a second page to repeat it.
+         */}
+        <span>
+          <Link href="/about" style={CREAM_78}>
+            Open access
+          </Link>
+          {' · Articles licensed CC BY 4.0'}
+        </span>
       </div>
     </footer>
   )

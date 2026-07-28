@@ -26,6 +26,57 @@ test.describe('reviewer panel', () => {
   })
 })
 
+test.describe('editorial roles', () => {
+  test('the team page button navigates instead of toasting', async ({ page }) => {
+    await page.goto('/team')
+    await page.getByRole('link', { name: 'Apply as an editor' }).click()
+    await expect(page).toHaveURL(/\/editors\/apply$/)
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Join the editorial board')
+  })
+
+  /**
+   * Six recruiting roles plus the disabled placeholder. The seventh seeded
+   * role has an appointment pending, so it must not be on offer here.
+   */
+  test('offers only the roles being recruited', async ({ page }) => {
+    await page.goto('/editors/apply')
+    const roles = page.locator('form').getByRole('combobox')
+    await expect(roles.locator('option')).toHaveCount(7)
+    await expect(roles.locator('option', { hasText: 'Managing Editor' })).toHaveCount(0)
+  })
+
+  test('the form carries every field an application needs', async ({ page }) => {
+    await page.goto('/editors/apply')
+    const form = page.locator('form')
+    for (const name of ['name', 'email', 'affiliation', 'position', 'role', 'statement']) {
+      await expect(form.locator(`[name="${name}"]`)).toBeVisible()
+    }
+    await expect(page.getByRole('button', { name: 'Send application' })).toBeVisible()
+  })
+
+  test('an empty application is refused and says why', async ({ page }) => {
+    await page.goto('/editors/apply')
+    await page.getByRole('button', { name: 'Send application' }).click()
+    await expect(page.getByRole('status')).toBeVisible()
+    await expect(page.getByText('Please give your full name.')).toBeVisible()
+  })
+
+  test('a rejected application keeps its answers, including the role', async ({ page }) => {
+    await page.goto('/editors/apply')
+    await page.locator('[name="name"]').fill('Ada Lovelace')
+    await page.locator('[name="role"]').selectOption({ index: 1 })
+    await page.locator('[name="statement"]').fill('Short')
+
+    const role = await page.locator('[name="role"]').inputValue()
+    await page.getByRole('button', { name: 'Send application' }).click()
+    await expect(page.getByText('Please say why you want this role.')).toBeVisible()
+
+    await expect(page.locator('[name="name"]')).toHaveValue('Ada Lovelace')
+    await expect(page.locator('[name="statement"]')).toHaveValue('Short')
+    await expect(page.locator('[name="role"]')).toHaveValue(role)
+  })
+})
+
 test.describe('contact', () => {
   test('the top strip link opens the contact page, not the about page', async ({ page }) => {
     await page.goto('/')

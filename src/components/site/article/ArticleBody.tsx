@@ -65,6 +65,7 @@ export function ArticleBody() {
                   src={null}
                   label="Figure 1"
                   ratio="16/9"
+                  sizes="(max-width: 760px) 100vw, 700px"
                   className="h-full w-full border-0"
                 />
               </div>

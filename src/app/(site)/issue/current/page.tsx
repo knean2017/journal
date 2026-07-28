@@ -1,9 +1,17 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ProductionTimeline } from '@/components/site/issue/ProductionTimeline'
 import { TocPreview } from '@/components/site/issue/TocPreview'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getCurrentIssue, getTimeline, getTocPreview } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'Current issue',
+  description:
+    'The issue in preparation at the International Collegiate Research Review, its table of contents, and where it has reached in production.',
+  alternates: { canonical: '/issue/current' },
+}
 
 const TEMPLATE_SLUG = 'canopy-cover-and-summer-surface-temperature'
 
@@ -67,6 +75,7 @@ export default async function CurrentIssuePage() {
                 src={issue?.coverPath ?? null}
                 label="Issue cover"
                 ratio="3/4"
+                sizes="150px"
                 className="h-full w-full border-0"
               />
             </div>

@@ -8,26 +8,36 @@ export const dynamic = 'force-dynamic'
 async function counts() {
   const supabase = createSupabaseServiceClient()
 
-  const [submissions, unread, reviewers, messages, articles, authors, issue] = await Promise.all([
-    supabase.from('submissions').select('id', { count: 'exact', head: true }),
-    supabase.from('submissions').select('id', { count: 'exact', head: true }).eq('status', 'new'),
-    supabase
-      .from('reviewer_applications')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'new'),
-    supabase
-      .from('contact_messages')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'new'),
-    supabase.from('articles').select('id', { count: 'exact', head: true }),
-    supabase.from('authors').select('id', { count: 'exact', head: true }),
-    supabase.from('issues').select('volume, number, status_label').eq('is_current', true).maybeSingle(),
-  ])
+  const [submissions, unread, reviewers, editors, messages, articles, authors, issue] =
+    await Promise.all([
+      supabase.from('submissions').select('id', { count: 'exact', head: true }),
+      supabase.from('submissions').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+      supabase
+        .from('reviewer_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'new'),
+      supabase
+        .from('editor_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'new'),
+      supabase
+        .from('contact_messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'new'),
+      supabase.from('articles').select('id', { count: 'exact', head: true }),
+      supabase.from('authors').select('id', { count: 'exact', head: true }),
+      supabase
+        .from('issues')
+        .select('volume, number, status_label')
+        .eq('is_current', true)
+        .maybeSingle(),
+    ])
 
   return {
     submissions: submissions.count ?? 0,
     unread: unread.count ?? 0,
     reviewers: reviewers.count ?? 0,
+    editors: editors.count ?? 0,
     messages: messages.count ?? 0,
     articles: articles.count ?? 0,
     authors: authors.count ?? 0,
@@ -64,7 +74,16 @@ export default async function AdminDashboard() {
             {[
               { label: 'New submissions', value: stats.unread, href: `${base}/submissions` },
               { label: 'Submissions total', value: stats.submissions, href: `${base}/submissions` },
-              { label: 'New applications', value: stats.reviewers, href: `${base}/reviewers` },
+              {
+                label: 'New reviewer applications',
+                value: stats.reviewers,
+                href: `${base}/reviewers`,
+              },
+              {
+                label: 'New editor applications',
+                value: stats.editors,
+                href: `${base}/editors`,
+              },
               { label: 'New messages', value: stats.messages, href: `${base}/messages` },
               { label: 'Articles', value: stats.articles, href: `${base}/articles` },
               { label: 'Authors', value: stats.authors, href: `${base}/authors` },

@@ -1,5 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { moveRecord } from '@/lib/admin/actions'
+import { assetUrl } from '@/lib/admin/assets'
+import { recordTitle } from '@/lib/admin/derive'
 import { ENTITIES, findEntity } from '@/lib/admin/entities'
 import { requireAdmin } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
@@ -9,6 +12,44 @@ export const dynamic = 'force-dynamic'
 
 export function generateStaticParams() {
   return ENTITIES.map((entity) => ({ entity: entity.slug }))
+}
+
+/** The status wording an entity carries, if it carries one. */
+function chipOf(row: Record<string, unknown>): string | null {
+  if (row.is_published === false) return 'Hidden'
+  if (row.is_active === false) return 'Hidden'
+  const label = row.status_label
+  return typeof label === 'string' && label ? label : null
+}
+
+function MoveButton({
+  entity,
+  id,
+  direction,
+  disabled,
+}: {
+  entity: string
+  id: string
+  direction: 'up' | 'down'
+  disabled: boolean
+}) {
+  async function move() {
+    'use server'
+    await moveRecord(entity, id, direction)
+  }
+
+  return (
+    <form action={move}>
+      <button
+        type="submit"
+        disabled={disabled}
+        aria-label={direction === 'up' ? 'Move up' : 'Move down'}
+        className="w-7 h-7 border border-rule bg-page text-[13px] text-body cursor-pointer disabled:opacity-30 disabled:cursor-default"
+      >
+        {direction === 'up' ? '↑' : '↓'}
+      </button>
+    </form>
+  )
 }
 
 export default async function EntityListPage({
@@ -29,6 +70,8 @@ export default async function EntityListPage({
     .order(entity.orderBy.column, { ascending: entity.orderBy.ascending })
 
   const base = `/${adminPath()}/${entity.slug}`
+  const rows = data ?? []
+  const sortable = entity.orderBy.column === 'sort_order' && rows.length > 1
 
   return (
     <>
@@ -43,38 +86,98 @@ export default async function EntityListPage({
       <div className="rule-double mt-5" />
 
       {error ? (
-        <p className="mt-6 text-[14px] text-maroon">Could not load: {error.message}</p>
+        <p className="mt-6 text-[14px] text-maroon">
+          Could not load the list. {error.message}
+        </p>
       ) : null}
 
-      {data && data.length > 0 ? (
+      {sortable ? (
+        <p className="mt-5 mb-0 text-[13px] text-body-muted">
+          The arrows change the order these appear in on the website.
+        </p>
+      ) : null}
+
+      {rows.length > 0 ? (
         <div className="mt-6 border-t border-rule">
-          {data.map((row) => (
-            <Link
-              key={String(row.id)}
-              href={`${base}/${row.id}`}
-              className="grid [grid-template-columns:minmax(0,1fr)_auto] gap-5 items-baseline py-4 border-b border-rule text-ink hover:bg-cream hover:text-ink"
-            >
-              <span className="min-w-0">
-                <span className="block font-serif text-[17px] truncate">
-                  {String(row[entity.titleColumn] ?? '(untitled)')}
-                </span>
-                {entity.listColumns.length > 0 ? (
-                  <span className="block mt-1 text-[13px] text-body-muted truncate">
-                    {entity.listColumns
-                      .map((column) => row[column])
-                      .filter(Boolean)
-                      .join(' · ')}
+          {rows.map((row, index) => {
+            const id = String(row.id)
+            const thumbnail = entity.thumbnailColumn ? row[entity.thumbnailColumn] : null
+            const chip = chipOf(row)
+
+            return (
+              <div
+                key={id}
+                className="flex gap-4 items-center py-4 border-b border-rule hover:bg-cream"
+              >
+                {sortable ? (
+                  <div className="flex flex-col gap-1 flex-none">
+                    <MoveButton
+                      entity={entity.slug}
+                      id={id}
+                      direction="up"
+                      disabled={index === 0}
+                    />
+                    <MoveButton
+                      entity={entity.slug}
+                      id={id}
+                      direction="down"
+                      disabled={index === rows.length - 1}
+                    />
+                  </div>
+                ) : null}
+
+                {entity.thumbnailColumn ? (
+                  <div className="flex-none w-[54px] h-[64px] border border-rule bg-cream grid place-items-center overflow-hidden">
+                    {typeof thumbnail === 'string' && thumbnail ? (
+                      /* Bucket contents are arbitrary uploads, so next/image is not used here. */
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={assetUrl(thumbnail, 'image')}
+                        alt=""
+                        className="w-full h-full object-cover block"
+                      />
+                    ) : (
+                      <span className="text-[9px] tracking-[0.12em] uppercase text-gold-muted text-center px-1">
+                        No photo
+                      </span>
+                    )}
+                  </div>
+                ) : null}
+
+                <Link href={`${base}/${id}`} className="min-w-0 flex-1 text-ink hover:text-ink">
+                  <span className="block font-serif text-[17px] truncate">
+                    {recordTitle(entity, row, '(no title yet)')}
+                  </span>
+                  {entity.listColumns.length > 0 ? (
+                    <span className="block mt-1 text-[13px] text-body-muted truncate">
+                      {entity.listColumns
+                        .map((column) => row[column])
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </span>
+                  ) : null}
+                </Link>
+
+                {chip ? (
+                  <span className="flex-none border border-rule bg-cream px-[9px] py-[3px] text-[10.5px] tracking-[0.12em] uppercase font-bold text-gold-muted">
+                    {chip}
                   </span>
                 ) : null}
-              </span>
-              <span className="text-[11.5px] tracking-[0.12em] uppercase text-gold-muted font-bold">
-                {row.is_published === false ? 'Hidden' : 'Edit'}
-              </span>
-            </Link>
-          ))}
+
+                <Link
+                  href={`${base}/${id}`}
+                  className="flex-none text-[11.5px] tracking-[0.12em] uppercase text-maroon font-bold"
+                >
+                  Edit
+                </Link>
+              </div>
+            )
+          })}
         </div>
       ) : !error ? (
-        <p className="mt-6 text-[14px] text-body-muted">Nothing here yet.</p>
+        <p className="mt-6 text-[14px] text-body-muted">
+          Nothing here yet. Use the button above to add the first one.
+        </p>
       ) : null}
     </>
   )

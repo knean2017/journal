@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { RecordForm } from '@/components/admin/RecordForm'
+import { recordTitle } from '@/lib/admin/derive'
 import { findEntity } from '@/lib/admin/entities'
 import { loadLookups } from '@/lib/admin/lookups'
 import { requireAdmin } from '@/lib/admin/session'
@@ -40,11 +41,19 @@ export default async function EntityRecordPage({
       </Link>
 
       <h1 className="mt-4 mb-0 font-serif text-[28px] font-normal">
-        {isNew ? `New ${entity.label.toLowerCase()}` : String(record?.[entity.titleColumn] ?? '')}
+        {isNew || !record
+          ? `New ${entity.label.toLowerCase()}`
+          : recordTitle(entity, record, entity.label)}
       </h1>
       <div className="rule-double mt-5 mb-7" />
 
-      <RecordForm entity={entity} record={record} disciplines={disciplines} issues={issues} />
+      <RecordForm
+        entity={entity}
+        record={record}
+        disciplines={disciplines}
+        issues={issues}
+        base={base}
+      />
     </>
   )
 }
