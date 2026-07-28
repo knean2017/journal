@@ -2,7 +2,6 @@ import { AnnouncementBar } from '@/components/site/home/AnnouncementBar'
 import { AnnouncementRows } from '@/components/site/home/AnnouncementRows'
 import { ClosingCta } from '@/components/site/home/ClosingCta'
 import { Hero } from '@/components/site/home/Hero'
-import { HeroBand } from '@/components/site/home/HeroBand'
 import { ProcessSteps } from '@/components/site/home/ProcessSteps'
 import { ValueColumns } from '@/components/site/home/ValueColumns'
 import { WhatWePublish } from '@/components/site/home/WhatWePublish'
@@ -26,7 +25,6 @@ export default async function HomePage() {
   return (
     <>
       <Hero issueLabel={`Volume 1 · Issue 1 · ${config.expected}`} />
-      <HeroBand imagePath={config.heroImagePath} />
       <AnnouncementBar lines={tickerLines} />
       <ValueColumns />
       <WhatWePublish disciplines={disciplines} />

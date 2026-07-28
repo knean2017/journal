@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { signOut } from '@/lib/admin/actions'
 import { ENTITIES } from '@/lib/admin/entities'
+import { currentAdmin } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
 import '@/styles/globals.css'
 
 export const metadata = {
@@ -11,10 +11,7 @@ export const metadata = {
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await currentAdmin()
 
   // The login page renders inside this layout too, without the chrome.
   if (!user) return <div className="min-h-screen bg-page">{children}</div>
@@ -27,6 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: `${base}/media`, label: 'Media' },
     { href: `${base}/submissions`, label: 'Submissions' },
     { href: `${base}/reviewers`, label: 'Reviewer applications' },
+    { href: `${base}/editors`, label: 'Editor applications' },
     { href: `${base}/messages`, label: 'Messages' },
   ]
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { requireAdmin } from './session'
+import { friendlyError, reorder } from './derive'
 import {
   INBOX_TABLES,
   SITE_CONFIG_FIELDS,
@@ -14,6 +15,7 @@ import {
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { adminPath } from '@/lib/supabase/env'
+import type { FormResult } from '@/lib/form-result'
 
 const IMAGE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp'])
 const DOC_TYPES = new Set([
@@ -58,9 +60,6 @@ function coerce(fields: Field[], form: FormData): Record<string, unknown> {
               .filter(Boolean)
           : []
         break
-      case 'richtext':
-        row[field.name] = value ? JSON.parse(value) : null
-        break
       case 'date':
       case 'discipline':
       case 'issue':
@@ -74,7 +73,20 @@ function coerce(fields: Field[], form: FormData): Record<string, unknown> {
   return row
 }
 
-export async function saveRecord(entitySlug: string, id: string | null, form: FormData) {
+/**
+ * Saves and returns, rather than saving and throwing.
+ *
+ * A rejected save used to throw the Postgres message onto an error page, which
+ * both told the editor nothing they could act on and threw away everything
+ * they had typed. Now the message comes back to the form, which is still on
+ * screen with its contents intact.
+ */
+export async function saveRecord(
+  entitySlug: string,
+  id: string | null,
+  _previous: FormResult | null,
+  form: FormData,
+): Promise<FormResult> {
   await requireAdmin()
 
   const entity = findEntity(entitySlug)
@@ -94,10 +106,46 @@ export async function saveRecord(entitySlug: string, id: string | null, form: Fo
     ? await supabase.from(entity.table).update(row).eq('id', id)
     : await supabase.from(entity.table).insert(row)
 
-  if (error) throw new Error(`Could not save: ${error.message}`)
+  if (error) {
+    console.error(`[admin] save to ${entity.table} failed:`, error)
+    return { ok: false, message: friendlyError(error.message, entity.label.toLowerCase()) }
+  }
 
   revalidatePath('/', 'layout')
+  // Outside the failure path on purpose: redirect works by throwing.
   redirect(`/${adminPath()}/${entitySlug}`)
+}
+
+/**
+ * Moves a row one place up or down its list.
+ *
+ * Writes the whole list back in sequence rather than swapping the pair, which
+ * repairs duplicate and missing order numbers as a side effect. These lists run
+ * to a handful of rows, so the extra writes cost nothing.
+ */
+export async function moveRecord(entitySlug: string, id: string, direction: 'up' | 'down') {
+  await requireAdmin()
+
+  const entity = findEntity(entitySlug)
+  if (!entity) throw new Error(`Unknown entity "${entitySlug}"`)
+  assertWritable(entity.table)
+  if (entity.orderBy.column !== 'sort_order') throw new Error(`${entity.plural} is not a sorted list`)
+
+  const supabase = createSupabaseServiceClient()
+  const { data } = await supabase
+    .from(entity.table)
+    .select('id, sort_order')
+    .order('sort_order', { ascending: true })
+
+  const rows = (data ?? []).map((row) => ({ id: String(row.id) }))
+  const updated = reorder(rows, id, direction)
+
+  for (const row of updated) {
+    await supabase.from(entity.table).update({ sort_order: row.sort_order }).eq('id', row.id)
+  }
+
+  revalidatePath('/', 'layout')
+  revalidatePath(`/${adminPath()}/${entitySlug}`)
 }
 
 export async function deleteRecord(entitySlug: string, id: string) {
@@ -109,13 +157,16 @@ export async function deleteRecord(entitySlug: string, id: string) {
 
   const supabase = createSupabaseServiceClient()
   const { error } = await supabase.from(entity.table).delete().eq('id', id)
-  if (error) throw new Error(`Could not delete: ${error.message}`)
+  if (error) throw new Error(friendlyError(error.message, entity.label.toLowerCase()))
 
   revalidatePath('/', 'layout')
   redirect(`/${adminPath()}/${entitySlug}`)
 }
 
-export async function saveSiteConfig(form: FormData) {
+export async function saveSiteConfig(
+  _previous: FormResult | null,
+  form: FormData,
+): Promise<FormResult> {
   await requireAdmin()
 
   const supabase = createSupabaseServiceClient()
@@ -125,10 +176,13 @@ export async function saveSiteConfig(form: FormData) {
     .from('site_config')
     .upsert({ id: true, ...row }, { onConflict: 'id' })
 
-  if (error) throw new Error(`Could not save: ${error.message}`)
+  if (error) {
+    console.error('[admin] site config save failed:', error)
+    return { ok: false, message: friendlyError(error.message, 'setting') }
+  }
 
   revalidatePath('/', 'layout')
-  redirect(`/${adminPath()}/config`)
+  return { ok: true, message: 'Saved. The website is showing these values now.' }
 }
 
 /**

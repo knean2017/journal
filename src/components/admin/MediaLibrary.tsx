@@ -9,6 +9,7 @@ export function MediaLibrary({ files }: { files: MediaFile[] }) {
   const [items, setItems] = useState(files)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [copied, setCopied] = useState('')
 
   async function upload(file: File) {
     setBusy(true)
@@ -64,14 +65,16 @@ export function MediaLibrary({ files }: { files: MediaFile[] }) {
             {/* Bucket contents are arbitrary user uploads, so next/image is not used here. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={item.url} alt="" className="w-full h-[130px] object-cover block" />
-            <div className="mt-2 text-[11px] text-body-muted break-all">{item.name}</div>
-            <div className="flex gap-3 mt-2">
+            <div className="flex gap-3 mt-3">
               <button
                 type="button"
-                onClick={() => void navigator.clipboard.writeText(item.name)}
+                onClick={() => {
+                  void navigator.clipboard.writeText(item.name)
+                  setCopied(item.name)
+                }}
                 className="text-[11px] tracking-[0.12em] uppercase font-bold text-maroon bg-transparent border-0 p-0 cursor-pointer"
               >
-                Copy path
+                {copied === item.name ? 'Copied' : 'Copy'}
               </button>
               <button
                 type="button"

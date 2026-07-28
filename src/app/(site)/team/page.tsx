@@ -1,7 +1,15 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getEditorialRoles, getTeam } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'Our team',
+  description:
+    'Who runs the International Collegiate Research Review, which editorial roles are open, and the recusal rule every editor works under.',
+  alternates: { canonical: '/team' },
+}
 
 export default async function TeamPage() {
   const [team, roles] = await Promise.all([getTeam(), getEditorialRoles()])
@@ -25,6 +33,7 @@ export default async function TeamPage() {
                   src={member.portraitPath}
                   label="Photo"
                   ratio="4/5"
+                  sizes="150px"
                   className="h-full w-full border-0"
                 />
               </div>
@@ -74,6 +83,19 @@ export default async function TeamPage() {
             </p>
             <Link href="/reviewers/apply" className="btn-base btn-maroon mt-[18px]">
               Apply as a reviewer
+            </Link>
+          </div>
+
+          <div className="callout-gold px-[clamp(18px,3vw,32px)] py-[clamp(20px,3vw,30px)]">
+            <h3 className="m-0 font-serif text-[21px] font-bold text-maroon">
+              Take on an editorial role
+            </h3>
+            <p className="mt-[10px] mb-0 text-[14.5px] leading-[1.8] text-body">
+              The section editorships and the copyeditor post above are open. You would hold a
+              section: what it reviews, who reviews it, and the decision that follows.
+            </p>
+            <Link href="/editors/apply" className="btn-base btn-maroon mt-[18px]">
+              Apply as an editor
             </Link>
           </div>
 

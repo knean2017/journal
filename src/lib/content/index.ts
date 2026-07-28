@@ -1,3 +1,5 @@
+import { unstable_rethrow } from 'next/navigation'
+import { cache } from 'react'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import * as seed from './sources/seed'
 import * as db from './sources/supabase'
@@ -27,39 +29,56 @@ async function fromDb<T>(read: () => Promise<T>, fallback: () => Promise<T>): Pr
   try {
     return await read()
   } catch (error) {
+    /*
+     * Next signals control flow by throwing: redirect, notFound, and the
+     * bail-out that tells a render it may not be static. Those are not
+     * database failures and swallowing them is how a page ends up quietly
+     * serving seed content instead of doing what it was told. Only a genuine
+     * read failure reaches the fallback.
+     */
+    unstable_rethrow(error)
     console.error('[content] Supabase read failed, serving seed content instead:', error)
     return fallback()
   }
 }
 
-export const getConfig = () => fromDb(db.getConfig, seed.getConfig)
-export const getDisciplines = () => fromDb(db.getDisciplines, seed.getDisciplines)
-export const getTeam = () => fromDb(db.getTeam, seed.getTeam)
-export const getEditorialRoles = () => fromDb(db.getEditorialRoles, seed.getEditorialRoles)
-export const getAuthors = () => fromDb(db.getAuthors, seed.getAuthors)
-export const getIssues = () => fromDb(db.getIssues, seed.getIssues)
-export const getCurrentIssue = () => fromDb(db.getCurrentIssue, seed.getCurrentIssue)
-export const getArticles = () => fromDb(db.getArticles, seed.getArticles)
-export const getAnnouncements = () => fromDb(db.getAnnouncements, seed.getAnnouncements)
-export const getTickerLines = () => fromDb(db.getTickerLines, seed.getTickerLines)
+/*
+ * Wrapped in React's `cache` so a render that asks twice pays once. The site
+ * layout and the page inside it both read the config on every single view.
+ */
+export const getConfig = cache(() => fromDb(db.getConfig, seed.getConfig))
+export const getDisciplines = cache(() => fromDb(db.getDisciplines, seed.getDisciplines))
+export const getTeam = cache(() => fromDb(db.getTeam, seed.getTeam))
+export const getEditorialRoles = cache(() =>
+  fromDb(db.getEditorialRoles, seed.getEditorialRoles),
+)
+export const getAuthors = cache(() => fromDb(db.getAuthors, seed.getAuthors))
+export const getIssues = cache(() => fromDb(db.getIssues, seed.getIssues))
+export const getCurrentIssue = cache(() => fromDb(db.getCurrentIssue, seed.getCurrentIssue))
+export const getArticles = cache(() => fromDb(db.getArticles, seed.getArticles))
+export const getAnnouncements = cache(() => fromDb(db.getAnnouncements, seed.getAnnouncements))
+export const getTickerLines = cache(() => fromDb(db.getTickerLines, seed.getTickerLines))
 
-export const getAuthorBySlug = (slug: string) =>
+export const getAuthorBySlug = cache((slug: string) =>
   fromDb(
     () => db.getAuthorBySlug(slug),
     () => seed.getAuthorBySlug(slug),
-  )
+  ),
+)
 
-export const getArticleBySlug = (slug: string) =>
+export const getArticleBySlug = cache((slug: string) =>
   fromDb(
     () => db.getArticleBySlug(slug),
     () => seed.getArticleBySlug(slug),
-  )
+  ),
+)
 
-export const getArticlesByAuthor = (authorId: string) =>
+export const getArticlesByAuthor = cache((authorId: string) =>
   fromDb(
     () => db.getArticlesByAuthor(authorId),
     () => seed.getArticlesByAuthor(authorId),
-  )
+  ),
+)
 
 // Editorial furniture: fixed copy, not editable content. Seed only.
 export const getProcessSteps = seed.getProcessSteps

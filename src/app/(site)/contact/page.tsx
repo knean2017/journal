@@ -53,6 +53,10 @@ export default async function ContactPage() {
               <Link href="/reviewers/apply" className="border-b border-gold pb-[1px]">
                 reviewer panel
               </Link>
+              . For a section editorship or the copyeditor post, see the{' '}
+              <Link href="/editors/apply" className="border-b border-gold pb-[1px]">
+                editorial roles
+              </Link>
               .
             </p>
           </div>

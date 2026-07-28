@@ -1,7 +1,15 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getIssues } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'Archives',
+  description:
+    'Every issue of the International Collegiate Research Review, current and scheduled, with its table of contents.',
+  alternates: { canonical: '/archives' },
+}
 
 export default async function ArchivesPage() {
   const [config, issues] = await Promise.all([getConfig(), getIssues()])
@@ -26,6 +34,7 @@ export default async function ArchivesPage() {
                   src={current.coverPath}
                   label="Cover"
                   ratio="3/4"
+                  sizes="120px"
                   className="h-full w-full border-0"
                 />
               </div>

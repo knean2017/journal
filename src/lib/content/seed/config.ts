@@ -6,5 +6,4 @@ export const config: SiteConfig = {
   showPreviewNotes: true,
   contactEmail: 'icrrjournal@gmail.com',
   issnStatus: 'Pending',
-  heroImagePath: null,
 }

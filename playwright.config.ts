@@ -20,12 +20,18 @@ export default defineConfig({
    * from an earlier build silently tests the wrong code, which has already
    * happened here. CONTENT_SOURCE=seed pins the fixtures, so editing content in
    * the admin cannot turn the suite red.
+   *
+   * It builds as well as serves, and both halves get the variable. The public
+   * pages are prerendered now, so the content a visitor sees is decided during
+   * the build, not on the request. Setting this only on the server would leave
+   * the suite reading whatever the editorial office published today out of
+   * static HTML that was written before the variable existed.
    */
   webServer: {
-    command: 'npm start -- --port 3100',
+    command: 'npm run build && npm start -- --port 3100',
     url: 'http://localhost:3100',
     env: { CONTENT_SOURCE: 'seed' },
     reuseExistingServer: false,
-    timeout: 120_000,
+    timeout: 240_000,
   },
 })

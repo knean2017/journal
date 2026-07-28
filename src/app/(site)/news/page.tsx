@@ -1,7 +1,15 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { StayInformed } from '@/components/site/news/StayInformed'
 import { PageHead } from '@/components/ui/PageHead'
 import { getAnnouncements } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'Announcements',
+  description:
+    'News from the editorial office of the International Collegiate Research Review: calls for papers, deadlines, and appointments.',
+  alternates: { canonical: '/news' },
+}
 
 export default async function NewsPage() {
   const announcements = await getAnnouncements()

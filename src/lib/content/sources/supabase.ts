@@ -1,5 +1,6 @@
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { cache } from 'react'
 import { SUPABASE_URL } from '@/lib/supabase/env'
+import { createSupabasePublicClient } from '@/lib/supabase/public'
 import type {
   Announcement,
   Article,
@@ -18,6 +19,13 @@ import type {
  *
  * Reads run under RLS with the anon key, so this can only return rows the
  * public is allowed to see. Nothing here writes.
+ *
+ * Every reader is wrapped in React's `cache`, which collapses repeat calls
+ * within one render. The site layout and the page it wraps both want the site
+ * config, the current issue is picked out of the issue list, and an author's
+ * publications are filtered out of the article list; without this each of
+ * those is a second round trip to Postgres for a copy of what the render
+ * already has.
  */
 
 /** Bucket paths are stored bare; the public URL is derived, never stored. */
@@ -74,6 +82,9 @@ type ArticleRow = {
 }
 
 const DISCIPLINE_SELECT = 'slug, name, blurb, sort_order'
+/* Named rather than `*`: the row carries editorial columns no view reads. */
+const ISSUE_SELECT = `slug, volume, number, status, status_label, publish_date,
+  submissions_close, cover_path, description, is_current`
 const AUTHOR_SELECT =
   'id, slug, name, role, affiliation, department, location, orcid, bio, interests, portrait_path, disciplines ( slug, name )'
 const ARTICLE_SELECT = `slug, article_type, title, abstract, keywords, status, status_label,
@@ -137,8 +148,8 @@ function toArticle(row: ArticleRow): Article {
   }
 }
 
-export async function getConfig(): Promise<SiteConfig> {
-  const supabase = await createSupabaseServerClient()
+export const getConfig = cache(async (): Promise<SiteConfig> => {
+  const supabase = createSupabasePublicClient()
   const { data, error } = await supabase.from('site_config').select('*').single()
   if (error || !data) throw new Error(`site_config unavailable: ${error?.message ?? 'no row'}`)
 
@@ -148,21 +159,20 @@ export async function getConfig(): Promise<SiteConfig> {
     showPreviewNotes: data.show_preview_notes,
     contactEmail: data.contact_email,
     issnStatus: data.issn_status,
-    heroImagePath: mediaUrl(data.hero_image_path),
   }
-}
+})
 
-export async function getDisciplines(): Promise<Discipline[]> {
-  const supabase = await createSupabaseServerClient()
+export const getDisciplines = cache(async (): Promise<Discipline[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('disciplines')
     .select(DISCIPLINE_SELECT)
     .order('sort_order')
   return (data ?? []).map(toDiscipline)
-}
+})
 
-export async function getTeam(): Promise<TeamMember[]> {
-  const supabase = await createSupabaseServerClient()
+export const getTeam = cache(async (): Promise<TeamMember[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('team_members')
     .select('slug, name, role, duty, portrait_path, sort_order')
@@ -176,10 +186,10 @@ export async function getTeam(): Promise<TeamMember[]> {
     portraitPath: mediaUrl(row.portrait_path),
     sortOrder: row.sort_order,
   }))
-}
+})
 
-export async function getEditorialRoles(): Promise<EditorialRole[]> {
-  const supabase = await createSupabaseServerClient()
+export const getEditorialRoles = cache(async (): Promise<EditorialRole[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('editorial_roles')
     .select('title, status, status_label, duty, sort_order')
@@ -192,25 +202,25 @@ export async function getEditorialRoles(): Promise<EditorialRole[]> {
     duty: row.duty,
     sortOrder: row.sort_order,
   }))
-}
+})
 
-export async function getAuthors(): Promise<Author[]> {
-  const supabase = await createSupabaseServerClient()
+export const getAuthors = cache(async (): Promise<Author[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase.from('authors').select(AUTHOR_SELECT).order('name')
   return ((data ?? []) as unknown as AuthorRow[]).map(toAuthor)
-}
+})
 
-export async function getAuthorBySlug(slug: string): Promise<Author | null> {
-  const supabase = await createSupabaseServerClient()
+export const getAuthorBySlug = cache(async (slug: string): Promise<Author | null> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase.from('authors').select(AUTHOR_SELECT).eq('slug', slug).maybeSingle()
   return data ? toAuthor(data as unknown as AuthorRow) : null
-}
+})
 
-export async function getIssues(): Promise<Issue[]> {
-  const supabase = await createSupabaseServerClient()
+export const getIssues = cache(async (): Promise<Issue[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('issues')
-    .select('*')
+    .select(ISSUE_SELECT)
     .order('volume', { ascending: false })
     .order('number', { ascending: false })
 
@@ -226,36 +236,36 @@ export async function getIssues(): Promise<Issue[]> {
     description: row.description,
     isCurrent: row.is_current,
   }))
-}
+})
 
-export async function getCurrentIssue(): Promise<Issue | null> {
+export const getCurrentIssue = cache(async (): Promise<Issue | null> => {
   const issues = await getIssues()
   return issues.find((issue) => issue.isCurrent) ?? null
-}
+})
 
-export async function getArticles(): Promise<Article[]> {
-  const supabase = await createSupabaseServerClient()
+export const getArticles = cache(async (): Promise<Article[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase.from('articles').select(ARTICLE_SELECT).order('sort_order')
   return ((data ?? []) as unknown as ArticleRow[]).map(toArticle)
-}
+})
 
-export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  const supabase = await createSupabaseServerClient()
+export const getArticleBySlug = cache(async (slug: string): Promise<Article | null> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('articles')
     .select(ARTICLE_SELECT)
     .eq('slug', slug)
     .maybeSingle()
   return data ? toArticle(data as unknown as ArticleRow) : null
-}
+})
 
-export async function getArticlesByAuthor(authorId: string): Promise<Article[]> {
+export const getArticlesByAuthor = cache(async (authorId: string): Promise<Article[]> => {
   const articles = await getArticles()
   return articles.filter((article) => article.authors.some((a) => a.authorId === authorId))
-}
+})
 
-export async function getAnnouncements(): Promise<Announcement[]> {
-  const supabase = await createSupabaseServerClient()
+export const getAnnouncements = cache(async (): Promise<Announcement[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('announcements')
     .select('slug, published_on, tag, title, blurb, body, cta_label, cta_href, sort_order')
@@ -272,14 +282,14 @@ export async function getAnnouncements(): Promise<Announcement[]> {
     ctaHref: row.cta_href,
     sortOrder: row.sort_order,
   }))
-}
+})
 
-export async function getTickerLines(): Promise<TickerLine[]> {
-  const supabase = await createSupabaseServerClient()
+export const getTickerLines = cache(async (): Promise<TickerLine[]> => {
+  const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('ticker_lines')
     .select('text, sort_order')
     .order('sort_order')
 
   return (data ?? []).map((row) => ({ text: row.text, sortOrder: row.sort_order }))
-}
+})

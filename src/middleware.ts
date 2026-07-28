@@ -67,6 +67,12 @@ export async function middleware(request: NextRequest) {
   return response
 }
 
+/*
+ * Anything under `_next`, and anything with a file extension, is a build
+ * output or a file in `public/`. None of it can be an admin route, and every
+ * request that reaches this function costs a round trip through it, so they
+ * are matched out by shape rather than named one at a time.
+ */
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.png|apple-icon.png|brand/).*)'],
+  matcher: ['/((?!_next/|.*\\.).*)'],
 }

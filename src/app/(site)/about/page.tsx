@@ -1,7 +1,15 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { JournalAtAGlance } from '@/components/site/about/JournalAtAGlance'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getFacts } from '@/lib/content'
+
+export const metadata: Metadata = {
+  title: 'About',
+  description:
+    'An independent journal for student scholarship: what we consider, how work is judged, and the open-access terms every article is published on.',
+  alternates: { canonical: '/about' },
+}
 
 const SECTIONS = [
   {

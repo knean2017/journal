@@ -27,6 +27,30 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+
+  // The version string tells a visitor nothing and tells a scanner something.
+  poweredByHeader: false,
+
+  /*
+   * The brand lockups are the only images on a cold page that are not
+   * placeholders, and they are identical on every view. Their filenames are
+   * not content-hashed, so this is a day rather than a year, with a week of
+   * stale-while-revalidate behind it: a replacement lockup is live for
+   * everybody within a day and nobody waits on the network for it meanwhile.
+   */
+  async headers() {
+    return [
+      {
+        source: '/brand/:file*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig

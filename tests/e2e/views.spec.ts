@@ -51,7 +51,22 @@ test.describe('home', () => {
 
   test('reveals a below-the-fold section once it scrolls into view', async ({ page }) => {
     await page.goto('/')
-    const section = page.locator('[data-reveal]').first()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+
+    /*
+     * The first section that actually starts below the fold, which is not
+     * necessarily the first one on the page. armReveal never hides what is
+     * already in view, so which index that is depends on how tall the home
+     * page happens to be, and it changed when the hero image band was removed.
+     */
+    const index = await page.evaluate(() =>
+      Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]')).findIndex(
+        (el) => el.getBoundingClientRect().top >= window.innerHeight * 0.92,
+      ),
+    )
+    expect(index).toBeGreaterThan(-1)
+
+    const section = page.locator('[data-reveal]').nth(index)
     await expect(section).toHaveCSS('opacity', '0')
 
     await section.scrollIntoViewIfNeeded()
