@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getEditorialRoles, getTeam } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Our team',
   description:
     'Who runs the International Collegiate Research Review, which editorial roles are open, and the recusal rule every editor works under.',
-  alternates: { canonical: '/team' },
-}
+  path: '/team',
+})
 
 export default async function TeamPage() {
   const [team, roles] = await Promise.all([getTeam(), getEditorialRoles()])

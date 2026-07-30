@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { EditorForm } from '@/components/site/editors/EditorForm'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getEditorialRoles } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Join the editorial board',
   description:
     'Apply for an editorial role at the International Collegiate Research Review. Section editorships and a copyeditor post are open ahead of Issue 1.',
-}
+  path: '/editors/apply',
+})
 
 export default async function EditorApplyPage() {
   const [config, roles] = await Promise.all([getConfig(), getEditorialRoles()])

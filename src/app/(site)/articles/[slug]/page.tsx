@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { ArticleBody } from '@/components/site/article/ArticleBody'
 import { PreviewBanner } from '@/components/ui/PreviewBanner'
 import { ToastButton } from '@/components/ui/ToastButton'
 import { getArticleBySlug, getArticles, getConfig, getIssues } from '@/lib/content'
-import { absolute } from '@/lib/site'
+import { resolveIssn } from '@/lib/seo'
+import { SITE_NAME, absolute } from '@/lib/site'
 import { PDF_TOAST } from '@/lib/toasts'
 
 export async function generateStaticParams() {
@@ -32,28 +34,37 @@ export async function generateMetadata({
   const issue = issues.find((candidate) => candidate.slug === article.issueSlug)
   const names = article.authors.map((author) => author.authorName)
 
+  const published = article.status === 'published'
+
   /*
    * Highwire Press tags. These are what Google Scholar reads, and an academic
    * journal that omits them does not appear there at all, however good its
    * ordinary metadata is. Every value is emitted only when it is actually
    * known: a guessed page number or a placeholder ISSN is worse than a missing
    * tag, because indexers keep what they first read.
+   *
+   * That same rule is why nothing at all is emitted before publication. A page
+   * carrying this journal's name and a template body is a citation record as
+   * far as Scholar is concerned, and it is the version that would stick.
    */
-  const citation: Record<string, string | string[]> = {
-    citation_title: article.title,
-    citation_journal_title: 'International Collegiate Research Review',
-  }
-  if (names.length) citation.citation_author = names
-  if (article.publishedOn) citation.citation_publication_date = article.publishedOn
-  if (issue) {
-    citation.citation_volume = String(issue.volume)
-    citation.citation_issue = String(issue.number)
-  }
-  if (article.pageStart) citation.citation_firstpage = String(article.pageStart)
-  if (article.pageEnd) citation.citation_lastpage = String(article.pageEnd)
-  if (article.pdfPath) citation.citation_pdf_url = article.pdfPath
-  if (config.issnStatus && !/pending/i.test(config.issnStatus)) {
-    citation.citation_issn = config.issnStatus
+  const citation: Record<string, string | string[]> = {}
+  if (published) {
+    citation.citation_title = article.title
+    citation.citation_journal_title = SITE_NAME
+    if (names.length) citation.citation_author = names
+    if (article.publishedOn) citation.citation_publication_date = article.publishedOn
+    if (issue) {
+      citation.citation_volume = String(issue.volume)
+      citation.citation_issue = String(issue.number)
+    }
+    if (article.pageStart) citation.citation_firstpage = String(article.pageStart)
+    if (article.pageEnd) citation.citation_lastpage = String(article.pageEnd)
+    // Scholar follows this to fetch the full text, so it has to be absolute.
+    // `other` is passed through as written; nothing resolves it against
+    // `metadataBase` the way the OpenGraph fields are resolved.
+    if (article.pdfPath) citation.citation_pdf_url = absolute(article.pdfPath)
+    const issn = resolveIssn(config.issnStatus)
+    if (issn) citation.citation_issn = issn
   }
 
   const description = summarise(article.abstract)
@@ -64,6 +75,13 @@ export async function generateMetadata({
     authors: names.map((name) => ({ name })),
     keywords: article.keywords,
     alternates: { canonical: `/articles/${article.slug}` },
+    /*
+     * An unpublished article is a real page, and an author sent here by the
+     * editorial office should see it, but it is a template with a template
+     * body, and indexing it would put placeholder prose under the journal's
+     * name. `follow` stays on so the links out of it still count.
+     */
+    robots: published ? undefined : { index: false, follow: true },
     openGraph: {
       type: 'article',
       title: article.title,
@@ -92,8 +110,46 @@ const OUTLINE_CHIP =
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const [article, config] = await Promise.all([getArticleBySlug(slug), getConfig()])
+  const [article, config, issues] = await Promise.all([
+    getArticleBySlug(slug),
+    getConfig(),
+    getIssues(),
+  ])
   if (!article) notFound()
+
+  /*
+   * Described to search engines as a scholarly article only once it is one.
+   * Before that the record would assert an author list, a section and a
+   * journal for a page that is still a template, and structured data that
+   * contradicts the page is worse than none.
+   */
+  const issue = issues.find((candidate) => candidate.slug === article.issueSlug)
+  const schema =
+    article.status === 'published'
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'ScholarlyArticle',
+          '@id': absolute(`/articles/${article.slug}`),
+          headline: article.title,
+          abstract: article.abstract,
+          keywords: article.keywords,
+          inLanguage: 'en',
+          isAccessibleForFree: true,
+          license: 'https://creativecommons.org/licenses/by/4.0/',
+          author: article.authors.map((author) => ({
+            '@type': 'Person',
+            name: author.authorName,
+            url: absolute(`/authors/${author.authorSlug}`),
+          })),
+          ...(article.publishedOn ? { datePublished: article.publishedOn } : {}),
+          ...(issue
+            ? { isPartOf: { '@type': 'PublicationIssue', issueNumber: issue.number } }
+            : {}),
+          ...(article.pdfPath ? { encoding: { '@type': 'MediaObject', contentUrl: absolute(article.pdfPath) } } : {}),
+          publisher: { '@id': absolute('/#organization') },
+          periodical: { '@id': absolute('/#periodical') },
+        }
+      : null
 
   const dates = [
     { key: 'Received', value: article.receivedOn ?? 'TBA' },
@@ -104,6 +160,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
+      {schema ? <JsonLd data={schema} /> : null}
+
       {config.showPreviewNotes ? (
         <PreviewBanner>
           This shows how a published article will read. No articles have been published yet.

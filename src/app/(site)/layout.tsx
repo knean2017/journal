@@ -1,4 +1,7 @@
 import { SiteChrome } from '@/components/chrome/SiteChrome'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { getConfig } from '@/lib/content'
+import { journalSchema, resolveIssn } from '@/lib/seo'
 
 /**
  * Every public page under this layout is prerendered and then refreshed on a
@@ -8,6 +11,20 @@ import { SiteChrome } from '@/components/chrome/SiteChrome'
  */
 export const revalidate = 300
 
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  return <SiteChrome>{children}</SiteChrome>
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const config = await getConfig()
+
+  /*
+   * The journal described once, here, rather than on each page: it is the
+   * record every article's own markup points back at, and it is what lets a
+   * search engine read the site as one publication instead of fifteen
+   * unrelated documents. The ISSN joins it the day registration completes,
+   * with no further change.
+   */
+  return (
+    <SiteChrome>
+      <JsonLd data={journalSchema({ issn: resolveIssn(config.issnStatus) })} />
+      {children}
+    </SiteChrome>
+  )
 }

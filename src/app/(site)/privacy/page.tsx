@@ -9,12 +9,14 @@ import {
 } from '@/components/site/policy/Policy'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Privacy',
   description:
     'What the International Collegiate Research Review collects when you submit, apply, or write to us, who else sees it, and what you can ask us to do with it.',
-}
+  path: '/privacy',
+})
 
 export default async function PrivacyPage() {
   const config = await getConfig()

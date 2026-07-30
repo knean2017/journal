@@ -5,13 +5,14 @@ import { TocPreview } from '@/components/site/issue/TocPreview'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getCurrentIssue, getTimeline, getTocPreview } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Current issue',
   description:
     'The issue in preparation at the International Collegiate Research Review, its table of contents, and where it has reached in production.',
-  alternates: { canonical: '/issue/current' },
-}
+  path: '/issue/current',
+})
 
 const TEMPLATE_SLUG = 'canopy-cover-and-summer-surface-temperature'
 

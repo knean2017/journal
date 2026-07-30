@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { JournalAtAGlance } from '@/components/site/about/JournalAtAGlance'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getFacts } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'About',
   description:
     'An independent journal for student scholarship: what we consider, how work is judged, and the open-access terms every article is published on.',
-  alternates: { canonical: '/about' },
-}
+  path: '/about',
+})
 
 const SECTIONS = [
   {

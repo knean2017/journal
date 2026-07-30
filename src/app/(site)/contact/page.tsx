@@ -3,12 +3,14 @@ import Link from 'next/link'
 import { ContactForm } from '@/components/site/contact/ContactForm'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Contact',
   description:
     'Write to the editorial office of the International Collegiate Research Review, or find the right route for submissions and reviewing.',
-}
+  path: '/contact',
+})
 
 export default async function ContactPage() {
   const config = await getConfig()

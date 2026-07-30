@@ -3,12 +3,14 @@ import Link from 'next/link'
 import { PolicyBody, PolicySection, PolicyUpdated } from '@/components/site/policy/Policy'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Publication ethics',
   description:
     'Authorship, originality, declarations, conflicts of interest, corrections, retractions, and how to complain. The standards the International Collegiate Research Review holds itself to.',
-}
+  path: '/ethics',
+})
 
 export default async function EthicsPage() {
   const config = await getConfig()

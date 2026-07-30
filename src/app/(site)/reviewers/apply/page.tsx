@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import { ReviewerForm } from '@/components/site/reviewers/ReviewerForm'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getDisciplines } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Join the reviewer panel',
   description:
     'Apply to review for the International Collegiate Research Review. Two manuscripts a month, three-week turnaround, across all five sections.',
-}
+  path: '/reviewers/apply',
+})
 
 const COMMITMENT = [
   { key: 'Volume', value: 'Up to two manuscripts a month, and you may decline any of them.' },

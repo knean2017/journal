@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { ToastButton } from '@/components/ui/ToastButton'
 import { getArticlesByAuthor, getAuthorBySlug, getAuthors } from '@/lib/content'
@@ -51,8 +52,28 @@ export default async function AuthorProfilePage({
 
   const publications = await getArticlesByAuthor(author.id)
 
+  /*
+   * ORCID as `sameAs` is the part that earns its place: it is the identifier
+   * the rest of scholarly indexing joins on, so it ties this page to the
+   * person's record everywhere else rather than to a name that other people
+   * also have.
+   */
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': absolute(`/authors/${author.slug}`),
+    name: author.name,
+    jobTitle: author.role,
+    description: author.bio,
+    knowsAbout: author.interests,
+    affiliation: { '@type': 'Organization', name: author.affiliation },
+    ...(author.orcid ? { sameAs: [`https://orcid.org/${author.orcid}`] } : {}),
+  }
+
   return (
     <>
+      <JsonLd data={schema} />
+
       <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-[34px]">
         <Link href="/authors" className="text-[11.5px] tracking-[0.14em] uppercase font-bold">
           ← All contributors

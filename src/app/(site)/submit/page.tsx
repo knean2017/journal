@@ -10,13 +10,14 @@ import {
   getRequirements,
 } from '@/lib/content'
 import { PDF_TOAST } from '@/lib/toasts'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Submit a manuscript',
   description:
     'Author guidelines, the manuscript checklist, and the submission form. No submission charge and no processing charge.',
-  alternates: { canonical: '/submit' },
-}
+  path: '/submit',
+})
 
 export default async function SubmitPage() {
   const [config, disciplines, requirements, checklist, steps] = await Promise.all([
