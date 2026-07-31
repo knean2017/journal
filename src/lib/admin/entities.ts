@@ -497,3 +497,14 @@ export const INBOX_TABLES = {
 } as const
 
 export type InboxKey = keyof typeof INBOX_TABLES
+
+/**
+ * The three states anything in an inbox can be in. Declared once: the row that
+ * sets a status and the filter that searches by one have to agree on the
+ * wording, or a list quietly filters on a value nothing is ever set to.
+ */
+export const INBOX_STATUSES = [
+  { value: 'new', label: 'New' },
+  { value: 'replied', label: 'Replied' },
+  { value: 'archived', label: 'Archived' },
+]

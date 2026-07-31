@@ -14,12 +14,16 @@ export type FormResult = {
   fieldErrors?: Record<string, string>
 }
 
+/** One storage path the browser may write to once. */
+export type SignedUpload = { path: string; token: string }
+
 /**
  * A manuscript submission's first half: the one-time credentials the browser
- * needs to put the file into storage itself. Present only when `ok` is true.
+ * needs to put the two files into storage itself. Present only when `ok` is
+ * true, and then both are, because a submission is the pair or it is nothing.
  */
 export type UploadTarget = FormResult & {
-  upload?: { path: string; token: string }
+  uploads?: { manuscript: SignedUpload; coverLetter: SignedUpload }
 }
 
 /**

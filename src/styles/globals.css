@@ -260,6 +260,42 @@
   }
 
   /*
+   * The body of a page that carries standing panels: reading column left,
+   * panels right. The panel column is a fixed width sitting against the right
+   * edge of the container, which leaves the reading column everything else and
+   * opens a wide gutter between the two. Two equal columns put the panels in
+   * the middle of the page instead, with dead space to their right and a
+   * cramped column of text beside them.
+   *
+   * Under the breakpoint the panels drop below the text at full width. The
+   * breakpoint is the width at which the old auto-fit grid used to fold.
+   */
+  .page-split {
+    display: grid;
+    /*
+     * minmax(0, 1fr), never a bare 1fr: a grid track's floor is min-content,
+     * and one wide word or a `74ch` measure will push the track past the phone
+     * it is being read on.
+     */
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: clamp(30px, 4vw, 44px);
+  }
+
+  .page-aside {
+    position: sticky;
+    top: 70px;
+    width: 100%;
+  }
+
+  @media (min-width: 980px) {
+    .page-split {
+      grid-template-columns: minmax(0, 1fr) 320px;
+      column-gap: clamp(48px, 6vw, 96px);
+    }
+  }
+
+  /*
    * Reserved for the Toast chrome component (a later task): design-reference/README.md
    * "Global chrome / 6. Toast" and prototype line 744 specify this as the one shadow in
    * the whole design. Declared here, shadow-only, because it is a token-level constraint

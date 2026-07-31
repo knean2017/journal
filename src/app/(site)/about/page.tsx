@@ -44,7 +44,7 @@ export default async function AboutPage() {
     <>
       <PageHead eyebrow="About the journal" title="An independent journal for student scholarship" />
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-11 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,64px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-11 page-split">
         <div>
           <p className="m-0 font-serif text-[20px] leading-[1.75] text-maroon-deep">
             The International Collegiate Research Review publishes reviewed research by
@@ -65,7 +65,7 @@ export default async function AboutPage() {
           ))}
         </div>
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <JournalAtAGlance facts={facts} />
 
           <div id="contact" className="border border-rule px-[18px] py-5">

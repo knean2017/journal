@@ -121,7 +121,7 @@ export default async function AuthorProfilePage({
         </div>
       </section>
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,56px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 page-split">
         <div>
           <h2 className="m-0 font-serif text-[22px] font-bold text-maroon">Biography</h2>
           <p className="mt-3 mb-0 text-[15.5px] leading-[1.85] text-body">{author.bio}</p>
@@ -170,7 +170,7 @@ export default async function AuthorProfilePage({
           )}
         </div>
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <div className="border border-rule bg-cream">
             <div className="bg-maroon text-cream px-[18px] py-[11px] text-[11px] tracking-[0.16em] uppercase font-bold">
               Research interests

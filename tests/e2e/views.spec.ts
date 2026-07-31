@@ -240,7 +240,7 @@ test.describe('our team', () => {
 })
 
 test.describe('submit', () => {
-  test('lists all six manuscript requirements', async ({ page }) => {
+  test('lists all seven manuscript requirements', async ({ page }) => {
     await page.goto('/submit')
     // Scoped to the requirements table: "Abstract" is also a field label on
     // the form, and an unscoped exact match would find both.
@@ -252,6 +252,7 @@ test.describe('submit', () => {
       'Length',
       'File format',
       'Anonymisation',
+      'Cover letter',
       'Abstract',
       'References',
       'Figures',

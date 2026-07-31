@@ -196,6 +196,36 @@ describe('RecordForm chrome', () => {
     expect(details?.querySelector('[name="volume"]')).toBeNull()
   })
 
+  it('says nothing about unsaved changes until something is changed', () => {
+    draw(AUTHOR, { id: 'a1', name: 'Priya Nair', slug: 'priya-nair' })
+
+    expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByRole('textbox', { name: /name/i }), {
+      target: { value: 'Priya S. Nair' },
+    })
+
+    expect(screen.getByText('Unsaved changes')).toBeInTheDocument()
+  })
+
+  it('links to the live page of a record that has one', () => {
+    draw(AUTHOR, { id: 'a1', name: 'Priya Nair', slug: 'priya-nair' })
+
+    expect(screen.getByRole('link', { name: /view on the site/i })).toHaveAttribute(
+      'href',
+      '/authors/priya-nair',
+    )
+  })
+
+  it('offers no live page for a record that has no address, or none yet', () => {
+    const { unmount } = draw(ISSUE, { id: 'issue-1', volume: 1, number: 2 })
+    expect(screen.queryByRole('link', { name: /view on the site/i })).not.toBeInTheDocument()
+    unmount()
+
+    draw(AUTHOR, null)
+    expect(screen.queryByRole('link', { name: /view on the site/i })).not.toBeInTheDocument()
+  })
+
   it('asks before deleting rather than doing it on one click', () => {
     draw(ISSUE, { id: 'issue-1', volume: 1, number: 2 })
 

@@ -1,13 +1,52 @@
-import Link from 'next/link'
-import { signOut } from '@/lib/admin/actions'
+import { AdminNav, type NavGroup } from '@/components/admin/AdminNav'
 import { ENTITIES } from '@/lib/admin/entities'
 import { currentAdmin } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
+import { createSupabaseServiceClient } from '@/lib/supabase/service'
 import '@/styles/globals.css'
 
 export const metadata = {
   title: 'ICRR editorial office',
   robots: { index: false, follow: false },
+}
+
+/**
+ * What is waiting in each inbox, for the badges in the navigation.
+ *
+ * Four counting queries on every admin page, which is the price of being able
+ * to see from any screen that something has arrived. They are head-only counts,
+ * and a panel with one editor does not navigate often enough for it to matter.
+ * A database that cannot be reached returns no counts rather than an error
+ * page: the navigation still has to render so you can get somewhere else.
+ */
+async function inboxCounts(): Promise<Record<string, number>> {
+  try {
+    const supabase = createSupabaseServiceClient()
+    const [submissions, reviewers, editors, messages] = await Promise.all([
+      supabase.from('submissions').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+      supabase
+        .from('reviewer_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'new'),
+      supabase
+        .from('editor_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'new'),
+      supabase
+        .from('contact_messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'new'),
+    ])
+
+    return {
+      submissions: submissions.count ?? 0,
+      reviewers: reviewers.count ?? 0,
+      editors: editors.count ?? 0,
+      messages: messages.count ?? 0,
+    }
+  } catch {
+    return {}
+  }
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -17,47 +56,43 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) return <div className="min-h-screen bg-page">{children}</div>
 
   const base = `/${adminPath()}`
-  const links = [
-    { href: base, label: 'Dashboard' },
-    { href: `${base}/config`, label: 'Site settings' },
-    ...ENTITIES.map((entity) => ({ href: `${base}/${entity.slug}`, label: entity.plural })),
-    { href: `${base}/media`, label: 'Media' },
-    { href: `${base}/submissions`, label: 'Submissions' },
-    { href: `${base}/reviewers`, label: 'Reviewer applications' },
-    { href: `${base}/editors`, label: 'Editor applications' },
-    { href: `${base}/messages`, label: 'Messages' },
+  const counts = await inboxCounts()
+
+  /*
+   * Grouped by what you came to do. Everything that arrives from the public
+   * site is in one place and carries its own count; everything that appears on
+   * the site is in another; settings sit apart from both.
+   */
+  const groups: NavGroup[] = [
+    {
+      title: 'Overview',
+      links: [{ href: base, label: 'Dashboard', exact: true }],
+    },
+    {
+      title: 'Inbox',
+      links: [
+        { href: `${base}/submissions`, label: 'Submissions', count: counts.submissions },
+        { href: `${base}/reviewers`, label: 'Reviewer applications', count: counts.reviewers },
+        { href: `${base}/editors`, label: 'Editor applications', count: counts.editors },
+        { href: `${base}/messages`, label: 'Messages', count: counts.messages },
+      ],
+    },
+    {
+      title: 'Website content',
+      links: [
+        ...ENTITIES.map((entity) => ({ href: `${base}/${entity.slug}`, label: entity.plural })),
+        { href: `${base}/media`, label: 'Media' },
+      ],
+    },
+    {
+      title: 'Settings',
+      links: [{ href: `${base}/config`, label: 'Site settings' }],
+    },
   ]
 
   return (
-    <div className="min-h-screen bg-page grid [grid-template-columns:minmax(0,1fr)] md:[grid-template-columns:240px_minmax(0,1fr)]">
-      <aside className="bg-maroon text-cream px-6 py-7 flex flex-col gap-6">
-        <div>
-          <div className="eyebrow text-gold">ICRR</div>
-          <div className="font-serif text-[17px] mt-1">Editorial office</div>
-        </div>
-
-        <nav className="flex flex-col gap-[2px] flex-1">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-[13px] py-[7px] hover:bg-maroon-hover px-2 -mx-2"
-              style={{ color: 'rgba(247,244,239,.82)' }}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <form action={signOut}>
-          <div className="text-[11.5px] mb-2" style={{ color: 'rgba(247,244,239,.6)' }}>
-            {user.email}
-          </div>
-          <button type="submit" className="btn-base btn-outline-cream w-full">
-            Sign out
-          </button>
-        </form>
-      </aside>
+    <div className="min-h-screen bg-page grid [grid-template-columns:minmax(0,1fr)] md:[grid-template-columns:250px_minmax(0,1fr)] md:items-start">
+      <AdminNav groups={groups} email={user.email} />
 
       <main className="px-[clamp(20px,4vw,44px)] py-9 min-w-0">{children}</main>
     </div>

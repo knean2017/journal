@@ -112,6 +112,22 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+
+      /*
+       * The author templates and the page images of them. Same reasoning as the
+       * lockups and the same unhashed filenames: a corrected template is live
+       * for everybody within a day, and meanwhile nobody refetches nine page
+       * renderings to read a five-page document.
+       */
+      {
+        source: '/templates/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
     ]
   },
 }

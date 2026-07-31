@@ -213,7 +213,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-9 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,60px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-9 page-split">
         <article className="max-w-[74ch] font-serif">
           <div className="bg-cream px-[26px] py-6" style={{ borderLeft: '3px solid #5D1D21' }}>
             <div className="font-sans text-[11px] tracking-[0.16em] uppercase text-gold-muted font-bold">
@@ -230,7 +230,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <ArticleBody />
         </article>
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <div className="border border-rule bg-cream px-[18px] py-5">
             <div className="text-[11px] tracking-[0.16em] uppercase text-gold-muted font-bold">
               Article information

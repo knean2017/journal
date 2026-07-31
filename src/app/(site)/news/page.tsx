@@ -19,7 +19,7 @@ export default async function NewsPage() {
     <>
       <PageHead eyebrow="Announcements" title="News from the editorial office" maxWidth="none" />
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-9 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,56px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-9 page-split">
         <div>
           {announcements.map((announcement) => (
             <article key={announcement.slug} className="py-7 border-b border-rule">

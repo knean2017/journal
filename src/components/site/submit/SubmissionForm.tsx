@@ -13,8 +13,9 @@ import {
   useFormFields,
 } from '@/components/ui/FieldError'
 import type { FormResult } from '@/lib/form-result'
-import { createManuscriptUpload, submitManuscript } from '@/lib/submissions/actions'
+import { createSubmissionUploads, submitManuscript } from '@/lib/submissions/actions'
 import {
+  MAX_COVER_LETTER_BYTES,
   MAX_MANUSCRIPT_BYTES,
   manuscriptExtension,
   readableSize,
@@ -32,84 +33,138 @@ const ERROR_LABELS: Record<string, string> = {
   title: 'the manuscript title',
   abstract: 'the abstract',
   originality: 'the originality confirmation',
-  manuscript: 'the attached file',
+  manuscript: 'the manuscript file',
+  coverLetter: 'the cover letter',
 }
 
+/**
+ * The two files a submission is, described once.
+ *
+ * The manuscript is anonymous and the cover letter is not, which is the whole
+ * reason they are separate uploads rather than one. The ceilings differ for
+ * the reason given in lib/submissions/manuscript.ts.
+ */
+const ATTACHMENTS = [
+  {
+    field: 'manuscript' as const,
+    heading: 'Attach anonymised manuscript',
+    hint: 'PDF or DOCX · max 20 MB · no author names in the file',
+    limit: MAX_MANUSCRIPT_BYTES,
+    limitLabel: '20 MB',
+  },
+  {
+    field: 'coverLetter' as const,
+    heading: 'Attach cover letter',
+    hint: 'PDF or DOCX · max 5 MB · your name and institution go here',
+    limit: MAX_COVER_LETTER_BYTES,
+    limitLabel: '5 MB',
+  },
+]
+
+type AttachmentField = (typeof ATTACHMENTS)[number]['field']
+
 /** The same checks the server runs, run early so a bad file is caught at once. */
-function fileProblem(file: File): string | null {
+function fileProblem(file: File, limit: number, limitLabel: string): string | null {
   if (!manuscriptExtension(file.name, file.type)) return 'Only PDF and DOCX files are accepted.'
-  if (file.size > MAX_MANUSCRIPT_BYTES) {
-    return `That file is ${readableSize(file.size)}. The limit is 20 MB.`
+  if (file.size > limit) {
+    return `That file is ${readableSize(file.size)}. The limit is ${limitLabel}.`
   }
   return null
 }
 
+const NO_FILES: Record<AttachmentField, File | null> = { manuscript: null, coverLetter: null }
+const NO_FILE_ERRORS: Record<AttachmentField, string | null> = { manuscript: null, coverLetter: null }
+
 export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
   const toast = useToast()
-  const fileInput = useRef<HTMLInputElement>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [fileError, setFileError] = useState<string | null>(null)
+  const manuscriptInput = useRef<HTMLInputElement>(null)
+  const coverLetterInput = useRef<HTMLInputElement>(null)
+  const [files, setFiles] = useState(NO_FILES)
+  const [fileErrors, setFileErrors] = useState(NO_FILE_ERRORS)
   const [uploading, setUploading] = useState(false)
   const { values, field, checkbox, formRef } = useFormFields(FIELDS)
 
+  const inputs: Record<AttachmentField, React.RefObject<HTMLInputElement | null>> = {
+    manuscript: manuscriptInput,
+    coverLetter: coverLetterInput,
+  }
+
   /*
    * The action runs here in the browser rather than being the Server Action
-   * itself, because the file has to go straight to storage: see the note at
+   * itself, because the files have to go straight to storage: see the note at
    * the top of lib/submissions/actions.ts. Only text ever reaches the server.
    *
-   * The chosen file is read from state, not from the form. React empties a
-   * form once its action returns, which empties the file input with it; state
-   * is what keeps the attachment through a rejected submission.
+   * The chosen files are read from state, not from the form. React empties a
+   * form once its action returns, which empties the file inputs with it; state
+   * is what keeps the attachments through a rejected submission.
    */
   const [state, action, pending] = useActionState<FormResult | null, FormData>(
     async (_previous, form) => {
-      const chosen = file
+      const chosen = files
 
-      // Everything except the file. The file is described, not carried.
+      // Everything except the files. Each file is described, not carried.
       const fields = new FormData()
       for (const [key, value] of Array.from(form.entries())) {
         if (typeof value === 'string') fields.set(key, value)
       }
-      if (chosen) {
-        fields.set('manuscriptName', chosen.name)
-        fields.set('manuscriptType', chosen.type)
-        fields.set('manuscriptSize', String(chosen.size))
+      for (const attachment of ATTACHMENTS) {
+        const file = chosen[attachment.field]
+        if (!file) continue
+        fields.set(`${attachment.field}Name`, file.name)
+        fields.set(`${attachment.field}Type`, file.type)
+        fields.set(`${attachment.field}Size`, String(file.size))
       }
 
       try {
         /*
-         * The missing file is reported by the server along with the text, and
-         * after it, so a form with three empty boxes and no attachment names
-         * all four rather than only the attachment.
+         * A missing file is reported by the server along with the text, and
+         * after it, so a form with three empty boxes and nothing attached
+         * names all five rather than only the attachment.
          */
-        const target = await createManuscriptUpload(null, fields)
-        if (!target.ok || !target.upload) return target
-        if (!chosen) {
+        const target = await createSubmissionUploads(null, fields)
+        if (!target.ok || !target.uploads) return target
+
+        const missing = ATTACHMENTS.find((attachment) => !chosen[attachment.field])
+        if (missing) {
           return {
             ok: false,
-            message: 'Please attach the anonymised manuscript.',
-            fieldErrors: { manuscript: 'A PDF or DOCX file is required.' },
+            message: 'Please attach both files.',
+            fieldErrors: { [missing.field]: 'A PDF or DOCX file is required.' },
           }
         }
 
         setUploading(true)
         const supabase = createSupabaseBrowserClient()
-        const { error } = await supabase.storage
-          .from('manuscripts')
-          .uploadToSignedUrl(target.upload.path, target.upload.token, chosen, {
-            contentType: chosen.type || undefined,
-          })
 
-        if (error) {
-          console.error('[submit] upload to storage failed:', error)
-          return {
-            ok: false,
-            message: 'The upload did not finish. Please check your connection and try again.',
-            fieldErrors: { manuscript: 'The file did not reach us.' },
+        /*
+         * One at a time rather than in parallel. These are the two largest
+         * things the browser will send, often from a campus connection, and
+         * racing them only makes each slower and the failure harder to report
+         * against the right field.
+         */
+        for (const attachment of ATTACHMENTS) {
+          const file = chosen[attachment.field]
+          const upload = target.uploads[attachment.field]
+          if (!file) continue
+
+          const { error } = await supabase.storage
+            .from('manuscripts')
+            .uploadToSignedUrl(upload.path, upload.token, file, {
+              contentType: file.type || undefined,
+            })
+
+          if (error) {
+            console.error(`[submit] upload of the ${attachment.field} failed:`, error)
+            return {
+              ok: false,
+              message: 'The upload did not finish. Please check your connection and try again.',
+              fieldErrors: { [attachment.field]: 'The file did not reach us.' },
+            }
           }
+
+          fields.set(`${attachment.field}Path`, upload.path)
         }
 
-        fields.set('manuscriptPath', target.upload.path)
         return await submitManuscript(null, fields)
       } finally {
         setUploading(false)
@@ -118,16 +173,21 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
     null,
   )
 
-  function chooseFile(chosen: File | null) {
-    setFile(chosen)
-    setFileError(chosen ? fileProblem(chosen) : null)
+  function chooseFile(field: AttachmentField, chosen: File | null) {
+    const spec = ATTACHMENTS.find((attachment) => attachment.field === field)!
+    setFiles((current) => ({ ...current, [field]: chosen }))
+    setFileErrors((current) => ({
+      ...current,
+      [field]: chosen ? fileProblem(chosen, spec.limit, spec.limitLabel) : null,
+    }))
   }
 
-  function clearFile() {
+  function clearFile(field: AttachmentField) {
     // Resetting the input's value is what actually empties its FileList, so the
     // form posts no file. Clearing React state alone would only hide the chip.
-    if (fileInput.current) fileInput.current.value = ''
-    chooseFile(null)
+    const input = inputs[field].current
+    if (input) input.value = ''
+    chooseFile(field, null)
   }
 
   useEffect(() => {
@@ -227,48 +287,68 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
         <FieldError message={errors.abstract} />
       </label>
 
-      <div className="mt-5 border border-dashed border-gold bg-cream-tint p-[22px] text-center">
-        <div className="font-serif text-[16px] text-maroon">Attach anonymised manuscript</div>
-        <p className="mt-[6px] mb-2 text-[13px] text-body-muted">
-          PDF or DOCX · max 20 MB · no author names in the file
-        </p>
-        <input
-          ref={fileInput}
-          id="manuscript"
-          type="file"
-          name="manuscript"
-          accept=".pdf,.docx"
-          onChange={(event) => chooseFile(event.target.files?.[0] ?? null)}
-          className="sr-only"
-        />
+      {/*
+       * Two boxes, side by side where there is room. Both are required: the
+       * journal has always asked for both, and until now the form collected
+       * only one of them.
+       */}
+      <div className="mt-5 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))]">
+        {ATTACHMENTS.map((attachment) => {
+          const file = files[attachment.field]
 
-        {file ? (
-          <div className="mt-3 inline-flex items-center gap-3 border border-rule bg-page px-3 py-2 text-left max-w-full">
-            <span className="min-w-0 text-[13px] leading-[1.5]">
-              <span className="block truncate text-ink">{file.name}</span>
-              <span className="block text-[12px] text-body-muted">{readableSize(file.size)}</span>
-            </span>
-            <button
-              type="button"
-              onClick={clearFile}
-              aria-label={`Remove ${file.name}`}
-              title="Remove this file"
-              className="flex-none border border-rule px-[9px] py-[3px] text-[13px] leading-none text-body hover:bg-cream hover:text-maroon"
+          return (
+            <div
+              key={attachment.field}
+              className="border border-dashed border-gold bg-cream-tint p-[22px] text-center"
             >
-              ✕
-            </button>
-          </div>
-        ) : (
-          <label
-            htmlFor="manuscript"
-            className="btn-base btn-outline mt-1 inline-block px-[22px] py-[10px] text-[11.5px]"
-          >
-            Choose file
-          </label>
-        )}
+              <div className="font-serif text-[16px] text-maroon">{attachment.heading}</div>
+              <p className="mt-[6px] mb-2 text-[13px] text-body-muted">{attachment.hint}</p>
+              <input
+                ref={inputs[attachment.field]}
+                id={attachment.field}
+                type="file"
+                name={attachment.field}
+                accept=".pdf,.docx"
+                onChange={(event) =>
+                  chooseFile(attachment.field, event.target.files?.[0] ?? null)
+                }
+                className="sr-only"
+              />
 
-        {/* Rejected on sight, before anything is uploaded. */}
-        <FieldError message={fileError ?? errors.manuscript} />
+              {file ? (
+                <div className="mt-3 inline-flex items-center gap-3 border border-rule bg-page px-3 py-2 text-left max-w-full">
+                  <span className="min-w-0 text-[13px] leading-[1.5]">
+                    <span className="block truncate text-ink">{file.name}</span>
+                    <span className="block text-[12px] text-body-muted">
+                      {readableSize(file.size)}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => clearFile(attachment.field)}
+                    aria-label={`Remove ${file.name}`}
+                    title="Remove this file"
+                    className="flex-none border border-rule px-[9px] py-[3px] text-[13px] leading-none text-body hover:bg-cream hover:text-maroon"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor={attachment.field}
+                  className="btn-base btn-outline mt-1 inline-block px-[22px] py-[10px] text-[11.5px]"
+                >
+                  Choose file
+                </label>
+              )}
+
+              {/* Rejected on sight, before anything is uploaded. */}
+              <FieldError
+                message={fileErrors[attachment.field] ?? errors[attachment.field]}
+              />
+            </div>
+          )
+        })}
       </div>
 
       <label className="flex gap-[11px] items-start mt-5 text-[13.5px] leading-[1.7] text-body">
@@ -282,7 +362,7 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
 
       <button
         type="submit"
-        disabled={pending || Boolean(fileError)}
+        disabled={pending || Object.values(fileErrors).some(Boolean)}
         className="btn-base btn-maroon mt-[22px] px-[30px] py-[14px] text-[12px]"
       >
         {!pending ? 'Submit manuscript' : uploading ? 'Uploading…' : 'Sending…'}

@@ -1,10 +1,16 @@
 'use server'
 
 import { headers } from 'next/headers'
-import { MAX_MANUSCRIPT_BYTES, manuscriptExtension } from './manuscript'
-import { manuscriptPathSchema, newsletterSchema, submissionSchema } from './schema'
+import { MAX_COVER_LETTER_BYTES, MAX_MANUSCRIPT_BYTES, manuscriptExtension } from './manuscript'
+import { newsletterSchema, submissionSchema, uploadPathSchema } from './schema'
 import { notify } from '@/lib/email/resend'
-import { firstErrors, text, type FormResult, type UploadTarget } from '@/lib/form-result'
+import {
+  firstErrors,
+  text,
+  type FormResult,
+  type SignedUpload,
+  type UploadTarget,
+} from '@/lib/form-result'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
@@ -18,12 +24,68 @@ const OFFICE_EMAIL = process.env.EDITORIAL_EMAIL ?? 'icrrjournal@gmail.com'
  * moves the wall: the deploy target runs these actions as functions with a
  * request payload limit of a few megabytes. Neither can carry 20 MB.
  *
- * So the file never passes through the server. `createManuscriptUpload` checks
- * the form and hands back a one-time credential for a single storage path;
- * the browser uploads to storage directly; `submitManuscript` is then given
- * the path and records the row. Both halves validate the same fields, because
- * the second one is reachable on its own.
+ * So the files never pass through the server. `createSubmissionUploads` checks
+ * the form and hands back a one-time credential per storage path; the browser
+ * uploads to storage directly; `submitManuscript` is then given the paths and
+ * records the row. Both halves validate the same fields, because the second
+ * one is reachable on its own.
+ *
+ * A submission is two files: the anonymised manuscript, and the cover letter
+ * that carries the names the manuscript may not. Both are demanded here
+ * because the site asks for both in three places, and a form that accepted one
+ * of them would be the odd one out.
  */
+
+/** What a file has to be to be accepted, per role in the submission. */
+const ATTACHMENTS = [
+  {
+    field: 'manuscript',
+    limit: MAX_MANUSCRIPT_BYTES,
+    missing: 'Please attach the anonymised manuscript.',
+    tooBig: 'That manuscript is larger than 20 MB.',
+    tooBigField: 'Please attach a file under 20 MB.',
+  },
+  {
+    field: 'coverLetter',
+    limit: MAX_COVER_LETTER_BYTES,
+    missing: 'Please attach the cover letter.',
+    tooBig: 'That cover letter is larger than 5 MB.',
+    tooBigField: 'Please attach a file under 5 MB.',
+  },
+] as const
+
+/**
+ * The extension to store one attachment under, or the reason it is refused.
+ *
+ * The browser describes each file rather than sending it, so this reads the
+ * name, type and size the form reported. They are a claim, which is why
+ * `submitManuscript` measures the object that actually arrived.
+ */
+function checkAttachment(
+  form: FormData,
+  attachment: (typeof ATTACHMENTS)[number],
+): { extension: string } | FormResult {
+  const { field, limit, missing, tooBig, tooBigField } = attachment
+
+  const extension = manuscriptExtension(text(form, `${field}Name`), text(form, `${field}Type`))
+  if (!extension) {
+    return {
+      ok: false,
+      message: 'Both files must be PDF or DOCX.',
+      fieldErrors: { [field]: 'Only PDF and DOCX files are accepted.' },
+    }
+  }
+
+  const size = Number(form.get(`${field}Size`))
+  if (!Number.isFinite(size) || size <= 0) {
+    return { ok: false, message: missing, fieldErrors: { [field]: 'A PDF or DOCX file is required.' } }
+  }
+  if (size > limit) {
+    return { ok: false, message: tooBig, fieldErrors: { [field]: tooBigField } }
+  }
+
+  return { extension }
+}
 
 /** The text half of the form. Shared, so the two halves cannot disagree. */
 function parseSubmission(form: FormData) {
@@ -47,12 +109,13 @@ const checkTheFields = (
 })
 
 /**
- * Validates the form and issues a signed upload URL for one storage path.
+ * Validates the form and issues a signed upload URL per storage path.
  *
- * The form is checked before the credential is issued, so a mistyped email
+ * The form is checked before either credential is issued, so a mistyped email
  * costs nothing: nobody uploads 20 MB only to be told the address is wrong.
+ * Both files are checked before either is signed, for the same reason.
  */
-export async function createManuscriptUpload(
+export async function createSubmissionUploads(
   _previous: UploadTarget | null,
   form: FormData,
 ): Promise<UploadTarget> {
@@ -62,29 +125,11 @@ export async function createManuscriptUpload(
   const parsed = parseSubmission(form)
   if (!parsed.success) return checkTheFields(parsed.error.issues)
 
-  const extension = manuscriptExtension(text(form, 'manuscriptName'), text(form, 'manuscriptType'))
-  if (!extension) {
-    return {
-      ok: false,
-      message: 'The manuscript must be a PDF or DOCX file.',
-      fieldErrors: { manuscript: 'Only PDF and DOCX files are accepted.' },
-    }
-  }
-
-  const size = Number(form.get('manuscriptSize'))
-  if (!Number.isFinite(size) || size <= 0) {
-    return {
-      ok: false,
-      message: 'Please attach the anonymised manuscript.',
-      fieldErrors: { manuscript: 'A PDF or DOCX file is required.' },
-    }
-  }
-  if (size > MAX_MANUSCRIPT_BYTES) {
-    return {
-      ok: false,
-      message: 'That file is larger than 20 MB.',
-      fieldErrors: { manuscript: 'Please attach a file under 20 MB.' },
-    }
+  const extensions: string[] = []
+  for (const attachment of ATTACHMENTS) {
+    const checked = checkAttachment(form, attachment)
+    if ('ok' in checked) return checked
+    extensions.push(checked.extension)
   }
 
   /*
@@ -100,17 +145,26 @@ export async function createManuscriptUpload(
     return { ok: false, message: 'Too many submissions from this address. Try again later.' }
   }
 
-  // The path is generated here; the client's filename is never trusted.
-  const path = `${crypto.randomUUID()}.${extension}`
   const supabase = createSupabaseServiceClient()
-  const { data, error } = await supabase.storage.from('manuscripts').createSignedUploadUrl(path)
+  const signed: SignedUpload[] = []
 
-  if (error || !data) {
-    console.error('[submit] could not sign an upload URL:', error)
-    return { ok: false, message: 'Could not start the upload. Please try again.' }
+  for (const extension of extensions) {
+    // The path is generated here; the client's filename is never trusted.
+    const path = `${crypto.randomUUID()}.${extension}`
+    const { data, error } = await supabase.storage.from('manuscripts').createSignedUploadUrl(path)
+
+    if (error || !data) {
+      console.error('[submit] could not sign an upload URL:', error)
+      return { ok: false, message: 'Could not start the upload. Please try again.' }
+    }
+    signed.push({ path: data.path, token: data.token })
   }
 
-  return { ok: true, message: '', upload: { path: data.path, token: data.token } }
+  return {
+    ok: true,
+    message: '',
+    uploads: { manuscript: signed[0], coverLetter: signed[1] },
+  }
 }
 
 export async function submitManuscript(
@@ -123,42 +177,59 @@ export async function submitManuscript(
   const parsed = parseSubmission(form)
   if (!parsed.success) return checkTheFields(parsed.error.issues)
 
-  const parsedPath = manuscriptPathSchema.safeParse(form.get('manuscriptPath'))
-  if (!parsedPath.success) {
-    return {
-      ok: false,
-      message: 'Please attach the anonymised manuscript.',
-      fieldErrors: { manuscript: parsedPath.error.issues[0]?.message ?? 'A file is required.' },
+  const paths: string[] = []
+  for (const attachment of ATTACHMENTS) {
+    const parsedPath = uploadPathSchema.safeParse(form.get(`${attachment.field}Path`))
+    if (!parsedPath.success) {
+      return {
+        ok: false,
+        message: attachment.missing,
+        fieldErrors: {
+          [attachment.field]: parsedPath.error.issues[0]?.message ?? 'A file is required.',
+        },
+      }
     }
+    paths.push(parsedPath.data)
   }
 
-  const path = parsedPath.data
   const supabase = createSupabaseServiceClient()
 
   /*
-   * The upload happened in the browser, so its result is a claim until it is
-   * checked here: the object has to exist, and it has to be the size it was
-   * signed for.
+   * Both uploads happened in the browser, so their results are a claim until
+   * they are checked here: each object has to exist, and it has to be within
+   * the ceiling it was signed for.
+   *
+   * A file already accepted is removed when its partner turns out to be
+   * missing. Nothing has been recorded at this point, so leaving it would
+   * leave an object in the bucket that no row will ever refer to.
    */
-  const listed = await supabase.storage.from('manuscripts').list('', { search: path, limit: 1 })
-  const object = listed.data?.find((entry) => entry.name === path)
-  const uploadedBytes = Number(object?.metadata?.size ?? 0)
+  const discard = () => supabase.storage.from('manuscripts').remove(paths)
 
-  if (!object || uploadedBytes <= 0) {
-    return {
-      ok: false,
-      message: 'The upload did not finish. Please attach the file and try again.',
-      fieldErrors: { manuscript: 'The file did not reach us.' },
+  for (const [index, attachment] of ATTACHMENTS.entries()) {
+    const path = paths[index]
+    const listed = await supabase.storage.from('manuscripts').list('', { search: path, limit: 1 })
+    const object = listed.data?.find((entry) => entry.name === path)
+    const uploadedBytes = Number(object?.metadata?.size ?? 0)
+
+    if (!object || uploadedBytes <= 0) {
+      await discard()
+      return {
+        ok: false,
+        message: 'The upload did not finish. Please attach both files and try again.',
+        fieldErrors: { [attachment.field]: 'The file did not reach us.' },
+      }
+    }
+    if (uploadedBytes > attachment.limit) {
+      await discard()
+      return {
+        ok: false,
+        message: attachment.tooBig,
+        fieldErrors: { [attachment.field]: attachment.tooBigField },
+      }
     }
   }
-  if (uploadedBytes > MAX_MANUSCRIPT_BYTES) {
-    await supabase.storage.from('manuscripts').remove([path])
-    return {
-      ok: false,
-      message: 'That file is larger than 20 MB.',
-      fieldErrors: { manuscript: 'Please attach a file under 20 MB.' },
-    }
-  }
+
+  const [manuscriptPath, coverLetterPath] = paths
 
   const { data: discipline } = await supabase
     .from('disciplines')
@@ -173,14 +244,15 @@ export async function submitManuscript(
     discipline_id: discipline?.id ?? null,
     title: parsed.data.title,
     abstract: parsed.data.abstract,
-    manuscript_path: path,
+    manuscript_path: manuscriptPath,
+    cover_letter_path: coverLetterPath,
     originality_confirmed: true,
     status: 'new',
   })
 
   if (insert.error) {
     console.error('[submit] insert failed:', insert.error)
-    await supabase.storage.from('manuscripts').remove([path])
+    await discard()
     return { ok: false, message: 'Something went wrong saving your submission. Please try again.' }
   }
 
@@ -198,7 +270,7 @@ export async function submitManuscript(
       'Abstract:',
       parsed.data.abstract,
       '',
-      'Open the editorial office to read the manuscript.',
+      'Open the editorial office to read the manuscript and the cover letter.',
     ].join('\n'),
   )
 

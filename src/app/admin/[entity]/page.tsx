@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ListToolbar } from '@/components/admin/ListToolbar'
 import { moveRecord } from '@/lib/admin/actions'
 import { assetUrl } from '@/lib/admin/assets'
 import { recordTitle } from '@/lib/admin/derive'
 import { ENTITIES, findEntity } from '@/lib/admin/entities'
+import { matchesQuery, param } from '@/lib/admin/filter'
 import { requireAdmin } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
@@ -52,16 +54,27 @@ function MoveButton({
   )
 }
 
+/** Whether a row is on the website, for the visibility filter. */
+function isVisible(row: Record<string, unknown>): boolean {
+  return row.is_published !== false && row.is_active !== false
+}
+
 export default async function EntityListPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ entity: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   await requireAdmin()
 
   const { entity: slug } = await params
   const entity = findEntity(slug)
   if (!entity) notFound()
+
+  const filters = await searchParams
+  const query = param(filters.q)
+  const status = param(filters.status)
 
   const supabase = createSupabaseServiceClient()
   const { data, error } = await supabase
@@ -70,8 +83,31 @@ export default async function EntityListPage({
     .order(entity.orderBy.column, { ascending: entity.orderBy.ascending })
 
   const base = `/${adminPath()}/${entity.slug}`
-  const rows = data ?? []
-  const sortable = entity.orderBy.column === 'sort_order' && rows.length > 1
+  const allRows = data ?? []
+
+  const rows = allRows.filter((row) => {
+    if (status === 'visible' && !isVisible(row)) return false
+    if (status === 'hidden' && isVisible(row)) return false
+
+    return matchesQuery(query, [
+      recordTitle(entity, row, ''),
+      ...entity.listColumns.map((column) => {
+        const value = row[column]
+        return typeof value === 'string' ? value : null
+      }),
+    ])
+  })
+
+  /*
+   * The arrows move a record against the one above or below it in the list.
+   * A filtered list is not that list, so they are hidden while one is in force
+   * rather than left to shuffle records past rows you cannot see.
+   */
+  const filtered = Boolean(query || status)
+  const sortable = entity.orderBy.column === 'sort_order' && allRows.length > 1 && !filtered
+  const hasVisibility = allRows.some(
+    (row) => 'is_published' in row || 'is_active' in row,
+  )
 
   return (
     <>
@@ -91,8 +127,27 @@ export default async function EntityListPage({
         </p>
       ) : null}
 
+      {allRows.length > 0 ? (
+        <ListToolbar
+          action={base}
+          query={query}
+          status={status}
+          statuses={
+            hasVisibility
+              ? [
+                  { value: 'visible', label: 'On the website' },
+                  { value: 'hidden', label: 'Hidden' },
+                ]
+              : undefined
+          }
+          placeholder={`Search ${entity.plural.toLowerCase()}`}
+          shown={rows.length}
+          total={allRows.length}
+        />
+      ) : null}
+
       {sortable ? (
-        <p className="mt-5 mb-0 text-[13px] text-body-muted">
+        <p className="mt-4 mb-0 text-[13px] text-body-muted">
           The arrows change the order these appear in on the website.
         </p>
       ) : null}
@@ -174,11 +229,15 @@ export default async function EntityListPage({
             )
           })}
         </div>
-      ) : !error ? (
+      ) : error ? null : allRows.length > 0 ? (
+        <p className="mt-7 text-[14px] text-body-muted">
+          Nothing matches that. Clear the filters to see all {allRows.length}.
+        </p>
+      ) : (
         <p className="mt-6 text-[14px] text-body-muted">
           Nothing here yet. Use the button above to add the first one.
         </p>
-      ) : null}
+      )}
     </>
   )
 }

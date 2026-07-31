@@ -79,8 +79,8 @@ export default async function TeamPage() {
               Join the reviewer panel
             </h3>
             <p className="mt-[10px] mb-0 text-[14.5px] leading-[1.8] text-body">
-              We are recruiting reviewers across all five sections: graduate students, postdocs, and
-              faculty. Two manuscripts a month, three-week turnaround.
+              We are recruiting reviewers across all five sections. A remote volunteer post, open
+              worldwide: two manuscripts a month, three-week turnaround.
             </p>
             <Link href="/reviewers/apply" className="btn-base btn-maroon mt-[18px]">
               Apply as a reviewer

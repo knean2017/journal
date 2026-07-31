@@ -102,6 +102,10 @@ export const requirements: Requirement[] = [
     key: 'Anonymisation',
     value: 'No author names, affiliations, or acknowledgements in the manuscript file.',
   },
+  {
+    key: 'Cover letter',
+    value: 'Required, as a separate file. Not anonymised: your names and institution go here.',
+  },
   { key: 'Abstract', value: '250 words maximum, plus four to six keywords.' },
   { key: 'References', value: 'Consistent style throughout: APA, Chicago, or OSCOLA.' },
   { key: 'Figures', value: 'Numbered, captioned, and legible in greyscale at print size.' },

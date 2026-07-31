@@ -274,8 +274,13 @@ export async function setInboxStatus(
   revalidatePath(`/${adminPath()}/${key}`)
 }
 
-/** Short-lived signed URL. Manuscripts are never public. */
-export async function signManuscript(path: string): Promise<string> {
+/**
+ * Short-lived signed URL for one submitted file.
+ *
+ * Manuscripts and cover letters share the private bucket and are never public,
+ * so both are read this way rather than by a URL anyone could keep.
+ */
+export async function signSubmissionFile(path: string): Promise<string> {
   await requireAdmin()
 
   const supabase = createSupabaseServiceClient()
