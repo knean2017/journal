@@ -6,13 +6,14 @@ import { PageHead } from '@/components/ui/PageHead'
 import { PreviewBanner } from '@/components/ui/PreviewBanner'
 import { buildAuthorCards } from '@/lib/authors/filter'
 import { getArticles, getAuthors, getConfig, getDisciplines } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Contributors',
   description:
     'Everyone the International Collegiate Research Review has published, searchable by section, subject interest and institution.',
-  alternates: { canonical: '/authors' },
-}
+  path: '/authors',
+})
 
 export default async function AuthorsPage() {
   const [config, authors, articles, disciplines] = await Promise.all([

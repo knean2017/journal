@@ -26,8 +26,16 @@ const STATIC_ROUTES: { path: string; priority: number }[] = [
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [articles, authors] = await Promise.all([getArticles(), getAuthors()])
+  const [allArticles, authors] = await Promise.all([getArticles(), getAuthors()])
   const now = new Date()
+
+  /*
+   * Published articles only. The others carry a template body, and a sitemap
+   * is a request to index every URL in it. Submitting placeholder prose under
+   * the journal's name is the one thing worth being careful about while there
+   * is nothing real to show. They rejoin the moment their status changes.
+   */
+  const articles = allArticles.filter((article) => article.status === 'published')
 
   return [
     ...STATIC_ROUTES.map((route) => ({

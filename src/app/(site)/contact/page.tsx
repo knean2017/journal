@@ -3,12 +3,14 @@ import Link from 'next/link'
 import { ContactForm } from '@/components/site/contact/ContactForm'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Contact',
   description:
     'Write to the editorial office of the International Collegiate Research Review, or find the right route for submissions and reviewing.',
-}
+  path: '/contact',
+})
 
 export default async function ContactPage() {
   const config = await getConfig()
@@ -22,10 +24,10 @@ export default async function ContactPage() {
         maxWidth="none"
       />
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,56px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 page-split">
         <ContactForm />
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <div className="border border-rule px-[18px] py-5">
             <div className="text-[11px] tracking-[0.16em] uppercase text-gold-muted font-bold">
               Editorial office

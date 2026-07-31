@@ -5,13 +5,14 @@ import { TocPreview } from '@/components/site/issue/TocPreview'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getCurrentIssue, getTimeline, getTocPreview } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Current issue',
   description:
     'The issue in preparation at the International Collegiate Research Review, its table of contents, and where it has reached in production.',
-  alternates: { canonical: '/issue/current' },
-}
+  path: '/issue/current',
+})
 
 const TEMPLATE_SLUG = 'canopy-cover-and-summer-surface-temperature'
 
@@ -34,7 +35,7 @@ export default async function CurrentIssuePage() {
         rule="double-hairline"
       />
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-11 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,56px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-11 page-split">
         <div>
           <div className="callout-gold px-7 py-[26px]">
             <div className="text-[11px] tracking-[0.18em] uppercase text-gold-muted font-bold">
@@ -68,7 +69,7 @@ export default async function CurrentIssuePage() {
           </Link>
         </div>
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <div className="border border-rule bg-cream px-5 py-[22px] text-center">
             <div className="h-[190px] border border-rule bg-page mb-4">
               <ImageSlot

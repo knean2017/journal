@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig, getIssues } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Archives',
   description:
     'Every issue of the International Collegiate Research Review, current and scheduled, with its table of contents.',
-  alternates: { canonical: '/archives' },
-}
+  path: '/archives',
+})
 
 export default async function ArchivesPage() {
   const [config, issues] = await Promise.all([getConfig(), getIssues()])

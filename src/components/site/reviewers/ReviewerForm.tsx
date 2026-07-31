@@ -104,7 +104,7 @@ export function ReviewerForm({ disciplines }: { disciplines: Discipline[] }) {
         <label className="flex flex-col gap-[7px]">
           <span className={FIELD_LABEL}>Current position</span>
           <input
-            placeholder="PhD candidate, postdoc, lecturer"
+            placeholder="Undergraduate, PhD candidate, postdoc, lecturer"
             className="field"
             {...field('position')}
             {...invalid(errors, 'position')}

@@ -202,20 +202,68 @@ test.describe('manuscript attachment', () => {
     buffer: Buffer.from('%PDF-1.4 test'),
   }
 
+  const LETTER = {
+    name: 'cover-letter.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from('%PDF-1.4 letter'),
+  }
+
+  /** A submission is two files, so each box has its own Choose file label. */
+  test('offers a box for the manuscript and a box for the cover letter', async ({ page }) => {
+    await page.goto('/submit')
+
+    await expect(page.getByText('Attach anonymised manuscript')).toBeVisible()
+    await expect(page.getByText('Attach cover letter')).toBeVisible()
+    await expect(page.getByText('Choose file')).toHaveCount(2)
+  })
+
   test('names the attached file and can remove it again', async ({ page }) => {
     await page.goto('/submit')
     const input = page.locator('input[name="manuscript"]')
 
-    await expect(page.getByText('Choose file')).toBeVisible()
+    await expect(page.getByText('Choose file')).toHaveCount(2)
 
     await input.setInputFiles(FILE)
     await expect(page.getByText(FILE.name)).toBeVisible()
-    await expect(page.getByText('Choose file')).toHaveCount(0)
+    // The cover letter box still has its own, so one label goes, not both.
+    await expect(page.getByText('Choose file')).toHaveCount(1)
 
     await page.getByRole('button', { name: `Remove ${FILE.name}` }).click()
 
     await expect(page.getByText(FILE.name)).toHaveCount(0)
-    await expect(page.getByText('Choose file')).toBeVisible()
+    await expect(page.getByText('Choose file')).toHaveCount(2)
+  })
+
+  test('the two boxes hold their files independently', async ({ page }) => {
+    await page.goto('/submit')
+
+    await page.locator('input[name="manuscript"]').setInputFiles(FILE)
+    await page.locator('input[name="coverLetter"]').setInputFiles(LETTER)
+
+    await expect(page.getByText(FILE.name)).toBeVisible()
+    await expect(page.getByText(LETTER.name)).toBeVisible()
+
+    // Removing one leaves the other attached.
+    await page.getByRole('button', { name: `Remove ${FILE.name}` }).click()
+    await expect(page.getByText(FILE.name)).toHaveCount(0)
+    await expect(page.getByText(LETTER.name)).toBeVisible()
+  })
+
+  /**
+   * A cover letter is one page. Its ceiling is five megabytes rather than the
+   * manuscript's twenty, so attaching the two the wrong way round is caught
+   * here rather than by an editor opening the file.
+   */
+  test('a cover letter over 5 MB is refused before anything is uploaded', async ({ page }) => {
+    await page.goto('/submit')
+    await page.locator('input[name="coverLetter"]').setInputFiles({
+      name: 'not-a-letter.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.alloc(6 * 1024 * 1024),
+    })
+
+    await expect(page.getByText('That file is 6.0 MB. The limit is 5 MB.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Submit manuscript' })).toBeDisabled()
   })
 
   test('removing the file really empties the input, not just the label', async ({ page }) => {

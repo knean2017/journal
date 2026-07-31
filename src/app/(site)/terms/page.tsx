@@ -8,12 +8,14 @@ import {
 } from '@/components/site/policy/Policy'
 import { PageHead } from '@/components/ui/PageHead'
 import { getConfig } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Terms of use',
   description:
     'The terms on which the International Collegiate Research Review publishes: what you promise when you submit, what you keep, and what we do not undertake.',
-}
+  path: '/terms',
+})
 
 export default async function TermsPage() {
   const config = await getConfig()

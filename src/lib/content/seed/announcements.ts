@@ -17,7 +17,7 @@ export const announcements: Announcement[] = [
     publishedOn: '2 July 2026',
     tag: 'Editorial',
     title: 'Reviewer recruitment for the inaugural cycle',
-    blurb: 'Graduate students, postdocs, and faculty are invited to join the review panel.',
+    blurb: 'Students, researchers, and professionals worldwide are invited to join the review panel.',
     body: 'Each section is building a panel of reviewers with subject expertise. Reviewers assess up to two manuscripts a month with a three-week turnaround, and are credited on the team page unless they ask not to be.',
     ctaLabel: 'Meet the team',
     ctaHref: '/team',

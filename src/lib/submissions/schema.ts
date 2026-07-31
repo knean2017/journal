@@ -3,9 +3,10 @@ import { z } from 'zod'
 /**
  * A storage path this server issued: a UUID and one of two extensions, nothing
  * else. The client hands the path back after uploading, so it is input, and a
- * path is used to read and delete an object.
+ * path is used to read and delete an object. Both the manuscript and the cover
+ * letter come back this way.
  */
-export const manuscriptPathSchema = z
+export const uploadPathSchema = z
   .string()
   .regex(
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(pdf|docx)$/,

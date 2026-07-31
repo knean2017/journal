@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { ToastButton } from '@/components/ui/ToastButton'
 import { getArticlesByAuthor, getAuthorBySlug, getAuthors } from '@/lib/content'
@@ -51,8 +52,28 @@ export default async function AuthorProfilePage({
 
   const publications = await getArticlesByAuthor(author.id)
 
+  /*
+   * ORCID as `sameAs` is the part that earns its place: it is the identifier
+   * the rest of scholarly indexing joins on, so it ties this page to the
+   * person's record everywhere else rather than to a name that other people
+   * also have.
+   */
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': absolute(`/authors/${author.slug}`),
+    name: author.name,
+    jobTitle: author.role,
+    description: author.bio,
+    knowsAbout: author.interests,
+    affiliation: { '@type': 'Organization', name: author.affiliation },
+    ...(author.orcid ? { sameAs: [`https://orcid.org/${author.orcid}`] } : {}),
+  }
+
   return (
     <>
+      <JsonLd data={schema} />
+
       <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-[34px]">
         <Link href="/authors" className="text-[11.5px] tracking-[0.14em] uppercase font-bold">
           ← All contributors
@@ -100,7 +121,7 @@ export default async function AuthorProfilePage({
         </div>
       </section>
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,56px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 page-split">
         <div>
           <h2 className="m-0 font-serif text-[22px] font-bold text-maroon">Biography</h2>
           <p className="mt-3 mb-0 text-[15.5px] leading-[1.85] text-body">{author.bio}</p>
@@ -149,7 +170,7 @@ export default async function AuthorProfilePage({
           )}
         </div>
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <div className="border border-rule bg-cream">
             <div className="bg-maroon text-cream px-[18px] py-[11px] text-[11px] tracking-[0.16em] uppercase font-bold">
               Research interests

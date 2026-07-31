@@ -42,7 +42,16 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
-  alternates: { canonical: '/' },
+  /*
+   * The canonical here belongs to the homepage, which declares no metadata of
+   * its own. Every other public page sets its own through `pageMetadata`,
+   * because a page that does not inherits this one and tells search engines it
+   * is a duplicate of the homepage.
+   */
+  alternates: {
+    canonical: '/',
+    types: { 'application/atom+xml': [{ url: '/feed.xml', title: SITE_NAME }] },
+  },
   openGraph: {
     type: 'website',
     siteName: SITE_NAME,

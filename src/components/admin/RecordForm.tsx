@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { FieldInput, type Choice } from './FieldInput'
 import { deleteRecord, saveRecord } from '@/lib/admin/actions'
 import { fillPattern, nextStatusLabel } from '@/lib/admin/derive'
@@ -34,14 +34,32 @@ export function RecordForm({
   const id = record ? String(record.id) : null
   const isNew = id === null
 
-  const [values, setValues] = useState<Values>(() =>
+  const [initial] = useState<Values>(() =>
     Object.fromEntries(entity.fields.map((field) => [field.name, initialValue(field, record)])),
   )
+  const [values, setValues] = useState<Values>(initial)
 
   const [state, action, pending] = useActionState<FormResult | null, FormData>(
     saveRecord.bind(null, entity.slug, id),
     null,
   )
+
+  const dirty = entity.fields.some((field) => values[field.name] !== initial[field.name])
+
+  /*
+   * A record edited down to the last field and then navigated away from used to
+   * go with the page. The browser's own warning is the only one that catches a
+   * closed tab or a typed address, so it is the one used. Saving is a
+   * navigation too, hence `pending`: the guard has to be down before the
+   * redirect that follows a successful save.
+   */
+  useEffect(() => {
+    if (!dirty || pending) return
+
+    const warn = (event: BeforeUnloadEvent) => event.preventDefault()
+    window.addEventListener('beforeunload', warn)
+    return () => window.removeEventListener('beforeunload', warn)
+  }, [dirty, pending])
 
   /**
    * One write, plus whatever the panel works out from it.
@@ -80,6 +98,18 @@ export function RecordForm({
 
   const plain = entity.fields.filter((field) => !field.advanced)
   const advanced = entity.fields.filter((field) => field.advanced)
+
+  /*
+   * Records with a page of their own get a link to it, so a change can be
+   * checked where readers will see it. It follows the field rather than the
+   * saved record, which is right for everything except an unsaved rename: the
+   * old address is gone the moment you save anyway.
+   */
+  const publicField = entity.fields.find((field) => field.type === 'slug' && field.urlPrefix)
+  const publicHref =
+    !isNew && publicField && values[publicField.name]
+      ? `${publicField.urlPrefix}${String(values[publicField.name])}`
+      : null
 
   function render(field: Field) {
     return (
@@ -121,13 +151,33 @@ export function RecordForm({
           </details>
         ) : null}
 
-        <div className="flex gap-3 items-center pt-2">
+        {/*
+          * Save travels with you. A long record used to put it below the last
+          * field, so making one change near the top meant scrolling past
+          * everything you had not touched to commit it.
+          */}
+        <div className="sticky bottom-0 flex gap-4 items-center flex-wrap bg-page border-t border-rule py-4">
           <button type="submit" disabled={pending} className="btn-base btn-maroon">
             {pending ? 'Saving…' : 'Save'}
           </button>
           <Link href={base} className="text-[11.5px] tracking-[0.14em] uppercase font-bold">
             Cancel
           </Link>
+
+          {dirty && !pending ? (
+            <span className="text-[12.5px] text-maroon">Unsaved changes</span>
+          ) : null}
+
+          {publicHref ? (
+            <a
+              href={publicHref}
+              target="_blank"
+              rel="noreferrer"
+              className="ml-auto text-[11.5px] tracking-[0.14em] uppercase font-bold border-b border-gold pb-[2px]"
+            >
+              View on the site
+            </a>
+          ) : null}
         </div>
       </form>
 

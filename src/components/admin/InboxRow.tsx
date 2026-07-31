@@ -2,13 +2,7 @@
 
 import { useState } from 'react'
 import { setInboxStatus } from '@/lib/admin/actions'
-import type { InboxKey } from '@/lib/admin/entities'
-
-const STATUSES = [
-  { value: 'new', label: 'New' },
-  { value: 'replied', label: 'Replied' },
-  { value: 'archived', label: 'Archived' },
-]
+import { INBOX_STATUSES as STATUSES, type InboxKey } from '@/lib/admin/entities'
 
 export type InboxItem = {
   id: string

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { setSubmissionStatus, signManuscript } from '@/lib/admin/actions'
+import { setSubmissionStatus, signSubmissionFile } from '@/lib/admin/actions'
 
 const STATUSES = [
   { value: 'new', label: 'New' },
@@ -22,6 +22,8 @@ export type Submission = {
   status: string
   adminNotes: string
   manuscriptPath: string | null
+  /** Null on submissions taken before the cover letter was collected. */
+  coverLetterPath: string | null
   createdAt: string
 }
 
@@ -41,14 +43,14 @@ export function SubmissionRow({ submission }: { submission: Submission }) {
     }
   }
 
-  async function download() {
-    if (!submission.manuscriptPath) return
+  async function open_(path: string | null, what: string) {
+    if (!path) return
     setMessage('')
     try {
-      // Signed for five minutes; manuscripts are never publicly readable.
-      window.open(await signManuscript(submission.manuscriptPath), '_blank', 'noopener')
+      // Signed for five minutes; neither file is ever publicly readable.
+      window.open(await signSubmissionFile(path), '_blank', 'noopener')
     } catch (cause) {
-      setMessage(cause instanceof Error ? cause.message : 'Could not open the manuscript')
+      setMessage(cause instanceof Error ? cause.message : `Could not open the ${what}`)
     }
   }
 
@@ -92,11 +94,32 @@ export function SubmissionRow({ submission }: { submission: Submission }) {
             </select>
 
             {submission.manuscriptPath ? (
-              <button type="button" onClick={() => void download()} className="btn-base btn-outline">
+              <button
+                type="button"
+                onClick={() => void open_(submission.manuscriptPath, 'manuscript')}
+                className="btn-base btn-outline"
+              >
                 Open manuscript
               </button>
             ) : (
-              <span className="text-[12.5px] text-body-muted">No file attached</span>
+              <span className="text-[12.5px] text-body-muted">No manuscript attached</span>
+            )}
+
+            {/*
+             * Submissions taken before the cover letter was collected have
+             * none, and saying so is more use to an editor than an absent
+             * button they cannot tell apart from a missing upload.
+             */}
+            {submission.coverLetterPath ? (
+              <button
+                type="button"
+                onClick={() => void open_(submission.coverLetterPath, 'cover letter')}
+                className="btn-base btn-outline"
+              >
+                Open cover letter
+              </button>
+            ) : (
+              <span className="text-[12.5px] text-body-muted">No cover letter</span>
             )}
           </div>
 

@@ -3,13 +3,14 @@ import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getEditorialRoles, getTeam } from '@/lib/content'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Our team',
   description:
     'Who runs the International Collegiate Research Review, which editorial roles are open, and the recusal rule every editor works under.',
-  alternates: { canonical: '/team' },
-}
+  path: '/team',
+})
 
 export default async function TeamPage() {
   const [team, roles] = await Promise.all([getTeam(), getEditorialRoles()])
@@ -78,8 +79,8 @@ export default async function TeamPage() {
               Join the reviewer panel
             </h3>
             <p className="mt-[10px] mb-0 text-[14.5px] leading-[1.8] text-body">
-              We are recruiting reviewers across all five sections: graduate students, postdocs, and
-              faculty. Two manuscripts a month, three-week turnaround.
+              We are recruiting reviewers across all five sections. A remote volunteer post, open
+              worldwide: two manuscripts a month, three-week turnaround.
             </p>
             <Link href="/reviewers/apply" className="btn-base btn-maroon mt-[18px]">
               Apply as a reviewer

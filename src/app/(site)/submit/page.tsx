@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { SubmissionForm } from '@/components/site/submit/SubmissionForm'
+import { TemplatesDialog } from '@/components/site/submit/TemplatesDialog'
 import { PageHead } from '@/components/ui/PageHead'
-import { ToastButton } from '@/components/ui/ToastButton'
 import {
   getChecklist,
   getConfig,
@@ -9,14 +9,14 @@ import {
   getProcessSteps,
   getRequirements,
 } from '@/lib/content'
-import { PDF_TOAST } from '@/lib/toasts'
+import { pageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: 'Submit a manuscript',
   description:
     'Author guidelines, the manuscript checklist, and the submission form. No submission charge and no processing charge.',
-  alternates: { canonical: '/submit' },
-}
+  path: '/submit',
+})
 
 export default async function SubmitPage() {
   const [config, disciplines, requirements, checklist, steps] = await Promise.all([
@@ -36,7 +36,7 @@ export default async function SubmitPage() {
         maxWidth="none"
       />
 
-      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-[clamp(30px,4vw,56px)] items-start">
+      <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-10 page-split">
         <div>
           <h2 className="m-0 font-serif text-[24px] font-bold text-maroon">Eligibility</h2>
           <p className="mt-3 mb-0 text-[15.5px] leading-[1.85] text-body">
@@ -86,7 +86,7 @@ export default async function SubmitPage() {
           <SubmissionForm disciplines={disciplines} />
         </div>
 
-        <aside className="flex flex-col gap-5 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+        <aside className="flex flex-col gap-5 page-aside">
           <div className="border border-rule">
             <div className="bg-maroon text-cream px-[18px] py-[11px] text-[11px] tracking-[0.16em] uppercase font-bold">
               What happens next
@@ -114,14 +114,12 @@ export default async function SubmitPage() {
               Templates
             </div>
             <p className="mt-[10px] mb-0 text-[13.5px] leading-[1.75] text-body">
-              Manuscript and cover-letter templates will be posted before the deadline.
+              Optional. Your own format is welcome. These are here if you would rather start from a
+              document already laid out to the requirements above.
             </p>
-            <ToastButton
-              message={PDF_TOAST}
-              className="inline-block mt-3 text-[11.5px] tracking-[0.12em] uppercase font-bold border-b border-gold pb-[3px] text-maroon"
-            >
-              Download template
-            </ToastButton>
+            <TemplatesDialog className="inline-block mt-3 text-[11.5px] tracking-[0.12em] uppercase font-bold border-b border-gold pb-[3px] text-maroon">
+              Download templates
+            </TemplatesDialog>
           </div>
 
           <div className="border border-rule px-[18px] py-5">

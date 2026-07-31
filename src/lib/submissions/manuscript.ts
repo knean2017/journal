@@ -1,5 +1,5 @@
 /**
- * What counts as a manuscript.
+ * What counts as a manuscript, and as the cover letter beside it.
  *
  * Kept apart from schema.ts so the submission form can check a chosen file in
  * the browser without pulling Zod into the client bundle to do it. The same
@@ -7,6 +7,14 @@
  */
 
 export const MAX_MANUSCRIPT_BYTES = 20 * 1024 * 1024
+
+/*
+ * A cover letter is one page, two at the outside. Twenty megabytes of it is
+ * not a cover letter, and holding the smaller ceiling here means an author who
+ * attaches the two files the wrong way round is told so immediately rather
+ * than after uploading the larger one.
+ */
+export const MAX_COVER_LETTER_BYTES = 5 * 1024 * 1024
 
 /** The only two extensions a stored manuscript is ever given. */
 const EXTENSION_BY_TYPE: Record<string, string> = {

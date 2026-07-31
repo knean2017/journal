@@ -29,7 +29,7 @@ export function StayInformed() {
   }, [state, toast])
 
   return (
-    <aside className="border border-rule bg-cream px-[22px] py-6 sticky top-[70px] w-full max-w-[380px] justify-self-start">
+    <aside className="border border-rule bg-cream px-[22px] py-6 page-aside">
       <div className="text-[11px] tracking-[0.16em] uppercase text-gold-muted font-bold">
         Stay informed
       </div>
