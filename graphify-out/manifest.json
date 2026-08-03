@@ -465,8 +465,8 @@
     "semantic_hash": "fb4c521639b136b6a84275844f0325a2"
   },
   "src/lib/admin/session.ts": {
-    "mtime": 1785765370.0434973,
-    "ast_hash": "a7a1785b13c94612c89f8e7ee0291dd4",
+    "mtime": 1785786610.9405963,
+    "ast_hash": "d098dc513968177b1c4d81d29673bf57",
     "semantic_hash": ""
   },
   "src/lib/authors/filter.ts": {
@@ -967,6 +967,11 @@
   "tests/unit/permissions.test.ts": {
     "mtime": 1785766108.3655653,
     "ast_hash": "d1040730f584fc655f9d51623ad0fd73",
+    "semantic_hash": ""
+  },
+  "src/app/admin/no-access/page.tsx": {
+    "mtime": 1785786683.0029507,
+    "ast_hash": "dcb8470f3b9bcb4b24613f9b8430c3d1",
     "semantic_hash": ""
   }
 }

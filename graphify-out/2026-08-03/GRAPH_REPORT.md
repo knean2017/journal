@@ -1,16 +1,16 @@
 # Graph Report - design_handoff_icrr_journal  (2026-08-03)
 
 ## Corpus Check
-- 173 files · ~118,683 words
+- 181 files · ~125,111 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1004 nodes · 2015 edges · 70 communities (60 shown, 10 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 78 edges (avg confidence: 0.85)
+- 1050 nodes · 2202 edges · 70 communities (58 shown, 12 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 73 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `be2e1203`
+- Built from commit: `e416a880`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -68,23 +68,23 @@
 - [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 62|Community 62]]
 - [[_COMMUNITY_Community 63|Community 63]]
-- [[_COMMUNITY_Community 64|Community 64]]
-- [[_COMMUNITY_Community 65|Community 65]]
-- [[_COMMUNITY_Community 66|Community 66]]
-- [[_COMMUNITY_Community 68|Community 68]]
 - [[_COMMUNITY_Community 69|Community 69]]
+- [[_COMMUNITY_Community 70|Community 70]]
+- [[_COMMUNITY_Community 71|Community 71]]
+- [[_COMMUNITY_Community 73|Community 73]]
+- [[_COMMUNITY_Community 75|Community 75]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `createSupabaseServiceClient()` - 42 edges
-2. `requireAdmin()` - 31 edges
-3. `getConfig` - 29 edges
-4. `ImageSlot` - 27 edges
-5. `adminPath()` - 27 edges
-6. `ICRR Journal Public Site Implementation Plan` - 19 edges
-7. `ICRR Journal` - 17 edges
-8. `ICRR Journal Website — Design Spec` - 17 edges
-9. `PageHead()` - 16 edges
-10. `compilerOptions` - 16 edges
+1. `createSupabaseServiceClient()` - 44 edges
+2. `requireCapability()` - 38 edges
+3. `requireAdmin()` - 34 edges
+4. `getConfig` - 29 edges
+5. `adminPath()` - 29 edges
+6. `ImageSlot` - 27 edges
+7. `ICRR Journal Public Site Implementation Plan` - 19 edges
+8. `ICRR Journal` - 17 edges
+9. `ICRR Journal Website — Design Spec` - 17 edges
+10. `PageHead()` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Three Enforced Copy Rules` --semantically_similar_to--> `Spec Copy Rules (two)`  [INFERRED] [semantically similar]
@@ -113,15 +113,15 @@
 - **ICRR Brand Mark Visual System** — app_icon_icrr_monogram_mark, app_icon_checkerboard_inversion, app_icon_maroon_cream_palette, app_icon_serif_academic_wordmark [INFERRED 0.85]
 - **Next.js App Router Icon Asset Set** — app_icon, app_apple_icon, app_icon_nextjs_file_convention_metadata [INFERRED 0.95]
 
-## Communities (70 total, 10 thin omitted)
+## Communities (70 total, 12 thin omitted)
 
 ### Community 0 - "Admin Server Actions"
-Cohesion: 0.25
-Nodes (15): INBOX_STATUSES, matchesQuery(), matchesStatus(), param(), InboxItem, InboxRow(), ListToolbar(), StatusOption (+7 more)
+Cohesion: 0.31
+Nodes (10): INBOX_STATUSES, matchesQuery(), matchesStatus(), param(), InboxItem, InboxRow(), ListToolbar(), StatusOption (+2 more)
 
 ### Community 1 - "Forms and Toast System"
 Cohesion: 0.06
-Nodes (72): Field, SettingsForm(), ToastContext, useToast(), ContactForm(), ERROR_LABELS, FIELDS, Discipline (+64 more)
+Nodes (70): Field, SettingsForm(), ToastContext, useToast(), ContactForm(), ERROR_LABELS, FIELDS, EditorForm() (+62 more)
 
 ### Community 2 - "Prototype DCLogic Runtime"
 Cohesion: 0.06
@@ -129,55 +129,55 @@ Nodes (49): boot(), cdnScriptFor(), collectProps(), compileAttr(), compileTempla
 
 ### Community 3 - "Site Chrome and Shell"
 Cohesion: 0.07
-Nodes (23): Drawer(), COLUMNS, CREAM_78, Footer(), Masthead(), Nav(), RevealArmer(), SiteChrome() (+15 more)
+Nodes (22): Drawer(), COLUMNS, CREAM_78, Footer(), Masthead(), Nav(), RevealArmer(), ToastProvider() (+14 more)
 
 ### Community 4 - "NPM Dependency Manifest"
 Cohesion: 0.05
 Nodes (40): dependencies, next, react, react-dom, resend, server-only, @supabase/ssr, @supabase/supabase-js (+32 more)
 
 ### Community 5 - "Static Public Pages"
-Cohesion: 0.15
-Nodes (20): AboutPage(), metadata, SECTIONS, ContactPage(), metadata, getConfig, EthicsPage(), metadata (+12 more)
+Cohesion: 0.14
+Nodes (18): ContactPage(), metadata, metadata, pageMetadata(), metadata, PolicyBody(), PolicyList(), PolicySection() (+10 more)
 
 ### Community 6 - "Prototype ImageSlot Element"
 Cohesion: 0.12
 Nodes (7): flushNow(), getSlot(), ImageSlot, load(), save(), setSlot(), toDataUrl()
 
 ### Community 7 - "Journal Process Content"
-Cohesion: 0.12
-Nodes (15): JournalAtAGlance(), Fact, Requirement, checklist, facts, processSteps, requirements, timeline (+7 more)
+Cohesion: 0.09
+Nodes (24): Fact, ProcessStep, Requirement, TimelineEntry, TocPreviewEntry, checklist, facts, processSteps (+16 more)
 
 ### Community 8 - "Supabase Content Sources"
-Cohesion: 0.10
-Nodes (19): ArticleAuthor, ArticleRow, AuthorRow, DisciplineRow, getAnnouncements, getArticleBySlug, getArticles, getArticlesByAuthor (+11 more)
+Cohesion: 0.09
+Nodes (21): ArticleAuthor, ArticleRow, AuthorRow, DisciplineRow, getAnnouncements, getArticleBySlug, getArticles, getArticlesByAuthor (+13 more)
 
 ### Community 9 - "Root Layout and Metadata"
-Cohesion: 0.18
-Nodes (15): fromDb(), getAnnouncements, getAuthorBySlug, getDisciplines, getTickerLines, useDb(), editorialRoleSchema, editorialRoleStatusSchema (+7 more)
+Cohesion: 0.15
+Nodes (13): 5. Data model, `announcements`, `article_authors`, `articles`, `authors`, `disciplines`, `editorial_roles`, `issues` (+5 more)
 
 ### Community 10 - "TypeScript Compiler Config"
 Cohesion: 0.10
 Nodes (19): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+11 more)
 
 ### Community 11 - "Zod Content Schemas"
-Cohesion: 0.09
-Nodes (20): announcementSchema, Article, articleAuthorSchema, articleSchema, articleStatusSchema, Author, authorSchema, disciplineSchema (+12 more)
+Cohesion: 0.11
+Nodes (18): announcementSchema, articleAuthorSchema, articleSchema, articleStatusSchema, authorSchema, disciplineSchema, editorialRoleSchema, editorialRoleStatusSchema (+10 more)
 
 ### Community 12 - "Homepage Sections"
-Cohesion: 0.15
-Nodes (10): Announcement, ProcessStep, TickerLine, AnnouncementBar(), AnnouncementRows(), ClosingCta(), Hero(), ProcessSteps() (+2 more)
+Cohesion: 0.13
+Nodes (13): getAnnouncements, getTickerLines, AnnouncementBar(), AnnouncementRows(), ClosingCta(), Hero(), ProcessSteps(), ValueColumns() (+5 more)
 
 ### Community 13 - "Authors Browsing and Sitemap"
-Cohesion: 0.23
+Cohesion: 0.25
 Nodes (14): sitemap(), STATIC_ROUTES, AuthorsBrowser(), AuthorCard, buildAuthorCards(), countLabel(), filterAuthors(), publicationLabel() (+6 more)
 
 ### Community 14 - "Content Accessor Layer"
-Cohesion: 0.15
-Nodes (13): 5. Data model, `announcements`, `article_authors`, `articles`, `authors`, `disciplines`, `editorial_roles`, `issues` (+5 more)
+Cohesion: 0.10
+Nodes (36): activeAdministrators(), invitePerson(), InviteResult, isRole(), listStaff(), savePermissions(), setPersonActive(), setPersonRole() (+28 more)
 
 ### Community 15 - "Seed Data and Script"
-Cohesion: 0.14
-Nodes (12): EditorialRole, Issue, SiteConfig, check(), main(), supabase, announcements, config (+4 more)
+Cohesion: 0.15
+Nodes (11): Author, EditorialRole, SiteConfig, TickerLine, check(), main(), supabase, authors (+3 more)
 
 ### Community 16 - "Archives, Issue, Article Views"
 Cohesion: 0.31
@@ -203,6 +203,10 @@ Nodes (12): ICRR Horizontal Lockup (lockup-full.png), Divider Rule Separating Ma
 Cohesion: 0.18
 Nodes (12): Deviation from Spec §14 (own Zod schemas first), Task 18: Netlify Deploy, ADMIN_PATH Route Obscurity, createManuscriptUpload, Direct-to-Storage Manuscript Upload, Netlify Deployment Configuration, Runtime Security Model, submitManuscript (+4 more)
 
+### Community 22 - "Architecture Decisions"
+Cohesion: 0.17
+Nodes (14): SiteChrome(), getArticleBySlug, getConfig, EthicsPage(), journalSchema(), resolveIssn(), PrivacyPage(), JsonLd() (+6 more)
+
 ### Community 23 - "Copy and Visual Constraints"
 Cohesion: 0.15
 Nodes (14): Copy rules, No Border Radius Anywhere, One Shadow in the Whole Design, "Our Team" Rename from "Editorial Board", About Page Review-Policy Copy Constraint, Three Rule Treatments, Task 17: Design Audit, tests/unit/tokens.test.ts (+6 more)
@@ -210,10 +214,6 @@ Nodes (14): Copy rules, No Border Radius Anywhere, One Shadow in the Whole Desig
 ### Community 24 - "Design Tokens and Motion"
 Cohesion: 0.43
 Nodes (6): Colors, Design Tokens, Rules and dividers, Spacing & layout, Typography, globals.css Tokens, Reset, Keyframes, Component Classes
-
-### Community 25 - "App Router Icons"
-Cohesion: 0.48
-Nodes (7): Apple Touch Icon (ICRR Monogram), Favicon (ICRR Monogram), Checkerboard Color Inversion Pattern, ICRR Four-Quadrant Monogram Mark, Maroon and Cream Brand Palette, Next.js App Router Icon File Convention, Serif Academic Lettering
 
 ### Community 26 - "Scroll Reveal Behavior"
 Cohesion: 0.13
@@ -228,16 +228,16 @@ Cohesion: 0.05
 Nodes (47): Component (DCLogic subclass), Do Not Port the Prototype Runtime, ICRR Journal Design Handoff, Deviation from spec §14, File Structure, Global Constraints, ICRR Journal Public Site Implementation Plan, Plan sequence (+39 more)
 
 ### Community 29 - "Route Map and UI Primitives"
-Cohesion: 0.17
-Nodes (17): deleteAsset(), setSubmissionStatus(), signSubmissionFile(), uploadAsset(), recordTitle(), loadLookups(), MediaFile, MediaLibrary() (+9 more)
+Cohesion: 0.21
+Nodes (23): deleteAsset(), setSubmissionStatus(), signSubmissionFile(), uploadAsset(), MediaFile, MediaLibrary(), AdminDashboard(), counts() (+15 more)
 
 ### Community 30 - "Admin Panel Design Notes"
 Cohesion: 0.33
 Nodes (6): Pre-Launch Honesty in Copy, Routing, UI Primitives (Container, Eyebrow, PageHead, Button, Panel, Callout, ImageSlot), Tasks 7 to 16: The Ten Views, ImageSlot Component, Public Routes and Their Data
 
 ### Community 31 - "Design Audit Unit Test"
-Cohesion: 0.11
-Nodes (21): lato, libreBaskerville, metadata, robots(), getArticleBySlug, getArticlesByAuthor, escape(), GET() (+13 more)
+Cohesion: 0.13
+Nodes (14): lato, libreBaskerville, metadata, size, robots(), getArticlesByAuthor, escape(), GET() (+6 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.20
@@ -248,8 +248,8 @@ Cohesion: 0.20
 Nodes (9): About the Design Files, Fidelity, Files, Handoff: ICRR Journal Website, Overview, State Management, Admin Panel (editor-facing), useFormFields Hook (form state retention) (+1 more)
 
 ### Community 36 - "Site Config Seed"
-Cohesion: 0.14
-Nodes (12): getEditorialRoles, getTeam, roleStatusDisplay(), STATUS_COLOUR, getEditorialRoles, getTeam, COMMITMENT, LOOKING_FOR (+4 more)
+Cohesion: 0.16
+Nodes (12): getAuthorBySlug, getCurrentIssue, getEditorialRoles, getTeam, CurrentIssuePage(), metadata, ProductionTimeline(), TocPreview() (+4 more)
 
 ### Community 37 - "Team Seed"
 Cohesion: 0.29
@@ -268,42 +268,34 @@ Cohesion: 0.25
 Nodes (7): formatBytes(), Template, TemplateDownload, TemplateId, TEMPLATES, TemplatesDialog(), publicDir
 
 ### Community 56 - "Community 56"
-Cohesion: 0.18
-Nodes (14): assertWritable(), coerce(), deleteRecord(), DOC_TYPES, IMAGE_TYPES, INBOX_STATUSES, saveRecord(), saveSiteConfig() (+6 more)
+Cohesion: 0.14
+Nodes (20): assertWritable(), coerce(), deleteRecord(), DOC_TYPES, IMAGE_TYPES, INBOX_STATUSES, moveRecord(), requireEntityCapability() (+12 more)
 
 ### Community 57 - "Community 57"
-Cohesion: 0.15
-Nodes (9): assetUrl(), Entity, AssetInput(), Choice, FieldInput(), RecordForm(), Values, AUTHOR (+1 more)
+Cohesion: 0.11
+Nodes (19): assetUrl(), fillPattern(), nextStatusLabel(), recordTitle(), reorder(), slugify(), standardLabel(), Entity (+11 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.12
 Nodes (16): 1. The problem, 2. What we are building, 3. Data model, 4. Public page — `src/app/(site)/team/page.tsx`, 5. Admin — `src/lib/admin/entities.ts`, 6. Application guards — no change, 7. Tests, 8. Files touched (+8 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.23
-Nodes (10): AdminNav(), NavGroup, NavLink, ENTITIES, AdminLayout(), inboxCounts(), metadata, currentAdmin (+2 more)
-
-### Community 61 - "Community 61"
-Cohesion: 0.19
-Nodes (9): getCurrentIssue, TimelineEntry, TocPreviewEntry, CurrentIssuePage(), metadata, ProductionTimeline(), TocPreview(), getTimeline() (+1 more)
+Cohesion: 0.24
+Nodes (10): signOut(), AdminNav(), NavGroup, NavLink, AdminLayout(), inboxCounts(), metadata, currentAdmin (+2 more)
 
 ### Community 62 - "Community 62"
-Cohesion: 0.40
-Nodes (5): ALLOWED_HEX, FILES, read(), readCopy(), ROUND_BY_DESIGN
+Cohesion: 0.29
+Nodes (7): fromDb(), useDb(), ALLOWED_HEX, FILES, read(), readCopy(), ROUND_BY_DESIGN
 
 ### Community 63 - "Community 63"
-Cohesion: 0.20
-Nodes (8): FieldType, INBOX_TABLES, InboxKey, PUBLISHED, SITE_CONFIG_FIELDS, SORT_ORDER, WRITABLE_TABLES, SiteConfigPage()
+Cohesion: 0.13
+Nodes (9): ENTITIES, FieldType, INBOX_TABLES, InboxKey, PUBLISHED, SITE_CONFIG_FIELDS, SORT_ORDER, WRITABLE_TABLES (+1 more)
 
-### Community 64 - "Community 64"
-Cohesion: 0.31
-Nodes (4): moveRecord(), findEntity(), EntityListPage(), MoveButton()
+### Community 69 - "Community 69"
+Cohesion: 0.40
+Nodes (4): JournalAtAGlance(), AboutPage(), metadata, SECTIONS
 
-### Community 65 - "Community 65"
-Cohesion: 0.50
-Nodes (6): fillPattern(), nextStatusLabel(), reorder(), slugify(), standardLabel(), ISSUE_STATUSES
-
-### Community 66 - "Community 66"
+### Community 70 - "Community 70"
 Cohesion: 0.33
 Nodes (4): COMMITMENT, LOOKING_FOR, metadata, RESPONSIBILITIES
 
@@ -318,9 +310,9 @@ Nodes (4): COMMITMENT, LOOKING_FOR, metadata, RESPONSIBILITIES
   design-reference/assets/icrr_mark.png · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **297 isolated node(s):** `Task 1: Data model — migration, schema, sources, seed`, `Task 2: The display helper`, `Task 3: Render the holder on the team page`, `Task 4: Appoint someone from the admin panel`, `Task 5: Confirm the application guards, change nothing` (+292 more)
+- **304 isolated node(s):** `csp`, `SECURITY_HEADERS`, `nextConfig`, `metadata`, `metadata` (+299 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -333,9 +325,9 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **What is the exact relationship between `Diagonal Reversed-Contrast Tile Pairing` and `Transparent-Background Asset Convention`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `getConfig` connect `Static Public Pages` to `Forms and Toast System`, `Community 66`, `Site Chrome and Shell`, `Site Config Seed`, `Root Layout and Metadata`, `Homepage Sections`, `Authors Browsing and Sitemap`, `Archives, Issue, Article Views`, `Community 61`, `Design Audit Unit Test`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `5. Data model` connect `Content Accessor Layer` to `Manuscript Upload Flow`, `Author Profile and TOC`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `Storage buckets` connect `Author Profile and TOC` to `Prototype to Code Mapping`, `Content Accessor Layer`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `fromDb()` connect `Community 62` to `Site Config Seed`?**
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Why does `getConfig` connect `Architecture Decisions` to `Site Chrome and Shell`, `Site Config Seed`, `Static Public Pages`, `Community 69`, `Community 70`, `Journal Process Content`, `Homepage Sections`, `Authors Browsing and Sitemap`, `Archives, Issue, Article Views`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `FormResult` connect `Forms and Toast System` to `Community 56`, `Community 57`, `Content Accessor Layer`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
