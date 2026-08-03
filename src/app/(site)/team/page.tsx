@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { PageHead } from '@/components/ui/PageHead'
 import { getEditorialRoles, getTeam } from '@/lib/content'
+import { roleStatusDisplay } from '@/lib/roles'
 import { pageMetadata } from '@/lib/seo'
 
 export const metadata: Metadata = pageMetadata({
@@ -55,20 +56,27 @@ export default async function TeamPage() {
       <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-12">
         <h2 className="m-0 font-serif text-[24px] font-bold">Editorial roles</h2>
         <div className="grid [grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr))] mt-5 border-t border-rule">
-          {roles.map((role) => (
-            <div key={role.title} className="py-6 pr-[26px] border-b border-rule">
-              <div className="font-serif text-[18px] font-bold text-ink">{role.title}</div>
-              <div
-                className="mt-[6px] text-[11.5px] tracking-[0.14em] uppercase font-bold"
-                style={{ color: role.status === 'pending' ? '#8A7B5C' : '#5D1D21' }}
-              >
-                {role.statusLabel}
+          {roles.map((role) => {
+            const { colour, holderName } = roleStatusDisplay(role)
+
+            return (
+              <div key={role.title} className="py-6 pr-[26px] border-b border-rule">
+                <div className="font-serif text-[18px] font-bold text-ink">{role.title}</div>
+                <div
+                  className="mt-[6px] text-[11.5px] tracking-[0.14em] uppercase font-bold"
+                  style={{ color: colour }}
+                >
+                  {role.statusLabel}
+                  {holderName && (
+                    <span className="normal-case tracking-[0.04em]"> · {holderName}</span>
+                  )}
+                </div>
+                <p className="mt-[9px] mb-0 text-[13.5px] leading-[1.75] text-body-muted">
+                  {role.duty}
+                </p>
               </div>
-              <p className="mt-[9px] mb-0 text-[13.5px] leading-[1.75] text-body-muted">
-                {role.duty}
-              </p>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </section>
 

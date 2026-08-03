@@ -558,12 +558,15 @@ Expected: PASS on all four. Record the actual output; do not report the feature 
 
 Run: `graphify update .`
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Do not commit the graph**
 
-```bash
-git add graphify-out
-git commit -m "chore: refresh knowledge graph after appointed roles"
-```
+`graphify-out/` already carries uncommitted changes from work that predates this plan. Committing it
+here would sweep that unrelated work into this branch's history. Leave it dirty on disk; it is
+handled separately once this plan is done.
+
+**Every commit in this plan names its exact files.** Never `git add -A`, `git add .`, or `git commit -a`
+— the working tree holds roughly nineteen unrelated modified and untracked files, and a broad add
+would take all of them.
 
 ---
 

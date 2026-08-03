@@ -192,13 +192,14 @@ export const getEditorialRoles = cache(async (): Promise<EditorialRole[]> => {
   const supabase = createSupabasePublicClient()
   const { data } = await supabase
     .from('editorial_roles')
-    .select('title, status, status_label, duty, sort_order')
+    .select('title, status, status_label, holder_name, duty, sort_order')
     .order('sort_order')
 
   return (data ?? []).map((row) => ({
     title: row.title,
     status: row.status,
     statusLabel: row.status_label,
+    holderName: row.holder_name,
     duty: row.duty,
     sortOrder: row.sort_order,
   }))

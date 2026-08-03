@@ -156,6 +156,7 @@ export const ENTITIES: Entity[] = [
         options: [
           { value: 'recruiting', label: 'Recruiting' },
           { value: 'pending', label: 'Appointment pending' },
+          { value: 'appointed', label: 'Appointed' },
         ],
         help: 'Only roles set to Recruiting can be applied for.',
       },
@@ -165,6 +166,12 @@ export const ENTITIES: Entity[] = [
         type: 'textarea',
         required: true,
         help: 'Shown on the team page and on the application form.',
+      },
+      {
+        name: 'holder_name',
+        label: 'Who holds it',
+        type: 'text',
+        help: 'Shown on the team page beside the role. Leave empty unless the status is Appointed.',
       },
       {
         name: 'status_label',

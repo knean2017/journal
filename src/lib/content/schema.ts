@@ -24,12 +24,13 @@ export const teamMemberSchema = z.object({
   sortOrder: z.number().int(),
 })
 
-export const editorialRoleStatusSchema = z.enum(['pending', 'recruiting'])
+export const editorialRoleStatusSchema = z.enum(['pending', 'recruiting', 'appointed'])
 
 export const editorialRoleSchema = z.object({
   title: z.string(),
   status: editorialRoleStatusSchema,
   statusLabel: z.string(),
+  holderName: z.string().nullable(),
   duty: z.string(),
   sortOrder: z.number().int(),
 })

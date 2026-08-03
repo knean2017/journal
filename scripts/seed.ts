@@ -107,6 +107,7 @@ async function main() {
           title: r.title,
           status: r.status,
           status_label: r.statusLabel,
+          holder_name: r.holderName,
           duty: r.duty,
           sort_order: r.sortOrder,
         })),
