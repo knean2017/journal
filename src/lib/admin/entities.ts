@@ -448,14 +448,14 @@ export const SITE_CONFIG_FIELDS: Field[] = [
     label: 'Submission deadline',
     type: 'text',
     required: true,
-    help: 'Written the way it should read, for example "31 August 2026".',
+    help: 'Written the way it should read, for example "30 August 2026".',
   },
   {
     name: 'expected',
     label: 'Publication date',
     type: 'text',
     required: true,
-    help: 'Written the way it should read, for example "30 September 2026".',
+    help: 'Written the way it should read, for example "15 September 2026".',
   },
   {
     name: 'contact_email',

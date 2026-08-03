@@ -12,7 +12,7 @@ export function ClosingCta({ deadline }: { deadline: string }) {
           style={{ color: 'rgba(247,244,239,.82)' }}
         >
           Submissions for Issue 1 close {deadline}. Manuscripts of 3,000–8,000 words in any of the
-          five sections.
+          six sections.
         </p>
         <div className="flex gap-[14px] justify-center flex-wrap mt-[30px]">
           {/* The only gold-filled button in the design. */}

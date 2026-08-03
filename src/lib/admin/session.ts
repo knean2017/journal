@@ -62,21 +62,34 @@ export const permissionMatrix = cache(async (): Promise<PermissionMatrix> => {
 })
 
 /**
- * Who is signed in, and what they are, or null.
+ * The authenticated account, whatever the staff table says about it.
  *
  * `getUser` is a round trip to the auth server, not a cookie read, and every
  * admin view asks at least twice: the layout draws the sidebar, then the page
  * inside it gates itself. React's `cache` makes the second ask free without
  * weakening either check, because the scope is one render.
  *
- * Authenticating is no longer enough. Without an active staff row, and without
- * being the bootstrap address, an account that can sign in still gets nothing.
+ * Separate from `currentAdmin` because the two failures it distinguishes need
+ * different answers: nobody is signed in, versus somebody is signed in and is
+ * not staff.
  */
-export const currentAdmin = cache(async (): Promise<AdminSession | null> => {
+export const currentUser = cache(async () => {
   const supabase = await createSupabaseServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  return user
+})
+
+/**
+ * Who is signed in, and what they are, or null.
+ *
+ * Authenticating is no longer enough. Without an active staff row, and without
+ * being the bootstrap address, an account that can sign in still gets nothing.
+ */
+export const currentAdmin = cache(async (): Promise<AdminSession | null> => {
+  const user = await currentUser()
 
   if (!user) return null
 
@@ -124,8 +137,16 @@ export const currentAdmin = cache(async (): Promise<AdminSession | null> => {
  */
 export async function requireAdmin(): Promise<AdminSession> {
   const admin = await currentAdmin()
-  if (!admin) redirect(`/${adminPath()}/login`)
-  return admin
+  if (admin) return admin
+
+  /*
+   * Two different refusals, and sending both to the login page turns one of
+   * them into a redirect loop: middleware bounces an already-signed-in visitor
+   * off the login page and back into the panel, which refuses again, forever.
+   * An account with no staff row gets a page that says so instead.
+   */
+  const user = await currentUser()
+  redirect(user ? `/${adminPath()}/no-access` : `/${adminPath()}/login`)
 }
 
 /**

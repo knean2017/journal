@@ -52,7 +52,7 @@ export default async function ReviewerApplyPage() {
       <PageHead
         eyebrow="For reviewers"
         title="Join the reviewer panel"
-        lead="We are recruiting reviewers across all five sections. This is a remote volunteer position, open worldwide to students, researchers, and professionals in the field. First-time reviewers are welcome and are paired with a section editor."
+        lead="We are recruiting reviewers across all six sections. This is a remote volunteer position, open worldwide to students, researchers, and professionals in the field. First-time reviewers are welcome and are paired with a section editor."
         maxWidth="none"
       />
 
