@@ -40,7 +40,7 @@ Decided against, deliberately:
 
 ## 3. Data model
 
-### Migration — `supabase/migrations/0005_appointed_roles.sql`
+### Migration — `supabase/migrations/0006_appointed_roles.sql`
 
 ```sql
 alter type editorial_role_status add value if not exists 'appointed';
@@ -107,12 +107,20 @@ export function roleStatusDisplay(role: EditorialRole): {
   colour: string
   holderName: string | null
 } {
+  const name = role.holderName?.trim()
   return {
     colour: STATUS_COLOUR[role.status],
-    holderName: role.status === 'appointed' ? role.holderName : null,
+    holderName: role.status === 'appointed' && name ? name : null,
   }
 }
 ```
+
+**Why the blank check, and not just a null check.** The admin panel's `coerce`
+(`src/lib/admin/actions.ts:68-69`) writes `''` for an empty text field — only `image`, `pdf`,
+`number`, `date`, `discipline` and `issue` get the `value === '' ? null` treatment. So an editor who
+picks "Appointed" and leaves the name empty stores `''`, not `null`, and a plain null check would
+render the separator with nothing after it. Normalising here is cheaper and narrower than changing
+`coerce`'s default, which every text field on every entity shares.
 
 An exhaustive `Record` keyed by the status union means a fourth status added later is a type error
 rather than a wrong colour. `src/lib/layout.ts` with `tests/unit/layout.test.ts` is the existing
@@ -132,12 +140,18 @@ The page calls the helper per role and renders the label, then the name when the
 
 ```
 Section Editor, Humanities
-APPOINTED — Jane Doe
+APPOINTED · Jane Doe
 Oversees history, literature, philosophy, and the arts.
 ```
 
 The label keeps its uppercase tracking; the name is wrapped in a `normal-case` span so it reads as a
-name rather than a shouted constant. Separator is an em dash.
+name rather than a shouted constant.
+
+**Separator is a middot, not an em dash.** The journal does not use em dashes: `tests/unit/content.test.ts`
+asserts none appear in seeded copy, and there is not one anywhere in `src/`. The middot is the
+established separator, used in ten files on both the public site and the admin — `Volume 1 · Issue 1`,
+`Open access · ISSN applied for`, `{author.role} · {author.affiliation}`. An em dash here would have
+been the first in the codebase.
 
 ## 5. Admin — `src/lib/admin/entities.ts`
 
@@ -202,8 +216,10 @@ appointed rendering is proved by unit tests over `roleStatusDisplay`, not end to
 - `recruiting` returns maroon `#5D1D21` and `null`, *even when `holderName` is set* — this is the
   stale-name case from §4 and the main reason the helper exists.
 - `pending` returns gold-muted `#8A7B5C` and `null`.
-- `appointed` with `holderName: null` returns `null` rather than an empty string, so the page renders
-  no dangling em dash.
+- `appointed` with `holderName: null` returns `null`, so the page renders no dangling separator.
+- `appointed` with `holderName: ''` and with `'   '` both return `null` — the value the admin panel
+  actually writes for an empty field.
+- `appointed` with `holderName: '  Jane Doe  '` returns `'Jane Doe'`, trimmed.
 
 **Unit — `tests/unit/content.test.ts`**
 
@@ -225,7 +241,7 @@ breaks, a seeded role was flipped to `appointed` by mistake.
 
 | File | Change |
 | --- | --- |
-| `supabase/migrations/0005_appointed_roles.sql` | New. Enum value, `holder_name` column. |
+| `supabase/migrations/0006_appointed_roles.sql` | New. Enum value, `holder_name` column. |
 | `src/lib/content/schema.ts` | `appointed` in the status enum; `holderName` on the role schema. |
 | `src/lib/content/sources/supabase.ts` | Map `holder_name` → `holderName`. |
 | `src/lib/content/seed/roles.ts` | `holderName: null` on all seven. |
@@ -234,6 +250,7 @@ breaks, a seeded role was flipped to `appointed` by mistake.
 | `src/app/(site)/team/page.tsx` | Call the helper; render the name. |
 | `src/lib/admin/entities.ts` | Third select option; `holder_name` field. |
 | `tests/unit/roles.test.ts` | New. Colour and name-visibility coverage. |
+| `tests/unit/entities.test.ts` | New. Third select option and `holder_name` field present. |
 | `tests/unit/content.test.ts` | Schema and seed coverage. |
 
 `tests/e2e/views.spec.ts` and the two application guards are deliberately absent from this table.
