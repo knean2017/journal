@@ -12,6 +12,12 @@ export type NavLink = {
   count?: number
   /** Dashboard only: every other page sits under it, so it cannot match by prefix. */
   exact?: boolean
+  /**
+   * The permission area that governs this link. The layout filters on it before
+   * rendering, so by the time a link is here it has already been allowed. Null
+   * means no area is mapped, which the layout treats as not visible.
+   */
+  area?: string | null
 }
 
 export type NavGroup = { title: string; links: NavLink[] }

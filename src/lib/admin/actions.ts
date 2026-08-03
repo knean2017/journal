@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { requireAdmin } from './session'
+import { requireCapability } from './session'
+import { areaForEntity, areaForInbox } from './permissions'
 import { friendlyError, reorder } from './derive'
 import {
   INBOX_TABLES,
@@ -29,6 +30,19 @@ const INBOX_STATUSES = new Set(['new', 'replied', 'archived'])
 
 function assertWritable(table: string): void {
   if (!WRITABLE_TABLES.has(table)) throw new Error(`Refusing to write to table "${table}"`)
+}
+
+/**
+ * The permission gate for the three actions that are generic over the entity.
+ *
+ * An entity with no area mapping is refused outright rather than allowed
+ * through ungated, so adding an entity to ENTITIES and forgetting to place it
+ * in AREA_BY_ENTITY locks it instead of opening it to everyone.
+ */
+async function requireEntityCapability(entitySlug: string, need: 'view' | 'edit') {
+  const area = areaForEntity(entitySlug)
+  if (!area) throw new Error(`No permission area is defined for "${entitySlug}"`)
+  return requireCapability(area, need)
 }
 
 /** Turns raw form values into the types Postgres expects for each column. */
@@ -87,7 +101,7 @@ export async function saveRecord(
   _previous: FormResult | null,
   form: FormData,
 ): Promise<FormResult> {
-  await requireAdmin()
+  await requireEntityCapability(entitySlug, 'edit')
 
   const entity = findEntity(entitySlug)
   if (!entity) throw new Error(`Unknown entity "${entitySlug}"`)
@@ -124,7 +138,7 @@ export async function saveRecord(
  * to a handful of rows, so the extra writes cost nothing.
  */
 export async function moveRecord(entitySlug: string, id: string, direction: 'up' | 'down') {
-  await requireAdmin()
+  await requireEntityCapability(entitySlug, 'edit')
 
   const entity = findEntity(entitySlug)
   if (!entity) throw new Error(`Unknown entity "${entitySlug}"`)
@@ -149,7 +163,7 @@ export async function moveRecord(entitySlug: string, id: string, direction: 'up'
 }
 
 export async function deleteRecord(entitySlug: string, id: string) {
-  await requireAdmin()
+  await requireEntityCapability(entitySlug, 'edit')
 
   const entity = findEntity(entitySlug)
   if (!entity) throw new Error(`Unknown entity "${entitySlug}"`)
@@ -167,7 +181,7 @@ export async function saveSiteConfig(
   _previous: FormResult | null,
   form: FormData,
 ): Promise<FormResult> {
-  await requireAdmin()
+  await requireCapability('settings', 'edit')
 
   const supabase = createSupabaseServiceClient()
   const row = coerce(SITE_CONFIG_FIELDS, form)
@@ -192,7 +206,7 @@ export async function saveSiteConfig(
  * type and size are checked server-side.
  */
 export async function uploadAsset(form: FormData): Promise<string> {
-  await requireAdmin()
+  await requireCapability('media', 'edit')
 
   const file = form.get('file')
   const kind = form.get('kind')
@@ -223,7 +237,7 @@ export async function uploadAsset(form: FormData): Promise<string> {
 }
 
 export async function deleteAsset(bucket: string, path: string) {
-  await requireAdmin()
+  await requireCapability('media', 'edit')
   if (bucket !== 'media' && bucket !== 'article-pdfs') throw new Error('Unknown bucket')
 
   const supabase = createSupabaseServiceClient()
@@ -234,7 +248,7 @@ export async function deleteAsset(bucket: string, path: string) {
 }
 
 export async function setSubmissionStatus(id: string, status: string, notes: string) {
-  await requireAdmin()
+  await requireCapability('submissions', 'edit')
 
   const supabase = createSupabaseServiceClient()
   const { error } = await supabase
@@ -256,7 +270,9 @@ export async function setInboxStatus(
   status: string,
   notes: string,
 ): Promise<void> {
-  await requireAdmin()
+  const area = areaForInbox(key)
+  if (!area) throw new Error(`No permission area is defined for inbox "${key}"`)
+  await requireCapability(area, 'edit')
 
   const inbox = INBOX_TABLES[key]
   if (!inbox) throw new Error(`Unknown inbox "${key}"`)
@@ -281,7 +297,8 @@ export async function setInboxStatus(
  * so both are read this way rather than by a URL anyone could keep.
  */
 export async function signSubmissionFile(path: string): Promise<string> {
-  await requireAdmin()
+  // View, not edit: a reviewer reads manuscripts, and an observer may too.
+  await requireCapability('submissions', 'view')
 
   const supabase = createSupabaseServiceClient()
   const { data, error } = await supabase.storage.from('manuscripts').createSignedUrl(path, 300)

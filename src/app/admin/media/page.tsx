@@ -1,12 +1,12 @@
 import { MediaLibrary } from '@/components/admin/MediaLibrary'
-import { requireAdmin } from '@/lib/admin/session'
+import { requireCapability } from '@/lib/admin/session'
 import { SUPABASE_URL } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
 export const dynamic = 'force-dynamic'
 
 export default async function MediaPage() {
-  await requireAdmin()
+  await requireCapability('media', 'view')
 
   const supabase = createSupabaseServiceClient()
   const { data, error } = await supabase.storage
