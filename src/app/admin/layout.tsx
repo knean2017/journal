@@ -1,6 +1,7 @@
 import { AdminNav, type NavGroup } from '@/components/admin/AdminNav'
 import { ENTITIES } from '@/lib/admin/entities'
-import { currentAdmin } from '@/lib/admin/session'
+import { areaForEntity, can, type Area } from '@/lib/admin/permissions'
+import { currentAdmin, permissionMatrix } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 import '@/styles/globals.css'
@@ -57,38 +58,75 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const base = `/${adminPath()}`
   const counts = await inboxCounts()
+  const matrix = await permissionMatrix()
+
+  /** Cosmetic only. The pages and the actions behind these links gate themselves. */
+  const visible = (area: Area | null) => Boolean(area) && can(matrix, user.role, area!, 'view')
 
   /*
    * Grouped by what you came to do. Everything that arrives from the public
    * site is in one place and carries its own count; everything that appears on
    * the site is in another; settings sit apart from both.
+   *
+   * Each link declares the area that governs it, and a group with nothing left
+   * in it drops out rather than leaving an empty heading. A reviewer sees one
+   * heading and one link.
    */
   const groups: NavGroup[] = [
     {
       title: 'Overview',
-      links: [{ href: base, label: 'Dashboard', exact: true }],
+      links: [{ href: base, label: 'Dashboard', exact: true, area: 'dashboard' as Area }],
     },
     {
       title: 'Inbox',
       links: [
-        { href: `${base}/submissions`, label: 'Submissions', count: counts.submissions },
-        { href: `${base}/reviewers`, label: 'Reviewer applications', count: counts.reviewers },
-        { href: `${base}/editors`, label: 'Editor applications', count: counts.editors },
-        { href: `${base}/messages`, label: 'Messages', count: counts.messages },
+        {
+          href: `${base}/submissions`,
+          label: 'Submissions',
+          count: counts.submissions,
+          area: 'submissions' as Area,
+        },
+        {
+          href: `${base}/reviewers`,
+          label: 'Reviewer applications',
+          count: counts.reviewers,
+          area: 'applications' as Area,
+        },
+        {
+          href: `${base}/editors`,
+          label: 'Editor applications',
+          count: counts.editors,
+          area: 'applications' as Area,
+        },
+        {
+          href: `${base}/messages`,
+          label: 'Messages',
+          count: counts.messages,
+          area: 'messages' as Area,
+        },
       ],
     },
     {
       title: 'Website content',
       links: [
-        ...ENTITIES.map((entity) => ({ href: `${base}/${entity.slug}`, label: entity.plural })),
-        { href: `${base}/media`, label: 'Media' },
+        ...ENTITIES.map((entity) => ({
+          href: `${base}/${entity.slug}`,
+          label: entity.plural,
+          area: areaForEntity(entity.slug),
+        })),
+        { href: `${base}/media`, label: 'Media', area: 'media' as Area },
       ],
     },
     {
       title: 'Settings',
-      links: [{ href: `${base}/config`, label: 'Site settings' }],
+      links: [
+        { href: `${base}/config`, label: 'Site settings', area: 'settings' as Area },
+        { href: `${base}/people`, label: 'People and permissions', area: 'people' as Area },
+      ],
     },
   ]
+    .map((group) => ({ ...group, links: group.links.filter((link) => visible(link.area)) }))
+    .filter((group) => group.links.length > 0)
 
   return (
     <div className="min-h-screen bg-page grid [grid-template-columns:minmax(0,1fr)] md:[grid-template-columns:250px_minmax(0,1fr)] md:items-start">

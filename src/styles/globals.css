@@ -296,6 +296,31 @@
   }
 
   /*
+   * The sections grid on the home page. The column count is handed in per
+   * breakpoint as --publish-columns rather than fitted from a track width,
+   * because auto-fit only cares how many cards fit a row, not how the leftover
+   * ones look: a sixth section turned a clean row of five into five plus an
+   * orphan. See balancedColumns in src/lib/layout.ts for how the counts are
+   * chosen. Phones get one column, where no last row can be short.
+   */
+  .publish-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 640px) {
+    .publish-grid {
+      grid-template-columns: repeat(var(--publish-columns-mid, 3), minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 980px) {
+    .publish-grid {
+      grid-template-columns: repeat(var(--publish-columns, 5), minmax(0, 1fr));
+    }
+  }
+
+  /*
    * Reserved for the Toast chrome component (a later task): design-reference/README.md
    * "Global chrome / 6. Toast" and prototype line 744 specify this as the one shadow in
    * the whole design. Declared here, shadow-only, because it is a token-level constraint

@@ -1,12 +1,12 @@
 import { SettingsForm } from '@/components/admin/SettingsForm'
 import { SITE_CONFIG_FIELDS } from '@/lib/admin/entities'
-import { requireAdmin } from '@/lib/admin/session'
+import { requireCapability } from '@/lib/admin/session'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
 export const dynamic = 'force-dynamic'
 
 export default async function SiteConfigPage() {
-  await requireAdmin()
+  await requireCapability('settings', 'view')
 
   const supabase = createSupabaseServiceClient()
   const { data } = await supabase.from('site_config').select('*').maybeSingle()

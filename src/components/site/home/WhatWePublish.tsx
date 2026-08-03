@@ -1,5 +1,7 @@
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import type { Discipline } from '@/lib/content'
+import { balancedColumns } from '@/lib/layout'
 
 export function WhatWePublish({ disciplines }: { disciplines: Discipline[] }) {
   return (
@@ -13,7 +15,15 @@ export function WhatWePublish({ disciplines }: { disciplines: Discipline[] }) {
         </Link>
       </div>
 
-      <div className="grid [grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))]">
+      <div
+        className="publish-grid"
+        style={
+          {
+            '--publish-columns': balancedColumns(disciplines.length, 5),
+            '--publish-columns-mid': balancedColumns(disciplines.length, 3),
+          } as CSSProperties
+        }
+      >
         {disciplines.map((discipline) => (
           <div key={discipline.slug} className="py-[26px] pr-6 border-b border-rule">
             <div className="font-serif text-[19px] font-bold text-ink">{discipline.name}</div>

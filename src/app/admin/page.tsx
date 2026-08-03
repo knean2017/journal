@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import { requireAdmin } from '@/lib/admin/session'
+import { redirect } from 'next/navigation'
+import { AREA_PATHS, can, firstAllowedArea } from '@/lib/admin/permissions'
+import { permissionMatrix, requireAdmin, requireCapability } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
@@ -46,8 +48,24 @@ async function counts() {
 }
 
 export default async function AdminDashboard() {
-  await requireAdmin()
   const base = `/${adminPath()}`
+
+  /*
+   * The dashboard is the panel's front door, and signing in lands here, but not
+   * every role opens it. A reviewer who has only submissions would otherwise be
+   * met by a refusal every single time they sign in. Send them to the first
+   * thing they can actually open instead, and leave the refusal for somebody
+   * who typed the address of a page that is genuinely not theirs.
+   */
+  const admin = await requireAdmin()
+  const matrix = await permissionMatrix()
+
+  if (!can(matrix, admin.role, 'dashboard', 'view')) {
+    const landing = firstAllowedArea(matrix, admin.role)
+    if (landing) redirect(`${base}/${AREA_PATHS[landing]}`)
+  }
+
+  await requireCapability('dashboard', 'view')
 
   let stats: Awaited<ReturnType<typeof counts>> | null = null
   let error = ''

@@ -10,6 +10,7 @@ import {
   getTeam,
   getTickerLines,
 } from '@/lib/content'
+import { editorialRoleSchema, editorialRoleStatusSchema } from '@/lib/content/schema'
 
 describe('content accessors', () => {
   it('returns the six seeded authors with unique slugs', async () => {
@@ -72,6 +73,36 @@ describe('content accessors', () => {
     expect(issue?.volume).toBe(1)
     expect(issue?.number).toBe(1)
     expect(issue?.status).toBe('in_preparation')
+  })
+})
+
+describe('editorial role status', () => {
+  it('accepts appointed alongside pending and recruiting', () => {
+    expect(editorialRoleStatusSchema.parse('appointed')).toBe('appointed')
+    expect(editorialRoleStatusSchema.parse('pending')).toBe('pending')
+    expect(editorialRoleStatusSchema.parse('recruiting')).toBe('recruiting')
+  })
+
+  it('rejects a status it does not know', () => {
+    expect(editorialRoleStatusSchema.safeParse('filled').success).toBe(false)
+  })
+
+  it('appoints nobody in the seed', async () => {
+    const roles = await getEditorialRoles()
+    expect(roles.every((r) => r.holderName === null)).toBe(true)
+    expect(roles.some((r) => r.status === 'appointed')).toBe(false)
+  })
+
+  it('requires holderName to be stated rather than omitted', () => {
+    const withoutHolder = {
+      title: 'Section Editor, Humanities',
+      status: 'recruiting',
+      statusLabel: 'Recruiting',
+      duty: 'Oversees history, literature, philosophy, and the arts.',
+      sortOrder: 5,
+    }
+    expect(editorialRoleSchema.safeParse(withoutHolder).success).toBe(false)
+    expect(editorialRoleSchema.safeParse({ ...withoutHolder, holderName: null }).success).toBe(true)
   })
 })
 

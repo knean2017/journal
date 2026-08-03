@@ -6,7 +6,8 @@ import { assetUrl } from '@/lib/admin/assets'
 import { recordTitle } from '@/lib/admin/derive'
 import { ENTITIES, findEntity } from '@/lib/admin/entities'
 import { matchesQuery, param } from '@/lib/admin/filter'
-import { requireAdmin } from '@/lib/admin/session'
+import { permissionMatrix, requireCapability } from '@/lib/admin/session'
+import { areaForEntity, can } from '@/lib/admin/permissions'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
@@ -66,11 +67,20 @@ export default async function EntityListPage({
   params: Promise<{ entity: string }>
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  await requireAdmin()
-
   const { entity: slug } = await params
   const entity = findEntity(slug)
   if (!entity) notFound()
+
+  /*
+   * Gated after the slug is known, because which area governs depends on which
+   * entity this is. An entity with no area mapping is a 404 rather than an open
+   * door: it is not something this panel knows how to gate, so it does not show
+   * it at all.
+   */
+  const area = areaForEntity(slug)
+  if (!area) notFound()
+  const { role } = await requireCapability(area, 'view')
+  const canEdit = can(await permissionMatrix(), role, area, 'edit')
 
   const filters = await searchParams
   const query = param(filters.q)
@@ -104,7 +114,8 @@ export default async function EntityListPage({
    * rather than left to shuffle records past rows you cannot see.
    */
   const filtered = Boolean(query || status)
-  const sortable = entity.orderBy.column === 'sort_order' && allRows.length > 1 && !filtered
+  const sortable =
+    entity.orderBy.column === 'sort_order' && allRows.length > 1 && !filtered && canEdit
   const hasVisibility = allRows.some(
     (row) => 'is_published' in row || 'is_active' in row,
   )
@@ -113,7 +124,7 @@ export default async function EntityListPage({
     <>
       <div className="flex items-baseline justify-between gap-5 flex-wrap">
         <h1 className="m-0 font-serif text-[28px] font-normal">{entity.plural}</h1>
-        {entity.canCreate ? (
+        {entity.canCreate && canEdit ? (
           <Link href={`${base}/new`} className="btn-base btn-maroon">
             Add {entity.label.toLowerCase()}
           </Link>
@@ -159,6 +170,27 @@ export default async function EntityListPage({
             const thumbnail = entity.thumbnailColumn ? row[entity.thumbnailColumn] : null
             const chip = chipOf(row)
 
+            /*
+             * The same two lines whether or not they are a link. Somebody with
+             * view but not edit still reads the list; the record page behind it
+             * is a form, so it is gated on edit and they are not sent there.
+             */
+            const summary = (
+              <>
+                <span className="block font-serif text-[17px] truncate">
+                  {recordTitle(entity, row, '(no title yet)')}
+                </span>
+                {entity.listColumns.length > 0 ? (
+                  <span className="block mt-1 text-[13px] text-body-muted truncate">
+                    {entity.listColumns
+                      .map((column) => row[column])
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                ) : null}
+              </>
+            )
+
             return (
               <div
                 key={id}
@@ -199,19 +231,13 @@ export default async function EntityListPage({
                   </div>
                 ) : null}
 
-                <Link href={`${base}/${id}`} className="min-w-0 flex-1 text-ink hover:text-ink">
-                  <span className="block font-serif text-[17px] truncate">
-                    {recordTitle(entity, row, '(no title yet)')}
-                  </span>
-                  {entity.listColumns.length > 0 ? (
-                    <span className="block mt-1 text-[13px] text-body-muted truncate">
-                      {entity.listColumns
-                        .map((column) => row[column])
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </span>
-                  ) : null}
-                </Link>
+                {canEdit ? (
+                  <Link href={`${base}/${id}`} className="min-w-0 flex-1 text-ink hover:text-ink">
+                    {summary}
+                  </Link>
+                ) : (
+                  <div className="min-w-0 flex-1 text-ink">{summary}</div>
+                )}
 
                 {chip ? (
                   <span className="flex-none border border-rule bg-cream px-[9px] py-[3px] text-[10.5px] tracking-[0.12em] uppercase font-bold text-gold-muted">
@@ -219,12 +245,14 @@ export default async function EntityListPage({
                   </span>
                 ) : null}
 
-                <Link
-                  href={`${base}/${id}`}
-                  className="flex-none text-[11.5px] tracking-[0.12em] uppercase text-maroon font-bold"
-                >
-                  Edit
-                </Link>
+                {canEdit ? (
+                  <Link
+                    href={`${base}/${id}`}
+                    className="flex-none text-[11.5px] tracking-[0.12em] uppercase text-maroon font-bold"
+                  >
+                    Edit
+                  </Link>
+                ) : null}
               </div>
             )
           })}

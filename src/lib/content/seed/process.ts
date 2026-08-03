@@ -36,13 +36,13 @@ export const timeline: TimelineEntry[] = [
   {
     title: 'Submissions open',
     when: 'Now',
-    body: 'Rolling. Papers enter the next available monthly cycle.',
+    body: 'Rolling. Papers enter the next available issue cycle.',
     filled: true,
   },
   {
     title: 'Issue 1 submissions close',
     when: '31 Aug 2026',
-    body: 'Later submissions are held for the October issue.',
+    body: 'Later submissions are held for the December issue.',
     filled: false,
   },
   {
@@ -60,7 +60,7 @@ export const timeline: TimelineEntry[] = [
   {
     title: 'Publication',
     when: '30 Sept 2026',
-    body: 'Issue 1 published open access, then at the end of each month.',
+    body: 'Issue 1 published open access, then every three months.',
     filled: false,
   },
 ]
@@ -91,7 +91,7 @@ export const facts: Fact[] = [
   { key: 'Access', value: 'Open, CC BY 4.0' },
   { key: 'Author fees', value: 'None' },
   { key: 'Review', value: 'Before publication' },
-  { key: 'Frequency', value: 'Monthly, at month end' },
+  { key: 'Frequency', value: 'Every three months' },
   { key: 'ISSN', value: 'Pending' },
 ]
 

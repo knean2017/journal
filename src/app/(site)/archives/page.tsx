@@ -72,7 +72,7 @@ export default async function ArchivesPage() {
           <div className="border border-dashed border-rule p-6 flex flex-col justify-center min-h-[300px] text-center text-gold-muted">
             <div className="font-serif text-[19px] text-body-muted">Future issues</div>
             <p className="mt-2 mb-0 text-[13.5px] leading-[1.7]">
-              Published at the end of each month
+              Published every three months
             </p>
           </div>
         </div>

@@ -4,7 +4,8 @@ import { RecordForm } from '@/components/admin/RecordForm'
 import { recordTitle } from '@/lib/admin/derive'
 import { findEntity } from '@/lib/admin/entities'
 import { loadLookups } from '@/lib/admin/lookups'
-import { requireAdmin } from '@/lib/admin/session'
+import { requireCapability } from '@/lib/admin/session'
+import { areaForEntity } from '@/lib/admin/permissions'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
@@ -15,11 +16,15 @@ export default async function EntityRecordPage({
 }: {
   params: Promise<{ entity: string; id: string }>
 }) {
-  await requireAdmin()
-
   const { entity: slug, id } = await params
   const entity = findEntity(slug)
   if (!entity) notFound()
+
+  // Editing a record is a write, so this page needs edit and not just view.
+  // An observer reaches the list but never the form.
+  const area = areaForEntity(slug)
+  if (!area) notFound()
+  await requireCapability(area, 'edit')
 
   const isNew = id === 'new'
   const supabase = createSupabaseServiceClient()

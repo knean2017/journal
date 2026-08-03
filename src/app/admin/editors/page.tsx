@@ -2,7 +2,7 @@ import { InboxRow } from '@/components/admin/InboxRow'
 import { ListToolbar } from '@/components/admin/ListToolbar'
 import { INBOX_STATUSES } from '@/lib/admin/entities'
 import { matchesQuery, matchesStatus, param } from '@/lib/admin/filter'
-import { requireAdmin } from '@/lib/admin/session'
+import { requireCapability } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
@@ -13,7 +13,7 @@ export default async function EditorApplicationsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  await requireAdmin()
+  await requireCapability('applications', 'view')
 
   const filters = await searchParams
   const query = param(filters.q)
