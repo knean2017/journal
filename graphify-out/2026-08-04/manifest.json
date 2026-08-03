@@ -85,8 +85,8 @@
     "semantic_hash": ""
   },
   "src/app/(site)/issue/current/page.tsx": {
-    "mtime": 1785787231.1141522,
-    "ast_hash": "92ccf64a05ed85906ecf377ba27ab7e9",
+    "mtime": 1785747893.2909157,
+    "ast_hash": "8630889f7141c88c677f07139e14106e",
     "semantic_hash": ""
   },
   "src/app/(site)/layout.tsx": {
@@ -115,8 +115,8 @@
     "semantic_hash": ""
   },
   "src/app/(site)/reviewers/apply/page.tsx": {
-    "mtime": 1785787224.6636417,
-    "ast_hash": "48699282bfe5c321b047fe2b6d2b1878",
+    "mtime": 1785497182.6691036,
+    "ast_hash": "86bcc611ea11655ca1726b33005d6b16",
     "semantic_hash": ""
   },
   "src/app/(site)/submit/page.tsx": {
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "src/app/(site)/team/page.tsx": {
-    "mtime": 1785787225.9512987,
-    "ast_hash": "555ee84bc436347e89f7830f3c3fb7c8",
+    "mtime": 1785760501.756145,
+    "ast_hash": "1d69bc16ae37a954819918ea361436f8",
     "semantic_hash": ""
   },
   "src/app/(site)/terms/page.tsx": {
@@ -145,8 +145,8 @@
     "semantic_hash": ""
   },
   "src/app/admin/config/page.tsx": {
-    "mtime": 1785787232.119817,
-    "ast_hash": "ce67b621e09b1ef85c9e43bb4e99313f",
+    "mtime": 1785765511.308389,
+    "ast_hash": "5e9e358a63588b580304db0047842e2c",
     "semantic_hash": ""
   },
   "src/app/admin/editors/page.tsx": {
@@ -325,14 +325,14 @@
     "semantic_hash": "c99da8ac58478f518a91a4cb7103b246"
   },
   "src/components/site/home/ClosingCta.tsx": {
-    "mtime": 1785787212.8478334,
-    "ast_hash": "d6696777dd4f1f491eedc9cd68c71786",
-    "semantic_hash": ""
+    "mtime": 1785091489.8954816,
+    "ast_hash": "c85ed31d4eb527801e89eca6b66ca263",
+    "semantic_hash": "c85ed31d4eb527801e89eca6b66ca263"
   },
   "src/components/site/home/Hero.tsx": {
-    "mtime": 1785787217.821008,
-    "ast_hash": "fedb66c3c47ce63662cc6e9034c9414a",
-    "semantic_hash": ""
+    "mtime": 1785168658.6638455,
+    "ast_hash": "dc32e7b6573496cd5e4f1994be7dc32e",
+    "semantic_hash": "dc32e7b6573496cd5e4f1994be7dc32e"
   },
   "src/components/site/home/ProcessSteps.tsx": {
     "mtime": 1785168538.5233822,
@@ -340,9 +340,9 @@
     "semantic_hash": "40d6b68e84b759ccee93f2ae9d0348a7"
   },
   "src/components/site/home/ValueColumns.tsx": {
-    "mtime": 1785787219.1644194,
-    "ast_hash": "ca4de9f91e26020e482d3a903a34fccc",
-    "semantic_hash": ""
+    "mtime": 1785170258.7573864,
+    "ast_hash": "b58192c814893c632143697b014af826",
+    "semantic_hash": "b58192c814893c632143697b014af826"
   },
   "src/components/site/home/WhatWePublish.tsx": {
     "mtime": 1785737713.2122207,
@@ -455,8 +455,8 @@
     "semantic_hash": "28deb6d3ba0d6d1a7693dc19c8e8378f"
   },
   "src/lib/admin/entities.ts": {
-    "mtime": 1785787245.2856736,
-    "ast_hash": "ed1d358fdd5a8a0aaaeaca5284b26a9d",
+    "mtime": 1785760518.147303,
+    "ast_hash": "c27bf5952b4ca152b7873735d7f9e96e",
     "semantic_hash": ""
   },
   "src/lib/admin/lookups.ts": {
@@ -500,9 +500,9 @@
     "semantic_hash": "b85f82ad5f3a8d501bdddebfa17e9f73"
   },
   "src/lib/content/seed/config.ts": {
-    "mtime": 1785787176.30299,
-    "ast_hash": "998e01823a193252c38d7b400b8a096b",
-    "semantic_hash": ""
+    "mtime": 1785235008.8150048,
+    "ast_hash": "9fc4f453baf41a80b2ef11436273705d",
+    "semantic_hash": "9fc4f453baf41a80b2ef11436273705d"
   },
   "src/lib/content/seed/disciplines.ts": {
     "mtime": 1785737570.9773493,
@@ -510,12 +510,12 @@
     "semantic_hash": "1f89893e27d74e62067061c1fbeceb6b"
   },
   "src/lib/content/seed/issues.ts": {
-    "mtime": 1785787176.3114266,
-    "ast_hash": "0079641232d0c291431729347cca75ca",
+    "mtime": 1785747882.2221665,
+    "ast_hash": "3d2c2c25d3e32e5d863515fdadf6c0e2",
     "semantic_hash": ""
   },
   "src/lib/content/seed/process.ts": {
-    "mtime": 1785787176.3114266,
+    "mtime": 1785747907.5004365,
     "ast_hash": "2b0ae66ff103f1c318dba8521190cdfd",
     "semantic_hash": ""
   },
@@ -580,9 +580,9 @@
     "semantic_hash": "91c5b4a6fef565b13e14ed243d149942"
   },
   "src/lib/site.ts": {
-    "mtime": 1785787211.0885136,
-    "ast_hash": "c434d9e2952d46aaccba1607e499b838",
-    "semantic_hash": ""
+    "mtime": 1785235663.0962038,
+    "ast_hash": "4938427d7cf893843e2f51d0b750f171",
+    "semantic_hash": "4938427d7cf893843e2f51d0b750f171"
   },
   "src/lib/submissions/actions.ts": {
     "mtime": 1785488595.9507241,
