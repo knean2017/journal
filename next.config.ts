@@ -114,6 +114,22 @@ const nextConfig: NextConfig = {
       },
 
       /*
+       * The favicons. Same unhashed filenames as the lockups, and the same day.
+       * They are plain files rather than the `app/icon.png` convention because
+       * Google asks that a favicon's URL stay stable between crawls and that
+       * convention appends a build hash to the address. See app/layout.tsx.
+       */
+      {
+        source: '/:file(favicon.ico|apple-icon.png|icon-48.png|icon-96.png|icon-192.png)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+
+      /*
        * The author templates and the page images of them. Same reasoning as the
        * lockups and the same unhashed filenames: a corrected template is live
        * for everybody within a day, and meanwhile nobody refetches nine page

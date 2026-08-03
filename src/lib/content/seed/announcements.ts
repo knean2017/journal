@@ -7,7 +7,7 @@ export const announcements: Announcement[] = [
     tag: 'Call for papers',
     title: 'Call for Papers: Volume 1, Issue 1',
     blurb: 'Submissions open in all five sections until 31 August 2026.',
-    body: 'ICRR invites original research, reviews, replication studies, and case analyses of 3,000–8,000 words from students at any institution. Submissions for Issue 1 close 31 August 2026; the issue publishes 30 September 2026, and at the end of each month thereafter. There are no fees at any stage.',
+    body: 'ICRR invites original research, reviews, replication studies, and case analyses of 3,000–8,000 words from students at any institution. Submissions for Issue 1 close 31 August 2026; the issue publishes 30 September 2026, and every three months thereafter. There are no fees at any stage.',
     ctaLabel: 'Read the guidelines',
     ctaHref: '/submit',
     sortOrder: 1,

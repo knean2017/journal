@@ -43,6 +43,28 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   /*
+   * Declared by hand against files in `public/` rather than left to the
+   * `app/icon.png` convention.
+   *
+   * Google's one hard rule for the favicon it draws next to a search result is
+   * that the URL stays stable between crawls, and the convention served it as
+   * `/icon.png?icon.<hash>` with a hash that moves when the build does. These
+   * paths never move. `/favicon.ico` is here because it 404'd before, and it is
+   * still the address a crawler tries when it is not reading the tags.
+   *
+   * The sizes are the ordinary set rather than the 1000x1000 original, which
+   * was valid but meant every browser tab downloaded a 24 KB file to draw 16
+   * pixels of it.
+   */
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/icon-96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+  },
+  /*
    * The canonical here belongs to the homepage, which declares no metadata of
    * its own. Every other public page sets its own through `pageMetadata`,
    * because a page that does not inherits this one and tells search engines it

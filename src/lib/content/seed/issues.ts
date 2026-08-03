@@ -19,10 +19,10 @@ export const issues: Issue[] = [
     number: 2,
     status: 'in_preparation',
     statusLabel: 'Scheduled',
-    publishDate: '30 October 2026',
+    publishDate: '30 December 2026',
     submissionsClose: null,
     coverPath: null,
-    description: '30 October 2026',
+    description: '30 December 2026',
     isCurrent: false,
   },
 ]

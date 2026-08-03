@@ -29,7 +29,7 @@ export default async function CurrentIssuePage() {
       <PageHead
         eyebrow="Current issue"
         title={issue ? `Volume ${issue.volume}, Issue ${issue.number}` : 'Current issue'}
-        lead={`Inaugural issue · Publishing ${config.expected}, then at the end of each month`}
+        lead={`Inaugural issue · Publishing ${config.expected}, then every three months`}
         centered
         maxWidth="none"
         rule="double-hairline"

@@ -139,8 +139,8 @@ test.describe('archives', () => {
 
   test('shows the scheduled and future issue cards', async ({ page }) => {
     await page.goto('/archives')
-    await expect(page.getByText('30 October 2026')).toBeVisible()
-    await expect(page.getByText('Published at the end of each month')).toBeVisible()
+    await expect(page.getByText('30 December 2026')).toBeVisible()
+    await expect(page.getByText('Published every three months')).toBeVisible()
   })
 })
 
