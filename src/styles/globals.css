@@ -306,11 +306,53 @@
   .publish-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+    /*
+     * Each card draws its vertical rule one pixel outside its own left edge,
+     * and this clips them, which is what spares the cards in the first column
+     * theirs. Selecting those cards instead would mean writing the column count
+     * out again as an :nth-child rule and keeping it in step with
+     * balancedColumns at every breakpoint; clipping does not care what the
+     * count is.
+     */
+    overflow: hidden;
+  }
+
+  .publish-grid > * {
+    position: relative;
+    padding-right: 24px;
+    border-bottom: 1px solid var(--color-rule);
   }
 
   @media (min-width: 640px) {
     .publish-grid {
       grid-template-columns: repeat(var(--publish-columns-mid, 3), minmax(0, 1fr));
+      /*
+       * Cards are padded on both sides so no text sits against a vertical rule.
+       * The negative margin spends that padding out of the section's own gutter
+       * again, so the first column stays flush with the heading above it. The
+       * gutter is never narrower than this from 640px up, which is also where
+       * the second column appears.
+       */
+      margin-inline: -24px;
+    }
+
+    .publish-grid > * {
+      padding-inline: 24px;
+    }
+
+    /*
+     * Held clear of the rules above and below it, so the two never meet in a
+     * cross. The grid then reads as columns set beside rows rather than as a
+     * table drawn round every card.
+     */
+    .publish-grid > *::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: 22px;
+      bottom: 22px;
+      width: 1px;
+      background: var(--color-rule);
     }
   }
 

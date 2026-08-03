@@ -25,7 +25,7 @@ export function WhatWePublish({ disciplines }: { disciplines: Discipline[] }) {
         }
       >
         {disciplines.map((discipline) => (
-          <div key={discipline.slug} className="py-[26px] pr-6 border-b border-rule">
+          <div key={discipline.slug} className="py-[26px]">
             <div className="font-serif text-[19px] font-bold text-ink">{discipline.name}</div>
             <p className="mt-2 mb-0 text-[13.5px] leading-[1.75] text-body-muted">
               {discipline.blurb}
