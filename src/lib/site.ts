@@ -18,7 +18,7 @@ export const SITE_URL = (
 export const SITE_NAME = 'International Collegiate Research Review'
 
 export const SITE_DESCRIPTION =
-  'An independent, open-access journal publishing undergraduate and graduate research across five sections.'
+  'An independent, open-access journal publishing undergraduate and graduate research across six sections.'
 
 /** Absolute URL for a site-relative path. */
 export function absolute(path: string): string {

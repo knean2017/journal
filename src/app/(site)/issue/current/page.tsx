@@ -93,7 +93,7 @@ export default async function CurrentIssuePage() {
             <div className="px-[18px] pt-[6px] pb-[14px]">
               {[
                 { key: 'Submissions close', value: config.deadline, last: false },
-                { key: 'Decisions', value: 'Mid-Sept 2026', last: false },
+                { key: 'Decisions', value: 'Early Sept 2026', last: false },
                 { key: 'Publication', value: config.expected, last: true },
               ].map((row) => (
                 <div

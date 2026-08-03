@@ -48,7 +48,7 @@ export function Hero({ issueLabel }: { issueLabel: string }) {
         style={{ animation: 'icrrUp .7s ease .14s both' }}
       >
         An independent, open-access journal publishing undergraduate and graduate research across
-        five sections. Submissions are open for our first issue.
+        six sections. Submissions are open for our first issue.
       </p>
 
       {/*

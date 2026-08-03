@@ -17,7 +17,7 @@ const VALUES = [
   {
     number: '03',
     title: 'Multidisciplinary',
-    body: 'Five sections and one review board, so interdisciplinary work has somewhere to go.',
+    body: 'Six sections and one review board, so interdisciplinary work has somewhere to go.',
   },
 ]
 
