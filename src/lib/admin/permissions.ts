@@ -131,6 +131,12 @@ const AREA_BY_ENTITY: Record<string, Area> = {
   ticker: 'content.outreach',
   team: 'content.people',
   roles: 'content.people',
+  // The copy describing how the journal runs. Part of the journal record.
+  timeline: 'content.journal',
+  'process-steps': 'content.journal',
+  facts: 'content.journal',
+  requirements: 'content.journal',
+  checklist: 'content.journal',
 }
 
 const AREA_BY_INBOX: Record<string, Area> = {

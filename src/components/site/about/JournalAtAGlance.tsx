@@ -1,6 +1,9 @@
 import type { Fact } from '@/lib/content'
 
 export function JournalAtAGlance({ facts }: { facts: Fact[] }) {
+  // Entered in the panel, so it can be empty. The header bar goes with it.
+  if (facts.length === 0) return null
+
   return (
     <div className="border border-rule bg-cream">
       <div className="bg-maroon text-cream px-[18px] py-[11px] text-[11px] tracking-[0.16em] uppercase font-bold">

@@ -137,8 +137,22 @@ filter and empty-group drop apply unchanged, so a role without `content.journal`
 
 ### Reads — `src/lib/content/sources/supabase.ts`
 
-Five read functions, each ordered by `sort_order` ascending and parsed through its zod schema, in
-the shape the existing readers use.
+Five read functions, each ordered by `sort_order` ascending.
+
+They deliberately do **not** follow the shape of the readers above them, and the reason is the
+whole of §6. Every existing reader destructures `data` alone and ignores `error`, which is
+survivable for tables that are never empty: a failed read yields `[]`, and `[]` is visibly wrong.
+These five are allowed to be empty, so a failed read and an empty table would be the same value.
+`fromDb` would see a clean read of nothing, serve nothing, and the seed fallback would never fire —
+the site would quietly drop five blocks and still return 200 on every page.
+
+So each read passes its response through a helper that raises when `error` is set. That is what
+lets `fromDb` tell "the table has no rows yet" from "the table is not there", which are the two
+states this change creates and the only two it must never confuse.
+
+This was found in implementation, not design: the first cut followed the neighbouring readers, and
+the five blocks disappeared from a running site against a database where the migration had not been
+applied. `tests/unit/editorial-copy-source.test.ts` covers it.
 
 ### Getters — `src/lib/content/index.ts`
 

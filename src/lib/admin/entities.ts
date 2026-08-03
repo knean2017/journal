@@ -440,6 +440,150 @@ export const ENTITIES: Entity[] = [
       SORT_ORDER,
     ],
   },
+
+  /*
+   * The copy that describes how the journal runs. These five used to be fixed
+   * in src/lib/content/seed/process.ts, which made correcting a timeline date a
+   * deploy. Their tables start empty and the pages that show them hide a block
+   * with nothing in it, so an entity here is the only way any of them appears.
+   */
+  {
+    slug: 'timeline',
+    table: 'timeline_entries',
+    label: 'Timeline entry',
+    plural: 'Production timeline',
+    titleColumn: 'title',
+    listColumns: ['when_label'],
+    orderBy: { column: 'sort_order', ascending: true },
+    canCreate: true,
+    canDelete: true,
+    fields: [
+      { name: 'title', label: 'Milestone', type: 'text', required: true },
+      {
+        name: 'when_label',
+        label: 'When',
+        type: 'text',
+        required: true,
+        help: 'Written the way it should read, and not always a date: "Now", "2–3 weeks", "15 Sept 2026".',
+      },
+      {
+        name: 'body',
+        label: 'Note',
+        type: 'textarea',
+        required: true,
+        help: 'The line under the milestone on the current issue page.',
+      },
+      {
+        name: 'is_reached',
+        label: 'Milestone reached',
+        type: 'boolean',
+        help: 'Fills the dot on the rail. Tick it as the issue passes each stage.',
+      },
+      SORT_ORDER,
+    ],
+  },
+  {
+    slug: 'process-steps',
+    table: 'process_steps',
+    label: 'Process step',
+    plural: 'Publication process',
+    titleColumn: 'title',
+    listColumns: ['time_label'],
+    orderBy: { column: 'sort_order', ascending: true },
+    canCreate: true,
+    canDelete: true,
+    fields: [
+      { name: 'title', label: 'Step', type: 'text', required: true },
+      {
+        name: 'time_label',
+        label: 'How long it takes',
+        type: 'text',
+        required: true,
+        help: 'Shown beside the step number, for example "Day 1" or "Weeks 1–3".',
+      },
+      {
+        name: 'body',
+        label: 'What happens',
+        type: 'textarea',
+        required: true,
+        help: 'One sentence. The journal reviews what it publishes; do not name a review model beyond that, and do not promise authors feedback.',
+      },
+      {
+        name: 'step_label',
+        label: 'Number',
+        type: 'text',
+        required: true,
+        help: 'The numeral in the box. Text rather than a number, because it is a label and never counted.',
+        advanced: true,
+      },
+      SORT_ORDER,
+    ],
+  },
+  {
+    slug: 'facts',
+    table: 'journal_facts',
+    label: 'Fact',
+    plural: 'Journal at a glance',
+    titleColumn: 'key',
+    listColumns: ['value'],
+    orderBy: { column: 'sort_order', ascending: true },
+    canCreate: true,
+    canDelete: true,
+    fields: [
+      {
+        name: 'key',
+        label: 'Label',
+        type: 'text',
+        required: true,
+        help: 'The left column of the panel on the about page, for example "Founded".',
+      },
+      { name: 'value', label: 'Value', type: 'text', required: true },
+      SORT_ORDER,
+    ],
+  },
+  {
+    slug: 'requirements',
+    table: 'submission_requirements',
+    label: 'Requirement',
+    plural: 'Submission requirements',
+    titleColumn: 'key',
+    listColumns: ['value'],
+    orderBy: { column: 'sort_order', ascending: true },
+    canCreate: true,
+    canDelete: true,
+    fields: [
+      {
+        name: 'key',
+        label: 'Requirement',
+        type: 'text',
+        required: true,
+        help: 'The short label, for example "Length" or "File format".',
+      },
+      { name: 'value', label: 'What is required', type: 'textarea', required: true },
+      SORT_ORDER,
+    ],
+  },
+  {
+    slug: 'checklist',
+    table: 'submission_checklist',
+    label: 'Checklist item',
+    plural: 'Submission checklist',
+    titleColumn: 'text',
+    listColumns: [],
+    orderBy: { column: 'sort_order', ascending: true },
+    canCreate: true,
+    canDelete: true,
+    fields: [
+      {
+        name: 'text',
+        label: 'Item',
+        type: 'textarea',
+        required: true,
+        help: 'One line of the "Before you submit" list, written as something the author confirms.',
+      },
+      SORT_ORDER,
+    ],
+  },
 ]
 
 export const SITE_CONFIG_FIELDS: Field[] = [

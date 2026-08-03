@@ -1,6 +1,13 @@
 import type { ProcessStep } from '@/lib/content'
 
 export function ProcessSteps({ steps }: { steps: ProcessStep[] }) {
+  /*
+   * The steps are entered in the panel and the table starts empty, so there is
+   * a state where there are none. The heading belongs to this section, and a
+   * heading with nothing under it reads as something that failed to load.
+   */
+  if (steps.length === 0) return null
+
   return (
     <section data-reveal className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-16">
       <div className="rule-double-bottom pb-3">

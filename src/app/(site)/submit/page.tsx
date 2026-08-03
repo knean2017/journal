@@ -45,40 +45,49 @@ export default async function SubmitPage() {
             contributed substantively.
           </p>
 
-          <h2 className="mt-[38px] mb-0 font-serif text-[24px] font-bold text-maroon">
-            Manuscript requirements
-          </h2>
-          <div className="mt-4 border-t border-rule">
-            {requirements.map((requirement) => (
+          {/* Each list below is entered in the panel, so its heading goes with it. */}
+          {requirements.length > 0 ? (
+            <>
+              <h2 className="mt-[38px] mb-0 font-serif text-[24px] font-bold text-maroon">
+                Manuscript requirements
+              </h2>
+              <div className="mt-4 border-t border-rule">
+                {requirements.map((requirement) => (
               /*
                * The key sits over its value on a phone. Side by side it took
                * 170px of a 375px screen to say "Length", leaving 152px for the
                * requirement itself.
                */
-              <div
-                key={requirement.key}
-                className="grid gap-[2px] sm:[grid-template-columns:minmax(110px,170px)_minmax(0,1fr)] sm:gap-[clamp(14px,2vw,24px)] py-[14px] border-b border-rule text-[14.5px] leading-[1.7]"
-              >
-                <span className="font-bold text-ink">{requirement.key}</span>
-                <span className="text-body">{requirement.value}</span>
+                  <div
+                    key={requirement.key}
+                    className="grid gap-[2px] sm:[grid-template-columns:minmax(110px,170px)_minmax(0,1fr)] sm:gap-[clamp(14px,2vw,24px)] py-[14px] border-b border-rule text-[14.5px] leading-[1.7]"
+                  >
+                    <span className="font-bold text-ink">{requirement.key}</span>
+                    <span className="text-body">{requirement.value}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : null}
 
-          <h2 className="mt-[38px] mb-0 font-serif text-[24px] font-bold text-maroon">
-            Before you submit
-          </h2>
-          <div className="mt-[14px] flex flex-col gap-[10px]">
-            {checklist.map((item) => (
-              <div
-                key={item}
-                className="flex gap-3 items-start text-[14.5px] leading-[1.75] text-body"
-              >
-                <span className="text-gold font-bold flex-none">✓</span>
-                <span>{item}</span>
+          {checklist.length > 0 ? (
+            <>
+              <h2 className="mt-[38px] mb-0 font-serif text-[24px] font-bold text-maroon">
+                Before you submit
+              </h2>
+              <div className="mt-[14px] flex flex-col gap-[10px]">
+                {checklist.map((item) => (
+                  <div
+                    key={item}
+                    className="flex gap-3 items-start text-[14.5px] leading-[1.75] text-body"
+                  >
+                    <span className="text-gold font-bold flex-none">✓</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : null}
 
           <h2 id="form" className="mt-11 mb-0 font-serif text-[24px] font-bold text-maroon">
             Submission form
@@ -87,27 +96,29 @@ export default async function SubmitPage() {
         </div>
 
         <aside className="flex flex-col gap-5 page-aside">
-          <div className="border border-rule">
-            <div className="bg-maroon text-cream px-[18px] py-[11px] text-[11px] tracking-[0.16em] uppercase font-bold">
-              What happens next
-            </div>
-            <div className="px-[18px] py-4">
-              {steps.map((step) => (
-                <div
-                  key={step.number}
-                  className="grid [grid-template-columns:24px_1fr] gap-3 py-[9px]"
-                >
-                  <span className="font-serif text-[12px] text-gold pt-[2px]">{step.number}</span>
-                  <span>
-                    <span className="block text-[14px] font-bold">{step.title}</span>
-                    <span className="block text-[12.5px] text-body-muted mt-[2px]">
-                      {step.time}
+          {steps.length > 0 ? (
+            <div className="border border-rule">
+              <div className="bg-maroon text-cream px-[18px] py-[11px] text-[11px] tracking-[0.16em] uppercase font-bold">
+                What happens next
+              </div>
+              <div className="px-[18px] py-4">
+                {steps.map((step) => (
+                  <div
+                    key={step.number}
+                    className="grid [grid-template-columns:24px_1fr] gap-3 py-[9px]"
+                  >
+                    <span className="font-serif text-[12px] text-gold pt-[2px]">{step.number}</span>
+                    <span>
+                      <span className="block text-[14px] font-bold">{step.title}</span>
+                      <span className="block text-[12.5px] text-body-muted mt-[2px]">
+                        {step.time}
+                      </span>
                     </span>
-                  </span>
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="border border-rule px-[18px] py-5">
             <div className="text-[11px] tracking-[0.16em] uppercase text-gold-muted font-bold">
