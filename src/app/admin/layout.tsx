@@ -126,6 +126,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       links: [
         ...entityLinks((entity) => !EDITORIAL_COPY.has(entity.slug)),
         { href: `${base}/media`, label: 'Media', area: 'media' as Area },
+        {
+          href: `${base}/subscribers`,
+          label: 'Announcement list',
+          area: 'subscribers' as Area,
+        },
+        {
+          href: `${base}/send`,
+          label: 'Send an announcement',
+          area: 'announcement_sends' as Area,
+        },
       ],
     },
     {

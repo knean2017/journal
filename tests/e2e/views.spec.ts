@@ -295,13 +295,23 @@ test.describe('announcements', () => {
     await expect(page).toHaveURL(/\/team$/)
   })
 
-  test('newsletter signup shows the confirmation toast', async ({ page }) => {
+  /*
+   * The form is checked, never submitted.
+   *
+   * `CONTENT_SOURCE=seed` pins what the pages read, but it does not redirect
+   * writes: Next still loads .env.local, so the subscribe action reaches the
+   * real Supabase project. An earlier version of this test filled the field
+   * and clicked, which is how reader@example.com came to be sitting in the
+   * production subscriber table. Under double opt-in it would also send a real
+   * confirmation email on every run.
+   *
+   * The action itself is covered by unit tests, which need no server and no
+   * database.
+   */
+  test('newsletter signup offers a labelled address field and a button', async ({ page }) => {
     await page.goto('/news')
-    await page.getByRole('textbox', { name: /email/i }).fill('reader@example.com')
-    await page.getByRole('button', { name: 'Subscribe' }).click()
-    await expect(page.getByRole('status')).toContainText(
-      'Thanks. You will receive our calls for papers',
-    )
+    await expect(page.getByRole('textbox', { name: /email/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Subscribe' })).toBeEnabled()
   })
 })
 

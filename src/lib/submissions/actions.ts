@@ -12,9 +12,16 @@ import {
   type UploadTarget,
 } from '@/lib/form-result'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
+import { SITE_URL } from '@/lib/site'
+import { confirmUrl } from '@/lib/subscribers/unsubscribe'
 import { isSupabaseConfigured } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
-import { SUBMIT_TOAST, SUBSCRIBE_TOAST } from '@/lib/toasts'
+import {
+  SUBMIT_TOAST,
+  SUBSCRIBE_ALREADY_TOAST,
+  SUBSCRIBE_CONFIRM_TOAST,
+  SUBSCRIBE_UNAVAILABLE_TOAST,
+} from '@/lib/toasts'
 
 const OFFICE_EMAIL = process.env.EDITORIAL_EMAIL ?? 'icrrjournal@gmail.com'
 
@@ -285,7 +292,8 @@ export async function subscribe(
   _previous: FormResult | null,
   form: FormData,
 ): Promise<FormResult> {
-  if (!isSupabaseConfigured()) return { ok: true, message: SUBSCRIBE_TOAST }
+  // No database attached yet: say so, rather than promise email nobody can send.
+  if (!isSupabaseConfigured()) return { ok: false, message: SUBSCRIBE_UNAVAILABLE_TOAST }
 
   const parsed = newsletterSchema.safeParse({ email: text(form, 'email') })
   if (!parsed.success) {
@@ -303,15 +311,78 @@ export async function subscribe(
   }
 
   const supabase = createSupabaseServiceClient()
-  // Upsert, so signing up twice is not an error.
-  const { error } = await supabase
-    .from('newsletter_subscribers')
-    .upsert({ email: parsed.data.email, is_active: true }, { onConflict: 'email' })
 
-  if (error) {
+  /*
+   * Entering an address is a request, not a subscription. Nothing is ever
+   * mailed to it until somebody opens the mailbox and follows the link, so a
+   * mistyped address costs its owner one message and never becomes a list
+   * member. That rule is enforced at the only place it can be, in the query
+   * that builds a send's recipients: `confirmed_at` has to be set.
+   */
+  const existing = await supabase
+    .from('newsletter_subscribers')
+    .select('confirm_token, confirmed_at, is_active')
+    .eq('email', parsed.data.email)
+    .maybeSingle()
+
+  // Already proved the address and still on the list. Nothing to do or send.
+  if (existing.data?.confirmed_at && existing.data.is_active) {
+    return { ok: true, message: SUBSCRIBE_ALREADY_TOAST }
+  }
+
+  /*
+   * Upsert, so signing up twice is not an error.
+   *
+   * `confirmed_at` is cleared alongside the return of `is_active`, which
+   * matters most for somebody coming back after unsubscribing: their old
+   * confirmation proved the address was theirs then, but the request to rejoin
+   * arrived from a browser, and anybody can type somebody else's address into
+   * a form. Making them confirm again is what stops that being a way to put a
+   * stranger back on the list.
+   *
+   * `unsubscribe_token` and `confirm_token` are absent from the update, so
+   * both survive: a live link in mail already sent still works.
+   */
+  const { data: saved, error } = await supabase
+    .from('newsletter_subscribers')
+    .upsert(
+      { email: parsed.data.email, is_active: true, unsubscribed_at: null, confirmed_at: null },
+      { onConflict: 'email' },
+    )
+    .select('confirm_token')
+    .maybeSingle()
+
+  if (error || !saved) {
     console.error('[subscribe] failed:', error)
     return { ok: false, message: 'Could not save that address. Please try again.' }
   }
 
-  return { ok: true, message: SUBSCRIBE_TOAST }
+  /*
+   * The one message an unconfirmed address is ever sent. Failure is reported,
+   * unlike the notifications elsewhere in this file that are swallowed: those
+   * follow a row that is already committed and useful without them, whereas an
+   * unsent confirmation leaves somebody waiting for a link that is not coming.
+   */
+  const sent = await notify(
+    parsed.data.email,
+    'Confirm your ICRR announcement emails',
+    [
+      'Somebody, we hope you, asked for announcement emails from the International Collegiate Research Review.',
+      '',
+      'Confirm the address by opening this link:',
+      confirmUrl(SITE_URL, saved.confirm_token),
+      '',
+      'If it was not you, ignore this message. Nothing else will be sent to this address, and it will never be added to the list.',
+    ].join('\n'),
+  )
+
+  if (!sent) {
+    console.error('[subscribe] confirmation email could not be sent to a new subscriber')
+    return {
+      ok: false,
+      message: 'We could not send the confirmation email. Please try again in a few minutes.',
+    }
+  }
+
+  return { ok: true, message: SUBSCRIBE_CONFIRM_TOAST }
 }
