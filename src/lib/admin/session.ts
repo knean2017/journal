@@ -43,6 +43,13 @@ function bootstrapEmail(): string | null {
  * Read once per render. A database that cannot be reached falls back to the
  * built-in defaults rather than to an empty grid, because an empty grid would
  * read as "nobody may do anything" and lock the panel during an outage.
+ *
+ * Deliberately not cached between requests. It was, briefly: this read costs
+ * about 148ms, and caching it looked like an obvious saving. Measured, it saved
+ * nothing at all. The layout runs it alongside the four inbox counts, which
+ * take longer, so removing it from the pair left the page waiting exactly as
+ * long on the counts. All it bought was a window in which a changed permission
+ * grid was stale, which is not a trade worth making for 0ms.
  */
 export const permissionMatrix = cache(async (): Promise<PermissionMatrix> => {
   try {

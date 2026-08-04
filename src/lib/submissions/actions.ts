@@ -3,7 +3,7 @@
 import { headers } from 'next/headers'
 import { MAX_COVER_LETTER_BYTES, MAX_MANUSCRIPT_BYTES, manuscriptExtension } from './manuscript'
 import { newsletterSchema, submissionSchema, uploadPathSchema } from './schema'
-import { notify } from '@/lib/email/resend'
+import { isEmailConfigured, notify } from '@/lib/email/resend'
 import {
   firstErrors,
   text,
@@ -294,6 +294,18 @@ export async function subscribe(
 ): Promise<FormResult> {
   // No database attached yet: say so, rather than promise email nobody can send.
   if (!isSupabaseConfigured()) return { ok: false, message: SUBSCRIBE_UNAVAILABLE_TOAST }
+
+  /*
+   * No mail provider, so nobody could ever confirm.
+   *
+   * Checked here, before the address is touched, rather than at the send below.
+   * Taking the address first would store a row that can never become mailable,
+   * which is clutter at best and a list of people who believe they signed up at
+   * worst. It also has to be a different message from the send failure further
+   * down: that one is transient and worth retrying, this one will fail
+   * identically forever until somebody sets the key.
+   */
+  if (!isEmailConfigured()) return { ok: false, message: SUBSCRIBE_UNAVAILABLE_TOAST }
 
   const parsed = newsletterSchema.safeParse({ email: text(form, 'email') })
   if (!parsed.success) {

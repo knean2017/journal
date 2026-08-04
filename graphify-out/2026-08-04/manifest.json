@@ -735,8 +735,8 @@
     "semantic_hash": "0feab1a5fa4361d4d9412bc876bb3e96"
   },
   "README.md": {
-    "mtime": 1785831211.4164908,
-    "ast_hash": "058b5da626701e9036b2682e99635356",
+    "mtime": 1785840915.440742,
+    "ast_hash": "3b1385e945d86b9e7974846abd336166",
     "semantic_hash": ""
   },
   "design-reference/ICRR Journal.dc.html": {
@@ -1019,11 +1019,6 @@
     "ast_hash": "6616290f260007cf4c1ff160d3292b38",
     "semantic_hash": ""
   },
-  "tests/unit/unsubscribe.test.ts": {
-    "mtime": 1785828064.8667138,
-    "ast_hash": "3b97bab8275c13dbb9fb38775e985767",
-    "semantic_hash": ""
-  },
   "src/app/(site)/subscribe/confirm/page.tsx": {
     "mtime": 1785830659.99568,
     "ast_hash": "8cb877f2c7e48b7de665c1f1542af3d3",
@@ -1055,8 +1050,13 @@
     "semantic_hash": ""
   },
   "tests/unit/announcement-send.test.ts": {
-    "mtime": 1785830865.900173,
-    "ast_hash": "7599b790a6961b70284265ff954c785f",
+    "mtime": 1785841379.061517,
+    "ast_hash": "566eef6328115bb6aabb95a0b719c44e",
+    "semantic_hash": ""
+  },
+  "supabase/seed/editorial-copy.sql": {
+    "mtime": 1785840321.6368191,
+    "ast_hash": "f3ef68041a11c528924609bd95b2c620",
     "semantic_hash": ""
   }
 }
