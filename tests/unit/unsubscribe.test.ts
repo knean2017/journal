@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { unsubscribeTokenSchema, unsubscribeUrl } from '@/lib/subscribers/unsubscribe'
 
-describe('the unsubscribe token', () => {
-  const TOKEN = '6f1b9d3e-9c2a-4f57-9a1e-2b0c7d8e5f41'
+/*
+ * Deliberately a counting pattern rather than random-looking hex.
+ *
+ * A realistic v4 uuid here reads as a high-entropy string to a secret scanner,
+ * and this fixture tripped one. Nothing is lost by making it obviously
+ * synthetic: the schema checks the shape, not the randomness. The version and
+ * variant nibbles are still 4 and 8, so it is a well-formed v4 uuid.
+ */
+const TOKEN = '00000000-0000-4000-8000-000000000001'
 
+describe('the unsubscribe token', () => {
   it('accepts a uuid', () => {
     expect(unsubscribeTokenSchema.safeParse(TOKEN).success).toBe(true)
   })
@@ -15,7 +23,7 @@ describe('the unsubscribe token', () => {
 
   it.each([
     ['nothing at all', ''],
-    ['a truncated token', '6f1b9d3e-9c2a-4f57-9a1e'],
+    ['a truncated token', '00000000-0000-4000-8000'],
     ['an email address', 'reader@example.com'],
     ['a number', '12345'],
     // Refused here rather than at the database, which would raise on a uuid
@@ -27,8 +35,6 @@ describe('the unsubscribe token', () => {
 })
 
 describe('unsubscribeUrl', () => {
-  const TOKEN = '6f1b9d3e-9c2a-4f57-9a1e-2b0c7d8e5f41'
-
   it('builds an absolute link the token round-trips through', () => {
     const url = new URL(unsubscribeUrl('https://icrrjournal.com', TOKEN))
     expect(url.pathname).toBe('/unsubscribe')

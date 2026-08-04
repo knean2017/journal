@@ -1,11 +1,11 @@
 # Graph Report - design_handoff_icrr_journal  (2026-08-04)
 
 ## Corpus Check
-- 192 files · ~132,912 words
+- 199 files · ~138,867 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1109 nodes · 2354 edges · 71 communities (58 shown, 13 thin omitted)
+- 1141 nodes · 2466 edges · 71 communities (58 shown, 13 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 73 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -65,9 +65,9 @@
 - [[_COMMUNITY_Community 58|Community 58]]
 - [[_COMMUNITY_Community 59|Community 59]]
 - [[_COMMUNITY_Community 60|Community 60]]
+- [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 62|Community 62]]
 - [[_COMMUNITY_Community 63|Community 63]]
-- [[_COMMUNITY_Community 65|Community 65]]
 - [[_COMMUNITY_Community 69|Community 69]]
 - [[_COMMUNITY_Community 71|Community 71]]
 - [[_COMMUNITY_Community 72|Community 72]]
@@ -76,23 +76,23 @@
 - [[_COMMUNITY_Community 75|Community 75]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `createSupabaseServiceClient()` - 56 edges
-2. `requireCapability()` - 41 edges
-3. `adminPath()` - 38 edges
+1. `createSupabaseServiceClient()` - 63 edges
+2. `requireCapability()` - 45 edges
+3. `adminPath()` - 40 edges
 4. `requireAdmin()` - 35 edges
 5. `getConfig` - 29 edges
 6. `ImageSlot` - 27 edges
-7. `ICRR Journal Public Site Implementation Plan` - 19 edges
-8. `PageHead()` - 17 edges
-9. `ICRR Journal` - 17 edges
-10. `ICRR Journal Website — Design Spec` - 17 edges
+7. `isSupabaseConfigured()` - 20 edges
+8. `ICRR Journal Public Site Implementation Plan` - 19 edges
+9. `PageHead()` - 18 edges
+10. `ICRR Journal` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Prerendered Public Pages` --semantically_similar_to--> `Do Not Port the Prototype Runtime`  [INFERRED] [semantically similar]
-  README.md → design-reference/README.md
 - `Three Enforced Copy Rules` --semantically_similar_to--> `Spec Copy Rules (two)`  [INFERRED] [semantically similar]
   README.md → docs/superpowers/specs/2026-07-26-icrr-journal-website-design.md
 - `useFormFields Hook (form state retention)` --semantically_similar_to--> `State Management`  [INFERRED] [semantically similar]
+  README.md → design-reference/README.md
+- `Prerendered Public Pages` --semantically_similar_to--> `Do Not Port the Prototype Runtime`  [INFERRED] [semantically similar]
   README.md → design-reference/README.md
 - `ImageSlot Component` --semantically_similar_to--> `Pre-Launch Honesty in Copy`  [INFERRED] [semantically similar]
   README.md → design-reference/README.md
@@ -117,12 +117,12 @@
 ## Communities (71 total, 13 thin omitted)
 
 ### Community 0 - "Admin Server Actions"
-Cohesion: 0.22
+Cohesion: 0.15
 Nodes (17): INBOX_STATUSES, matchesQuery(), matchesStatus(), param(), InboxItem, InboxRow(), ListToolbar(), StatusOption (+9 more)
 
 ### Community 1 - "Forms and Toast System"
-Cohesion: 0.06
-Nodes (71): Field, SettingsForm(), ToastContext, useToast(), ContactForm(), ERROR_LABELS, FIELDS, EditorForm() (+63 more)
+Cohesion: 0.05
+Nodes (81): Field, ToastContext, useToast(), ConfirmPage(), metadata, OUTCOMES, ContactForm(), ERROR_LABELS (+73 more)
 
 ### Community 2 - "Prototype DCLogic Runtime"
 Cohesion: 0.06
@@ -137,8 +137,8 @@ Cohesion: 0.05
 Nodes (40): dependencies, next, react, react-dom, resend, server-only, @supabase/ssr, @supabase/supabase-js (+32 more)
 
 ### Community 5 - "Static Public Pages"
-Cohesion: 0.18
-Nodes (18): ArchivesPage(), metadata, ContactPage(), metadata, getConfig, getIssues, EthicsPage(), metadata (+10 more)
+Cohesion: 0.11
+Nodes (24): ContactPage(), metadata, getConfig, EthicsPage(), metadata, pageMetadata(), PolicyBody(), PolicyList() (+16 more)
 
 ### Community 6 - "Prototype ImageSlot Element"
 Cohesion: 0.12
@@ -149,12 +149,12 @@ Cohesion: 0.12
 Nodes (17): Fact, ProcessStep, Requirement, TimelineEntry, TocPreviewEntry, checklist, facts, processSteps (+9 more)
 
 ### Community 8 - "Supabase Content Sources"
-Cohesion: 0.08
-Nodes (24): ArticleAuthor, ArticleRow, AuthorRow, DisciplineRow, getAnnouncements, getArticleBySlug, getArticles, getArticlesByAuthor (+16 more)
+Cohesion: 0.07
+Nodes (26): ArticleAuthor, ArticleRow, AuthorRow, DisciplineRow, getAnnouncements, getArticleBySlug, getArticles, getArticlesByAuthor (+18 more)
 
 ### Community 9 - "Root Layout and Metadata"
-Cohesion: 0.22
-Nodes (15): activeAdministrators(), invitePerson(), InviteResult, isRole(), listStaff(), savePermissions(), setPersonActive(), setPersonRole() (+7 more)
+Cohesion: 0.18
+Nodes (17): sitemap(), STATIC_ROUTES, AuthorsBrowser(), AuthorCard, buildAuthorCards(), countLabel(), filterAuthors(), publicationLabel() (+9 more)
 
 ### Community 10 - "TypeScript Compiler Config"
 Cohesion: 0.10
@@ -169,28 +169,28 @@ Cohesion: 0.15
 Nodes (9): AnnouncementBar(), AnnouncementRows(), ClosingCta(), Hero(), ProcessSteps(), ValueColumns(), VALUES, WhatWePublish() (+1 more)
 
 ### Community 13 - "Authors Browsing and Sitemap"
-Cohesion: 0.23
-Nodes (8): getEditorialRoles, getTeam, roleStatusDisplay(), STATUS_COLOUR, getEditorialRoles, getTeam, metadata, TeamPage()
+Cohesion: 0.19
+Nodes (17): SendableAnnouncement, SendAnnouncementForm(), sendAnnouncement(), windows(), bodyFor(), checkQuota(), chunk(), FREE_TIER (+9 more)
 
 ### Community 14 - "Content Accessor Layer"
-Cohesion: 0.14
-Nodes (22): INBOX_TABLES, EDITABLE_ROLES, LEVEL_LABELS, ACCESS_LEVELS, AccessLevel, Area, AREA_BY_ENTITY, AREA_BY_INBOX (+14 more)
+Cohesion: 0.10
+Nodes (37): INBOX_TABLES, AdminDashboard(), counts(), InviteResult, listStaff(), savePermissions(), StaffMember, PeopleList() (+29 more)
 
 ### Community 15 - "Seed Data and Script"
 Cohesion: 0.15
-Nodes (11): Article, EditorialRole, SiteConfig, TickerLine, check(), main(), supabase, articles (+3 more)
+Nodes (11): Announcement, Author, EditorialRole, TickerLine, check(), main(), supabase, announcements (+3 more)
 
 ### Community 16 - "Archives, Issue, Article Views"
-Cohesion: 0.27
-Nodes (6): UnsubscribeState, unsubscribeTokenSchema, unsubscribeUrl(), metadata, OUTCOMES, UnsubscribePage()
+Cohesion: 0.15
+Nodes (13): 5. Data model, `announcements`, `article_authors`, `articles`, `authors`, `disciplines`, `editorial_roles`, `issues` (+5 more)
 
 ### Community 17 - "Prototype to Code Mapping"
-Cohesion: 0.16
-Nodes (19): AUTHORS (six placeholder profiles), DISCIPLINES (five sections), matches (author search predicate), nav(page), NEWS (three announcement articles), note(msg), PAGES / PAGE_TITLES, renderVals (+11 more)
+Cohesion: 0.21
+Nodes (15): AUTHORS (six placeholder profiles), DISCIPLINES (five sections), matches (author search predicate), nav(page), NEWS (three announcement articles), PAGES / PAGE_TITLES, renderVals, STEPS / TIMELINE / TOC_PREVIEW / FACTS / REQS / CHECKLIST (+7 more)
 
 ### Community 18 - "Global Chrome Design Notes"
-Cohesion: 0.16
-Nodes (16): closeMenu, toggleMenu, Assets, Footer Brand Block, Global Chrome (every view), Masthead Lockup Sizing, Mobile Drawer, Sticky Nav, Two Variants at 860px (+8 more)
+Cohesion: 0.19
+Nodes (14): closeMenu, toggleMenu, Assets, Footer Brand Block, Global Chrome (every view), Masthead Lockup Sizing, Mobile Drawer, Sticky Nav, Two Variants at 860px (+6 more)
 
 ### Community 19 - "Brand Lockup Source Assets"
 Cohesion: 0.33
@@ -201,48 +201,56 @@ Cohesion: 0.38
 Nodes (12): ICRR Horizontal Lockup (lockup-full.png), Divider Rule Separating Mark from Wordmark, Orientation-Variant Lockup Set (Horizontal / Stacked / Mark-Only), Letterspaced Serif Small-Caps Typography, Wordmark: INTERNATIONAL COLLEGIATE RESEARCH REVIEW, ICRR Stacked Lockup (lockup-stacked.png), ICRR Stacked Lockup, Reversed/White (lockup-stacked-white.png), Reversed (On-Dark) Logo Treatment (+4 more)
 
 ### Community 21 - "Author Profile and TOC"
-Cohesion: 0.22
-Nodes (10): Deviation from Spec §14 (own Zod schemas first), Task 18: Netlify Deploy, ADMIN_PATH Route Obscurity, createManuscriptUpload, Direct-to-Storage Manuscript Upload, Netlify Deployment Configuration, Runtime Security Model, submitManuscript (+2 more)
+Cohesion: 0.18
+Nodes (12): Deviation from Spec §14 (own Zod schemas first), Task 18: Netlify Deploy, ADMIN_PATH Route Obscurity, createManuscriptUpload, Direct-to-Storage Manuscript Upload, Netlify Deployment Configuration, Runtime Security Model, submitManuscript (+4 more)
 
 ### Community 22 - "Architecture Decisions"
 Cohesion: 0.32
 Nodes (6): JournalAtAGlance(), AboutPage(), metadata, SECTIONS, getFacts, getFacts()
 
 ### Community 23 - "Copy and Visual Constraints"
-Cohesion: 0.20
-Nodes (12): Copy rules, No Border Radius Anywhere, "Our Team" Rename from "Editorial Board", About Page Review-Policy Copy Constraint, Three Rule Treatments, Task 17: Design Audit, Global Constraints, Branch policy (+4 more)
+Cohesion: 0.15
+Nodes (14): Copy rules, No Border Radius Anywhere, One Shadow in the Whole Design, "Our Team" Rename from "Editorial Board", About Page Review-Policy Copy Constraint, Three Rule Treatments, Task 17: Design Audit, tests/unit/tokens.test.ts (+6 more)
 
 ### Community 24 - "Design Tokens and Motion"
-Cohesion: 0.27
-Nodes (9): Colors, Design Tokens, One Shadow in the Whole Design, Rules and dividers, Spacing & layout, Toast, Typography, globals.css Tokens, Reset, Keyframes, Component Classes (+1 more)
+Cohesion: 0.43
+Nodes (6): Colors, Design Tokens, Rules and dividers, Spacing & layout, Typography, globals.css Tokens, Reset, Keyframes, Component Classes
+
+### Community 25 - "App Router Icons"
+Cohesion: 0.29
+Nodes (10): getChecklist, getDisciplines, getProcessSteps, getRequirements, HomePage(), getChecklist(), getProcessSteps(), getRequirements() (+2 more)
+
+### Community 26 - "Scroll Reveal Behavior"
+Cohesion: 0.29
+Nodes (7): 1. Top strip, 2. Masthead, 3. Nav — sticky, two variants at 860px, 4. Mobile drawer, 5. Footer, 6. Toast, Global chrome (every view)
 
 ### Community 27 - "Manuscript Upload Flow"
-Cohesion: 0.05
-Nodes (37): 10. Admin panel, 11. Submissions and email, 12. Images, 13. Copy rules, 14. Build phases, 15. Out of scope, 16. Open items, 1. What we are building (+29 more)
+Cohesion: 0.08
+Nodes (24): 10. Admin panel, 11. Submissions and email, 12. Images, 13. Copy rules, 14. Build phases, 15. Out of scope, 16. Open items, 1. What we are building (+16 more)
 
 ### Community 28 - "Deployment and Security Model"
-Cohesion: 0.07
-Nodes (30): Component (DCLogic subclass), Do Not Port the Prototype Runtime, ICRR Journal Design Handoff, Deviation from spec §14, File Structure, ICRR Journal Public Site Implementation Plan, Plan sequence, Self-Review (+22 more)
+Cohesion: 0.05
+Nodes (47): Component (DCLogic subclass), Do Not Port the Prototype Runtime, ICRR Journal Design Handoff, Deviation from spec §14, File Structure, Global Constraints, ICRR Journal Public Site Implementation Plan, Plan sequence (+39 more)
 
 ### Community 29 - "Route Map and UI Primitives"
-Cohesion: 0.17
-Nodes (20): deleteAsset(), setSubmissionStatus(), signSubmissionFile(), uploadAsset(), SITE_CONFIG_FIELDS, MediaFile, MediaLibrary(), AdminDashboard() (+12 more)
+Cohesion: 0.20
+Nodes (26): deleteAsset(), setInboxStatus(), setSubmissionStatus(), signSubmissionFile(), uploadAsset(), MediaFile, MediaLibrary(), activeAdministrators() (+18 more)
 
 ### Community 30 - "Admin Panel Design Notes"
-Cohesion: 0.29
-Nodes (8): Routing, UI Primitives (Container, Eyebrow, PageHead, Button, Panel, Callout, ImageSlot), Tasks 7 to 16: The Ten Views, Content Layer (src/lib/content/), Cookieless Anon Supabase Client (src/lib/supabase/public.ts), Highwire Press citation_* Tags, Prerendered Public Pages, Public Routes and Their Data
+Cohesion: 0.33
+Nodes (6): Pre-Launch Honesty in Copy, Routing, UI Primitives (Container, Eyebrow, PageHead, Button, Panel, Callout, ImageSlot), Tasks 7 to 16: The Ten Views, ImageSlot Component, Public Routes and Their Data
 
 ### Community 31 - "Design Audit Unit Test"
-Cohesion: 0.07
-Nodes (39): lato, libreBaskerville, metadata, size, robots(), sitemap(), STATIC_ROUTES, ArticleBody() (+31 more)
+Cohesion: 0.10
+Nodes (20): lato, libreBaskerville, metadata, size, robots(), getArticleBySlug, getArticlesByAuthor, journalSchema() (+12 more)
 
 ### Community 34 - "Community 34"
 Cohesion: 0.20
 Nodes (9): Appointed Editorial Roles Implementation Plan, Global Constraints, Manual verification, Out of scope, Task 1: Data model — migration, schema, sources, seed, Task 2: The display helper, Task 3: Render the holder on the team page, Task 4: Appoint someone from the admin panel (+1 more)
 
 ### Community 36 - "Site Config Seed"
-Cohesion: 0.17
-Nodes (18): fromDb(), getAnnouncements, getAuthorBySlug, getChecklist, getDisciplines, getProcessSteps, getRequirements, getTickerLines (+10 more)
+Cohesion: 0.16
+Nodes (15): fromDb(), getAnnouncements, getAuthorBySlug, getCurrentIssue, getEditorialRoles, getTeam, getTickerLines, useDb() (+7 more)
 
 ### Community 37 - "Community 37"
 Cohesion: 0.09
@@ -260,45 +268,37 @@ Nodes (11): About, Announcements, Archives, Article (template), Author profile, 
 Cohesion: 0.25
 Nodes (7): formatBytes(), Template, TemplateDownload, TemplateId, TEMPLATES, TemplatesDialog(), publicDir
 
-### Community 56 - "Community 56"
-Cohesion: 0.15
-Nodes (9): COMMITMENT, LOOKING_FOR, metadata, RESPONSIBILITIES, COMMITMENT, LOOKING_FOR, metadata, RESPONSIBILITIES (+1 more)
-
 ### Community 57 - "Community 57"
 Cohesion: 0.14
-Nodes (23): assertWritable(), coerce(), deleteRecord(), DOC_TYPES, IMAGE_TYPES, INBOX_STATUSES, moveRecord(), requireEntityCapability() (+15 more)
+Nodes (22): assertWritable(), coerce(), deleteRecord(), DOC_TYPES, IMAGE_TYPES, INBOX_STATUSES, moveRecord(), requireEntityCapability() (+14 more)
 
 ### Community 58 - "Community 58"
 Cohesion: 0.12
 Nodes (16): 1. The problem, 2. What we are building, 3. Data model, 4. Public page — `src/app/(site)/team/page.tsx`, 5. Admin — `src/lib/admin/entities.ts`, 6. Application guards — no change, 7. Tests, 8. Files touched (+8 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.16
-Nodes (15): signOut(), AdminNav(), NavGroup, NavLink, AdminLayout(), EDITORIAL_COPY, inboxCounts(), metadata (+7 more)
+Cohesion: 0.13
+Nodes (15): signIn(), signOut(), AdminNav(), NavGroup, NavLink, AdminLayout(), EDITORIAL_COPY, inboxCounts() (+7 more)
 
 ### Community 62 - "Community 62"
 Cohesion: 0.40
 Nodes (5): ALLOWED_HEX, FILES, read(), readCopy(), ROUND_BY_DESIGN
 
 ### Community 63 - "Community 63"
-Cohesion: 0.08
-Nodes (22): assetUrl(), recordTitle(), ENTITIES, Entity, FieldType, InboxKey, PUBLISHED, SORT_ORDER (+14 more)
-
-### Community 65 - "Community 65"
-Cohesion: 0.18
-Nodes (11): Task 10: Archives, Task 11: Authors directory, Task 12: Author profile, Task 13: Our Team, Task 14: Submit, Task 15: Announcements, Task 16: Article reading page, Task 7: Home (+3 more)
+Cohesion: 0.11
+Nodes (19): assetUrl(), fillPattern(), nextStatusLabel(), recordTitle(), reorder(), slugify(), standardLabel(), Entity (+11 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.23
-Nodes (8): getCurrentIssue, getTimeline, CurrentIssuePage(), metadata, ProductionTimeline(), TocPreview(), getTimeline(), getTocPreview()
+Cohesion: 0.15
+Nodes (13): ArchivesPage(), metadata, ArticleBody(), SECTIONS, getIssues, getTimeline, CurrentIssuePage(), metadata (+5 more)
 
 ### Community 71 - "Community 71"
-Cohesion: 0.11
-Nodes (18): 1. Top strip, 2. Masthead, 3. Nav — sticky, two variants at 860px, 4. Mobile drawer, 5. Footer, 6. Toast, About the Design Files, Fidelity (+10 more)
+Cohesion: 0.20
+Nodes (9): About the Design Files, Fidelity, Files, Handoff: ICRR Journal Website, Overview, State Management, Admin Panel (editor-facing), useFormFields Hook (form state retention) (+1 more)
 
 ### Community 73 - "Community 73"
-Cohesion: 0.16
-Nodes (14): ANNOUNCEMENTS (three ticker strings), componentDidMount, componentDidUpdate, componentWillUnmount, _reveal, Animations, Continuous Announcement Ticker, Hover states (+6 more)
+Cohesion: 0.13
+Nodes (17): ANNOUNCEMENTS (three ticker strings), componentDidMount, componentDidUpdate, componentWillUnmount, note(msg), _reveal, Animations, Continuous Announcement Ticker (+9 more)
 
 ## Ambiguous Edges - Review These
 - `Copy rules` → `STEPS / TIMELINE / TOC_PREVIEW / FACTS / REQS / CHECKLIST`  [AMBIGUOUS]
@@ -311,7 +311,7 @@ Nodes (14): ANNOUNCEMENTS (three ticker strings), componentDidMount, componentDi
   design-reference/assets/icrr_mark.png · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **334 isolated node(s):** `eslintConfig`, `csp`, `SECURITY_HEADERS`, `nextConfig`, `name` (+329 more)
+- **340 isolated node(s):** `eslintConfig`, `csp`, `SECURITY_HEADERS`, `nextConfig`, `name` (+335 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **13 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -326,9 +326,9 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
 - **What is the exact relationship between `Diagonal Reversed-Contrast Tile Pairing` and `Transparent-Background Asset Convention`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `createSupabaseServiceClient()` connect `Root Layout and Metadata` to `Admin Server Actions`, `Forms and Toast System`, `Archives, Issue, Article Views`, `Community 57`, `Community 60`, `Route Map and UI Primitives`, `Community 63`?**
+- **Why does `createSupabaseServiceClient()` connect `Route Map and UI Primitives` to `Admin Server Actions`, `Forms and Toast System`, `Authors Browsing and Sitemap`, `Content Accessor Layer`, `Community 57`, `Community 60`, `Community 63`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
+- **Why does `isSupabaseConfigured()` connect `Forms and Toast System` to `Admin Server Actions`, `Site Config Seed`, `Authors Browsing and Sitemap`?**
   _High betweenness centrality (0.018) - this node is a cross-community bridge._
-- **Why does `5. Data model` connect `Manuscript Upload Flow` to `Prototype to Code Mapping`?**
-  _High betweenness centrality (0.012) - this node is a cross-community bridge._
-- **Why does `Storage buckets` connect `Prototype to Code Mapping` to `Manuscript Upload Flow`, `Author Profile and TOC`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
+- **Why does `FormResult` connect `Forms and Toast System` to `Community 57`, `Authors Browsing and Sitemap`, `Content Accessor Layer`, `Community 63`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._

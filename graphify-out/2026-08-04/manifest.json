@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "src/app/admin/layout.tsx": {
-    "mtime": 1785828064.8097606,
-    "ast_hash": "51d83d42f01d440cb215715b7b27fa32",
+    "mtime": 1785830834.8346176,
+    "ast_hash": "6467f5c92b0d1d969c665dae8785ac1f",
     "semantic_hash": ""
   },
   "src/app/admin/login/page.tsx": {
@@ -545,9 +545,9 @@
     "semantic_hash": ""
   },
   "src/lib/email/resend.ts": {
-    "mtime": 1785108151.6413074,
-    "ast_hash": "8a8be5ba303403592c6e96f4f8c35872",
-    "semantic_hash": "8a8be5ba303403592c6e96f4f8c35872"
+    "mtime": 1785830715.1233966,
+    "ast_hash": "75909923e2b367c03ac4a55ff45b617f",
+    "semantic_hash": ""
   },
   "src/lib/form-result.ts": {
     "mtime": 1785488595.9507241,
@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "src/lib/submissions/actions.ts": {
-    "mtime": 1785828064.8097606,
-    "ast_hash": "99125bb9c195e8f812326822241da69e",
+    "mtime": 1785830620.721165,
+    "ast_hash": "7e8a5face1a21710cb34ba949e8a9154",
     "semantic_hash": ""
   },
   "src/lib/submissions/manuscript.ts": {
@@ -625,8 +625,8 @@
     "semantic_hash": "f07d157c256f66ce2c547ae54ba4e68e"
   },
   "src/lib/toasts.ts": {
-    "mtime": 1785828064.8097606,
-    "ast_hash": "56cf9e4d393e4d212c74a2b447f4519e",
+    "mtime": 1785830575.3971686,
+    "ast_hash": "e01279a2e16bf4c6ac1eb620e2134b2a",
     "semantic_hash": ""
   },
   "src/middleware.ts": {
@@ -675,8 +675,8 @@
     "semantic_hash": ""
   },
   "tests/e2e/views.spec.ts": {
-    "mtime": 1785828064.8181975,
-    "ast_hash": "34c787acb45777f2e8405c6b8412a4ca",
+    "mtime": 1785831090.212266,
+    "ast_hash": "dc2aa214a365bc7891232a596132e22a",
     "semantic_hash": ""
   },
   "tests/unit/admin-derive.test.ts": {
@@ -735,8 +735,8 @@
     "semantic_hash": "0feab1a5fa4361d4d9412bc876bb3e96"
   },
   "README.md": {
-    "mtime": 1785828356.7881424,
-    "ast_hash": "85447055a53f0db64f833f3535537111",
+    "mtime": 1785831211.4164908,
+    "ast_hash": "058b5da626701e9036b2682e99635356",
     "semantic_hash": ""
   },
   "design-reference/ICRR Journal.dc.html": {
@@ -955,8 +955,8 @@
     "semantic_hash": ""
   },
   "src/lib/admin/permissions.ts": {
-    "mtime": 1785828064.8097606,
-    "ast_hash": "ff733d89ab38a18f7f13ca4ba7999b40",
+    "mtime": 1785830540.0125313,
+    "ast_hash": "bd1ce5f0f92747c7769f13a8e1ed3293",
     "semantic_hash": ""
   },
   "supabase/migrations/0007_staff_roles.sql": {
@@ -965,8 +965,8 @@
     "semantic_hash": ""
   },
   "tests/unit/permissions.test.ts": {
-    "mtime": 1785828064.8194504,
-    "ast_hash": "885859e0a39b0adbe5f648ecda2c99a3",
+    "mtime": 1785830878.483202,
+    "ast_hash": "90ca5ef3e4f03f257b6d4f14d859949a",
     "semantic_hash": ""
   },
   "src/app/admin/no-access/page.tsx": {
@@ -1005,13 +1005,13 @@
     "semantic_hash": ""
   },
   "src/lib/subscribers/actions.ts": {
-    "mtime": 1785828064.8667138,
-    "ast_hash": "bfd6a68736fda0e466831c8aacdad75c",
+    "mtime": 1785830637.7114563,
+    "ast_hash": "8ffc3b9fe0ebb95e89127c79a8f53200",
     "semantic_hash": ""
   },
   "src/lib/subscribers/unsubscribe.ts": {
-    "mtime": 1785828064.8667138,
-    "ast_hash": "ca00a324197a20882af852a43f73dc5e",
+    "mtime": 1785830551.979635,
+    "ast_hash": "eb78c934d6858882e715d30e452a50ba",
     "semantic_hash": ""
   },
   "supabase/migrations/0009_unsubscribe.sql": {
@@ -1022,6 +1022,41 @@
   "tests/unit/unsubscribe.test.ts": {
     "mtime": 1785828064.8667138,
     "ast_hash": "3b97bab8275c13dbb9fb38775e985767",
+    "semantic_hash": ""
+  },
+  "src/app/(site)/subscribe/confirm/page.tsx": {
+    "mtime": 1785830659.99568,
+    "ast_hash": "8cb877f2c7e48b7de665c1f1542af3d3",
+    "semantic_hash": ""
+  },
+  "src/app/admin/send/page.tsx": {
+    "mtime": 1785830825.6927202,
+    "ast_hash": "2294c1df87e8e6d6cc98f96a492495c4",
+    "semantic_hash": ""
+  },
+  "src/components/admin/SendAnnouncementForm.tsx": {
+    "mtime": 1785830798.5349648,
+    "ast_hash": "a6c05742a10dd743ac26af25ba465700",
+    "semantic_hash": ""
+  },
+  "src/lib/announcements/actions.ts": {
+    "mtime": 1785830759.2771432,
+    "ast_hash": "29358a6c6a55fd17e6c300662ea4d160",
+    "semantic_hash": ""
+  },
+  "src/lib/announcements/send.ts": {
+    "mtime": 1785830697.0018818,
+    "ast_hash": "d778470f9ffcb01722b2afdbc958d675",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/0010_announcement_sends.sql": {
+    "mtime": 1785830513.1340907,
+    "ast_hash": "7d4f23a2c26cd44e0c0c7a8b213239f9",
+    "semantic_hash": ""
+  },
+  "tests/unit/announcement-send.test.ts": {
+    "mtime": 1785830865.900173,
+    "ast_hash": "7599b790a6961b70284265ff954c785f",
     "semantic_hash": ""
   }
 }

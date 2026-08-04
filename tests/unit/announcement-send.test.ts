@@ -22,7 +22,8 @@ const ANNOUNCEMENT: Sendable = {
 
 const READER: Recipient = {
   email: 'reader@example.com',
-  unsubscribeToken: '6f1b9d3e-9c2a-4f57-9a1e-2b0c7d8e5f41',
+  // Obviously synthetic, so a secret scanner does not read it as a live token.
+  unsubscribeToken: '00000000-0000-4000-8000-000000000002',
 }
 
 describe('chunk', () => {
