@@ -41,6 +41,31 @@ describe('the default matrix', () => {
       expect(DEFAULT_MATRIX[role].people, role).toBe('none')
     }
   })
+
+  it('lets nobody but the administrator edit the announcement list', () => {
+    // The list is built from consent given on the public site and withdrawn
+    // through the unsubscribe link. No role needs to write to it, and a role
+    // that could would be a way onto a mailing list nobody asked to be on.
+    for (const role of STAFF_ROLES) {
+      if (role === 'administrator') continue
+      expect(DEFAULT_MATRIX[role].subscribers, role).not.toBe('edit')
+    }
+  })
+
+  it('shows the announcement list to the role that writes announcements', () => {
+    expect(DEFAULT_MATRIX.content_manager.subscribers).toBe('view')
+    expect(DEFAULT_MATRIX.editor.subscribers).toBe('view')
+    expect(DEFAULT_MATRIX.reviewer.subscribers).toBe('none')
+  })
+
+  it('lets only the editor and the administrator mail the list', () => {
+    // Sending cannot be undone, so the role that writes the announcements is
+    // deliberately not the role that can put them in thousands of inboxes.
+    expect(DEFAULT_MATRIX.editor.announcement_sends).toBe('edit')
+    expect(DEFAULT_MATRIX.content_manager.announcement_sends).toBe('view')
+    expect(DEFAULT_MATRIX.observer.announcement_sends).toBe('view')
+    expect(DEFAULT_MATRIX.reviewer.announcement_sends).toBe('none')
+  })
 })
 
 describe('levelFor', () => {

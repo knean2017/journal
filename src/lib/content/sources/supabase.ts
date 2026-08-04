@@ -8,10 +8,14 @@ import type {
   Author,
   Discipline,
   EditorialRole,
+  Fact,
   Issue,
+  ProcessStep,
+  Requirement,
   SiteConfig,
   TeamMember,
   TickerLine,
+  TimelineEntry,
 } from '../schema'
 
 /**
@@ -293,4 +297,90 @@ export const getTickerLines = cache(async (): Promise<TickerLine[]> => {
     .order('sort_order')
 
   return (data ?? []).map((row) => ({ text: row.text, sortOrder: row.sort_order }))
+})
+
+/*
+ * The copy describing how the journal runs. Two columns are named differently
+ * in Postgres than in the schema the site reads: `when` is reserved, and
+ * `filled` describes a dot on the rail where the column is recording whether a
+ * milestone has been reached. Both are mapped back here, so the components that
+ * render them never learn the tables exist.
+ */
+
+/**
+ * These five readers raise where the readers above swallow, and the difference
+ * matters only for them.
+ *
+ * Their tables are allowed to be empty: a block with no rows is hidden on the
+ * site rather than rendered as a heading over nothing. The client reports a
+ * failed read as an `error` on the response rather than by throwing, so
+ * ignoring it the way the readers above do would turn a missing table, or a
+ * refused one, into the same empty array an empty table gives. `fromDb` would
+ * see a clean read of nothing and serve nothing, when what it is there for is
+ * to serve the seed copy instead. Raising is what tells the two apart.
+ */
+function orThrow<T>({ data, error }: { data: T[] | null; error: unknown }): T[] {
+  if (error) throw error
+  return data ?? []
+}
+
+export const getTimeline = cache(async (): Promise<TimelineEntry[]> => {
+  const supabase = createSupabasePublicClient()
+  const rows = orThrow(
+    await supabase
+      .from('timeline_entries')
+      .select('title, when_label, body, is_reached')
+      .order('sort_order'),
+  )
+
+  return rows.map((row) => ({
+    title: row.title,
+    when: row.when_label,
+    body: row.body,
+    filled: row.is_reached,
+  }))
+})
+
+export const getProcessSteps = cache(async (): Promise<ProcessStep[]> => {
+  const supabase = createSupabasePublicClient()
+  const rows = orThrow(
+    await supabase
+      .from('process_steps')
+      .select('step_label, time_label, title, body')
+      .order('sort_order'),
+  )
+
+  return rows.map((row) => ({
+    number: row.step_label,
+    time: row.time_label,
+    title: row.title,
+    body: row.body,
+  }))
+})
+
+export const getFacts = cache(async (): Promise<Fact[]> => {
+  const supabase = createSupabasePublicClient()
+  const rows = orThrow(
+    await supabase.from('journal_facts').select('key, value').order('sort_order'),
+  )
+
+  return rows.map((row) => ({ key: row.key, value: row.value }))
+})
+
+export const getRequirements = cache(async (): Promise<Requirement[]> => {
+  const supabase = createSupabasePublicClient()
+  const rows = orThrow(
+    await supabase.from('submission_requirements').select('key, value').order('sort_order'),
+  )
+
+  return rows.map((row) => ({ key: row.key, value: row.value }))
+})
+
+export const getChecklist = cache(async (): Promise<string[]> => {
+  const supabase = createSupabasePublicClient()
+  const rows = orThrow(
+    await supabase.from('submission_checklist').select('text').order('sort_order'),
+  )
+
+  return rows.map((row) => row.text)
 })

@@ -101,7 +101,8 @@ export default async function PrivacyPage() {
           </p>
           <p className="m-0">
             <strong>Announcement emails</strong> are sent on your consent alone. You gave it by
-            entering your address, and you can withdraw it at any time by writing to {mail}.
+            entering your address, and you can withdraw it at any time from the unsubscribe link at
+            the foot of every announcement we send, or by writing to {mail}.
           </p>
         </PolicySection>
 
@@ -170,7 +171,9 @@ export default async function PrivacyPage() {
           </p>
           <p className="m-0">
             <strong>Messages to the office</strong> are kept for two years.{' '}
-            <strong>Announcement addresses</strong> are kept until you unsubscribe.
+            <strong>Announcement addresses</strong> are kept until you unsubscribe. After that we
+            keep the address itself, marked as unsubscribed and never sent to, as the record of
+            when consent was withdrawn; ask us and we will delete it outright.
           </p>
         </PolicySection>
 

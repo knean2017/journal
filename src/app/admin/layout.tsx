@@ -11,6 +11,14 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
+/*
+ * The entities that describe how the journal runs rather than what it has
+ * published. They sit in their own navigation group: dropped in beside the
+ * records they are not, they took Website content from nine links to fourteen
+ * and buried Articles in the middle of it.
+ */
+const EDITORIAL_COPY = new Set(['timeline', 'process-steps', 'facts', 'requirements', 'checklist'])
+
 /**
  * What is waiting in each inbox, for the badges in the navigation.
  *
@@ -63,6 +71,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   /** Cosmetic only. The pages and the actions behind these links gate themselves. */
   const visible = (area: Area | null) => Boolean(area) && can(matrix, user.role, area!, 'view')
 
+  const entityLinks = (keep: (entity: (typeof ENTITIES)[number]) => boolean) =>
+    ENTITIES.filter(keep).map((entity) => ({
+      href: `${base}/${entity.slug}`,
+      label: entity.plural,
+      area: areaForEntity(entity.slug),
+    }))
+
   /*
    * Grouped by what you came to do. Everything that arrives from the public
    * site is in one place and carries its own count; everything that appears on
@@ -109,13 +124,23 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     {
       title: 'Website content',
       links: [
-        ...ENTITIES.map((entity) => ({
-          href: `${base}/${entity.slug}`,
-          label: entity.plural,
-          area: areaForEntity(entity.slug),
-        })),
+        ...entityLinks((entity) => !EDITORIAL_COPY.has(entity.slug)),
         { href: `${base}/media`, label: 'Media', area: 'media' as Area },
+        {
+          href: `${base}/subscribers`,
+          label: 'Announcement list',
+          area: 'subscribers' as Area,
+        },
+        {
+          href: `${base}/send`,
+          label: 'Send an announcement',
+          area: 'announcement_sends' as Area,
+        },
       ],
+    },
+    {
+      title: 'Editorial copy',
+      links: entityLinks((entity) => EDITORIAL_COPY.has(entity.slug)),
     },
     {
       title: 'Settings',

@@ -50,8 +50,13 @@ export default async function CurrentIssuePage() {
             </p>
           </div>
 
-          <h2 className="mt-11 mb-0 font-serif text-[24px] font-bold">Production timeline</h2>
-          <ProductionTimeline entries={timeline} />
+          {/* Entered in the panel, so the heading goes with the entries. */}
+          {timeline.length > 0 ? (
+            <>
+              <h2 className="mt-11 mb-0 font-serif text-[24px] font-bold">Production timeline</h2>
+              <ProductionTimeline entries={timeline} />
+            </>
+          ) : null}
 
           <h2 className="mt-6 mb-0 font-serif text-[24px] font-bold">
             How the table of contents will appear

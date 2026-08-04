@@ -100,17 +100,35 @@ The site runs without a database, on its seed content. These steps switch it ove
    RLS policies, and the three storage buckets; `0002` widens the public article read so the first
    issue's table of contents is visible before that issue is published; `0003` adds the reviewer
    application and contact message tables, which the reviewer and contact forms write to; `0004`
-   adds the editor application table behind `/editors/apply`. An existing install needs `0004`
-   run against it, or that form answers with a database error.
+   adds the editor application table behind `/editors/apply`; `0009` adds the unsubscribe token
+   and timestamp that `/unsubscribe` and the announcement list page read; `0010` adds the
+   confirmation token that makes announcement signups double opt-in, and the `announcement_sends`
+   record behind the send page. An existing install needs `0004`, `0009` and `0010` run against
+   it, or those pages answer with a database error.
+
+   `0010` marks every address already on the list as confirmed, because those were entered through
+   the public form before there was any way to verify a mailbox. Look over the announcement list
+   page afterwards and delete anything you do not recognise: from then on, an address is mailable
+   only once its owner has opened the link sent to it.
 
 3. **Load the content:** `npm run seed`. Idempotent, so running it twice changes nothing. It does
    overwrite rows it owns, so seed before editing in the admin, not after.
 
+   It does **not** cover the five editorial copy tables `0008` created: the process steps, the
+   production timeline, the journal facts, the manuscript requirements, and the pre-submission
+   checklist. Those start empty, and an empty table is a successful read rather than a failure, so
+   the site does not fall back to the seed files for them: each block simply disappears from the
+   page. Paste `supabase/seed/editorial-copy.sql` into the SQL editor to put the copy in. It skips
+   any table that already has rows, so it cannot overwrite what an editor has typed.
+
 4. **Create the one admin account** by hand in the Supabase dashboard, under Authentication →
    Users → Add user. There is no signup route by design.
 
-5. **Optional, for submission emails:** set `RESEND_API_KEY`, and `RESEND_FROM` once you have a
-   verified sender. Without it submissions still store; only the notification is skipped.
+5. **Set `RESEND_API_KEY`, and `RESEND_FROM` once you have a verified sender.** Optional for
+   submissions, which still store when it is missing and skip only the notification. Not optional
+   for announcements: signing up now requires a confirmation email, so with no key nobody can join
+   the list and nothing can be mailed to it. The free plan allows 100 messages a day and 3,000 a
+   month, and `src/lib/announcements/send.ts` refuses a send that would cross either.
 
 ### How a manuscript gets to storage
 

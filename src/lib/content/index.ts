@@ -80,12 +80,18 @@ export const getArticlesByAuthor = cache((authorId: string) =>
   ),
 )
 
-// Editorial furniture: fixed copy, not editable content. Seed only.
-export const getProcessSteps = seed.getProcessSteps
-export const getTimeline = seed.getTimeline
+export const getProcessSteps = cache(() => fromDb(db.getProcessSteps, seed.getProcessSteps))
+export const getTimeline = cache(() => fromDb(db.getTimeline, seed.getTimeline))
+export const getFacts = cache(() => fromDb(db.getFacts, seed.getFacts))
+export const getRequirements = cache(() => fromDb(db.getRequirements, seed.getRequirements))
+export const getChecklist = cache(() => fromDb(db.getChecklist, seed.getChecklist))
+
+/*
+ * The one block still fixed in code. It is scaffolding rather than copy: a
+ * shape shown on an issue that has no articles yet, labelled on the page as
+ * placeholder, and gone the moment real articles publish. Nobody maintains it,
+ * so there is nothing to maintain it from.
+ */
 export const getTocPreview = seed.getTocPreview
-export const getFacts = seed.getFacts
-export const getRequirements = seed.getRequirements
-export const getChecklist = seed.getChecklist
 
 export * from './schema'
