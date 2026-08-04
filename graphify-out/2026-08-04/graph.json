@@ -8588,16 +8588,6 @@
       "norm_label": "ondisk()"
     },
     {
-      "label": "unsubscribe.test.ts",
-      "file_type": "code",
-      "source_file": "tests/unit/unsubscribe.test.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "unit_unsubscribe_test",
-      "community": 1,
-      "norm_label": "unsubscribe.test.ts"
-    },
-    {
       "label": "tsconfig.json",
       "file_type": "code",
       "source_file": "tsconfig.json",
@@ -33766,39 +33756,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "subscribers_unsubscribe",
-      "target": "subscribers_unsubscribe_unsubscribeurl"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/unit/unsubscribe.test.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "unit_unsubscribe_test",
-      "target": "subscribers_unsubscribe"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/unit/unsubscribe.test.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "unit_unsubscribe_test",
-      "target": "subscribers_unsubscribe_unsubscribetokenschema"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "tests/unit/unsubscribe.test.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "unit_unsubscribe_test",
       "target": "subscribers_unsubscribe_unsubscribeurl"
     },
     {

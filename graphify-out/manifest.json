@@ -1020,8 +1020,8 @@
     "semantic_hash": ""
   },
   "tests/unit/unsubscribe.test.ts": {
-    "mtime": 1785828064.8667138,
-    "ast_hash": "3b97bab8275c13dbb9fb38775e985767",
+    "mtime": 1785841367.6410208,
+    "ast_hash": "06c6bc2e1b4fdcae975a6c41930996f8",
     "semantic_hash": ""
   },
   "src/app/(site)/subscribe/confirm/page.tsx": {
@@ -1055,8 +1055,8 @@
     "semantic_hash": ""
   },
   "tests/unit/announcement-send.test.ts": {
-    "mtime": 1785830865.900173,
-    "ast_hash": "7599b790a6961b70284265ff954c785f",
+    "mtime": 1785841379.061517,
+    "ast_hash": "566eef6328115bb6aabb95a0b719c44e",
     "semantic_hash": ""
   },
   "supabase/seed/editorial-copy.sql": {
