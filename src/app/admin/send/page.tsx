@@ -117,8 +117,15 @@ export default async function SendPage() {
                   {row.status === 'scheduled'
                     ? `Scheduled for ${when(row.scheduled_at)}`
                     : row.status === 'failed'
-                      ? 'Failed'
-                      : `Sent ${when(row.sent_at)}`}{' '}
+                      ? 'Failed, nothing sent'
+                      : // A send that stopped partway, and one that was started
+                        // and never finished. Neither may be repeated blindly,
+                        // so neither may read as an ordinary completed send.
+                        row.status === 'partial'
+                        ? 'Stopped partway'
+                        : row.status === 'pending'
+                          ? 'Started, never confirmed'
+                          : `Sent ${when(row.sent_at)}`}{' '}
                   · {row.recipient_count}{' '}
                   {row.recipient_count === 1 ? 'recipient' : 'recipients'}
                 </span>

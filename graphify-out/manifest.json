@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "src/app/admin/layout.tsx": {
-    "mtime": 1785830834.8346176,
-    "ast_hash": "6467f5c92b0d1d969c665dae8785ac1f",
+    "mtime": 1785844097.643051,
+    "ast_hash": "e701c6cfbb001aa55adf9557863dc99f",
     "semantic_hash": ""
   },
   "src/app/admin/login/page.tsx": {
@@ -465,8 +465,8 @@
     "semantic_hash": "fb4c521639b136b6a84275844f0325a2"
   },
   "src/lib/admin/session.ts": {
-    "mtime": 1785786610.9405963,
-    "ast_hash": "d098dc513968177b1c4d81d29673bf57",
+    "mtime": 1785844022.0340347,
+    "ast_hash": "57437cc43a3aa281c904818fa6fc3c51",
     "semantic_hash": ""
   },
   "src/lib/authors/filter.ts": {
@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "src/lib/submissions/actions.ts": {
-    "mtime": 1785830620.721165,
-    "ast_hash": "7e8a5face1a21710cb34ba949e8a9154",
+    "mtime": 1785843298.4620087,
+    "ast_hash": "6150b23c150e8cbee726b4aa9e2367b0",
     "semantic_hash": ""
   },
   "src/lib/submissions/manuscript.ts": {
@@ -950,7 +950,7 @@
     "semantic_hash": ""
   },
   "src/lib/admin/people.ts": {
-    "mtime": 1785765785.0264893,
+    "mtime": 1785844038.673739,
     "ast_hash": "7cef1a1a89cfe1d168396dfb9a831e26",
     "semantic_hash": ""
   },
@@ -1025,8 +1025,8 @@
     "semantic_hash": ""
   },
   "src/app/admin/send/page.tsx": {
-    "mtime": 1785830825.6927202,
-    "ast_hash": "2294c1df87e8e6d6cc98f96a492495c4",
+    "mtime": 1785845709.1251805,
+    "ast_hash": "99b83f77a949794fd0d0ee4c566e1b2d",
     "semantic_hash": ""
   },
   "src/components/admin/SendAnnouncementForm.tsx": {
@@ -1035,8 +1035,8 @@
     "semantic_hash": ""
   },
   "src/lib/announcements/actions.ts": {
-    "mtime": 1785830759.2771432,
-    "ast_hash": "29358a6c6a55fd17e6c300662ea4d160",
+    "mtime": 1785845668.493762,
+    "ast_hash": "177bdec45f51a80e2ce8effa18a19247",
     "semantic_hash": ""
   },
   "src/lib/announcements/send.ts": {
@@ -1057,6 +1057,16 @@
   "supabase/seed/editorial-copy.sql": {
     "mtime": 1785840321.6368191,
     "ast_hash": "f3ef68041a11c528924609bd95b2c620",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/0011_inbox_counts.sql": {
+    "mtime": 1785844070.142943,
+    "ast_hash": "8e1d21a6bcfa2b5551fab30770f9d8ed",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/0012_one_send_per_announcement.sql": {
+    "mtime": 1785845652.9563267,
+    "ast_hash": "ad65f695121fae71b8aa62b85e0cad8c",
     "semantic_hash": ""
   }
 }

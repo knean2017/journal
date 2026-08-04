@@ -87,7 +87,7 @@ export async function sendAnnouncement(
    */
   const { data: priorSends } = await supabase
     .from('announcement_sends')
-    .select('id, status, sent_at, scheduled_at')
+    .select('id, status, sent_at, scheduled_at, recipient_count')
     .eq('announcement_id', announcement.id)
     .neq('status', 'failed')
 
@@ -95,9 +95,14 @@ export async function sendAnnouncement(
     const prior = priorSends[0]
     return {
       ok: false,
-      message: prior.sent_at
-        ? 'That announcement has already been mailed to the list.'
-        : 'That announcement is already scheduled to go out.',
+      message:
+        prior.status === 'partial'
+          ? `An earlier attempt at this announcement reached ${prior.recipient_count} of the list before it stopped. Sending again would mail those people twice, so finish it from the mail provider, or delete that record here if you are certain nothing arrived.`
+          : prior.status === 'pending'
+            ? 'An attempt at this announcement was started and never finished. Check the mail provider before doing anything else: it may or may not have gone out.'
+            : prior.sent_at
+              ? 'That announcement has already been mailed to the list.'
+              : 'That announcement is already scheduled to go out.',
     }
   }
 
@@ -184,6 +189,21 @@ export async function sendAnnouncement(
 
   if (recordError || !record) {
     console.error('[send] could not record the send:', recordError)
+
+    /*
+     * 23505 is the unique violation from 0012, which means somebody else
+     * claimed this announcement between the check above and this insert. That
+     * is the guard working, not a fault: the other request is sending it, and
+     * this one must not. Worth its own message, because "could not record" reads
+     * like a database problem and would invite a retry.
+     */
+    if (recordError?.code === '23505') {
+      return {
+        ok: false,
+        message: 'That announcement is already being sent, from another window or by somebody else. Nothing was sent twice.',
+      }
+    }
+
     return { ok: false, message: 'Could not record the send, so nothing was sent.' }
   }
 
@@ -200,10 +220,20 @@ export async function sendAnnouncement(
     ids.push(...outcome.ids)
 
     if (!outcome.ok) {
+      /*
+       * 'partial' when anything at all got out, 'failed' only when nothing did.
+       *
+       * The distinction decides whether this announcement may be sent again,
+       * because the guard above ignores rows marked 'failed'. Recording a
+       * half-finished send as a failure would invite exactly the wrong repair:
+       * pressing send again would mail the whole list, and everybody the first
+       * attempt reached would get it twice. A send that reached nobody is the
+       * only one safe to repeat.
+       */
       await supabase
         .from('announcement_sends')
         .update({
-          status: 'failed',
+          status: ids.length > 0 ? 'partial' : 'failed',
           error: outcome.reason,
           recipient_count: ids.length,
           provider_ids: ids,
