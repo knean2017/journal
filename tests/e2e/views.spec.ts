@@ -302,8 +302,8 @@ test.describe('announcements', () => {
    * writes: Next still loads .env.local, so the subscribe action reaches the
    * real Supabase project. An earlier version of this test filled the field
    * and clicked, which is how reader@example.com came to be sitting in the
-   * production subscriber table. Under double opt-in it would also send a real
-   * confirmation email on every run.
+   * production subscriber table. It would also send a real confirmation email
+   * to that address on every run.
    *
    * The action itself is covered by unit tests, which need no server and no
    * database.

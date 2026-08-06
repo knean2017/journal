@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest'
-import { findEntity } from '@/lib/admin/entities'
+import { findEntity, WRITABLE_TABLES } from '@/lib/admin/entities'
+
+describe('WRITABLE_TABLES', () => {
+  it('admits the two tables the panel deletes from but never edits', () => {
+    // assertWritable is the last guard before a delete reaches Postgres, so an
+    // omission here reads as a crash on a button that looks like it should work.
+    expect(WRITABLE_TABLES.has('newsletter_subscribers')).toBe(true)
+    expect(WRITABLE_TABLES.has('announcement_sends')).toBe(true)
+  })
+
+  it('still refuses a table nothing in the panel owns', () => {
+    expect(WRITABLE_TABLES.has('staff')).toBe(false)
+    expect(WRITABLE_TABLES.has('role_permissions')).toBe(false)
+  })
+})
 
 describe('editorial roles entity', () => {
   it('offers appointed as a third status', () => {

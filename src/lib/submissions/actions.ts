@@ -20,6 +20,7 @@ import {
   SUBMIT_TOAST,
   SUBSCRIBE_ALREADY_TOAST,
   SUBSCRIBE_CONFIRM_TOAST,
+  SUBSCRIBE_PENDING_TOAST,
   SUBSCRIBE_UNAVAILABLE_TOAST,
 } from '@/lib/toasts'
 
@@ -296,16 +297,15 @@ export async function subscribe(
   if (!isSupabaseConfigured()) return { ok: false, message: SUBSCRIBE_UNAVAILABLE_TOAST }
 
   /*
-   * No mail provider, so nobody could ever confirm.
+   * The mail provider is deliberately not checked here, though the link below
+   * depends on it.
    *
-   * Checked here, before the address is touched, rather than at the send below.
-   * Taking the address first would store a row that can never become mailable,
-   * which is clutter at best and a list of people who believe they signed up at
-   * worst. It also has to be a different message from the send failure further
-   * down: that one is transient and worth retrying, this one will fail
-   * identically forever until somebody sets the key.
+   * It was checked here once, and the check refused the whole form. That is how
+   * signup came to be broken for months: the provider rejects every recipient
+   * until a sending domain is verified, so nobody could subscribe and no
+   * address was even kept. Taking the address costs nothing and can be
+   * confirmed later; throwing it away cannot be undone.
    */
-  if (!isEmailConfigured()) return { ok: false, message: SUBSCRIBE_UNAVAILABLE_TOAST }
 
   const parsed = newsletterSchema.safeParse({ email: text(form, 'email') })
   if (!parsed.success) {
@@ -333,7 +333,7 @@ export async function subscribe(
    */
   const existing = await supabase
     .from('newsletter_subscribers')
-    .select('confirm_token, confirmed_at, is_active')
+    .select('confirmed_at, is_active')
     .eq('email', parsed.data.email)
     .maybeSingle()
 
@@ -353,7 +353,8 @@ export async function subscribe(
    * stranger back on the list.
    *
    * `unsubscribe_token` and `confirm_token` are absent from the update, so
-   * both survive: a live link in mail already sent still works.
+   * both survive: a live link in mail already sent still works, and somebody
+   * who signs up twice can use whichever of the two messages they open.
    */
   const { data: saved, error } = await supabase
     .from('newsletter_subscribers')
@@ -370,30 +371,32 @@ export async function subscribe(
   }
 
   /*
-   * The one message an unconfirmed address is ever sent. Failure is reported,
-   * unlike the notifications elsewhere in this file that are swallowed: those
-   * follow a row that is already committed and useful without them, whereas an
-   * unsent confirmation leaves somebody waiting for a link that is not coming.
+   * The one message an unconfirmed address is ever sent.
+   *
+   * Its failure is reported but not treated as the form's failure, which is the
+   * distinction the earlier version got wrong. The row is committed and can be
+   * confirmed later, either from a link sent once the sending domain verifies
+   * or by the office; answering with an error threw all of that away and left
+   * the reader with nothing to do but retry into the same wall.
    */
-  const sent = await notify(
-    parsed.data.email,
-    'Confirm your ICRR announcement emails',
-    [
-      'Somebody, we hope you, asked for announcement emails from the International Collegiate Research Review.',
-      '',
-      'Confirm the address by opening this link:',
-      confirmUrl(SITE_URL, saved.confirm_token),
-      '',
-      'If it was not you, ignore this message. Nothing else will be sent to this address, and it will never be added to the list.',
-    ].join('\n'),
-  )
+  const sent =
+    isEmailConfigured() &&
+    (await notify(
+      parsed.data.email,
+      'Confirm your ICRR announcement emails',
+      [
+        'Somebody, we hope you, asked for announcement emails from the International Collegiate Research Review.',
+        '',
+        'Confirm the address by opening this link:',
+        confirmUrl(SITE_URL, saved.confirm_token),
+        '',
+        'If it was not you, ignore this message. Nothing else will be sent to this address, and it will never be added to the list.',
+      ].join('\n'),
+    ))
 
   if (!sent) {
-    console.error('[subscribe] confirmation email could not be sent to a new subscriber')
-    return {
-      ok: false,
-      message: 'We could not send the confirmation email. Please try again in a few minutes.',
-    }
+    console.error('[subscribe] address saved, confirmation link not sent:', parsed.data.email)
+    return { ok: true, message: SUBSCRIBE_PENDING_TOAST }
   }
 
   return { ok: true, message: SUBSCRIBE_CONFIRM_TOAST }

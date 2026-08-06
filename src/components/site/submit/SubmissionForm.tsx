@@ -355,7 +355,8 @@ export function SubmissionForm({ disciplines }: { disciplines: Discipline[] }) {
         <input type="checkbox" className="mt-[3px]" {...checkbox('originality')} />
         <span>
           I confirm the work is original, unpublished, not under consideration elsewhere, and that
-          all authors have approved this submission.
+          all authors have approved this submission. Where an author is under 18, a parent or
+          guardian has consented to publication.
         </span>
       </label>
       <FieldError message={errors.originality} />

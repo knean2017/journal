@@ -1,8 +1,10 @@
+import { DeleteButton } from '@/components/admin/DeleteButton'
 import {
   SendAnnouncementForm,
   type SendableAnnouncement,
 } from '@/components/admin/SendAnnouncementForm'
-import { requireCapability } from '@/lib/admin/session'
+import { deleteSend } from '@/lib/admin/actions'
+import { canDo, requireCapability } from '@/lib/admin/session'
 import { FREE_TIER } from '@/lib/announcements/send'
 import { isEmailConfigured } from '@/lib/email/resend'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
@@ -22,6 +24,7 @@ const when = (value: string | null) =>
 
 export default async function SendPage() {
   await requireCapability('announcement_sends', 'view')
+  const canDelete = await canDo('announcement_sends', 'edit')
 
   const supabase = createSupabaseServiceClient()
 
@@ -89,8 +92,10 @@ export default async function SendPage() {
 
       {recipients === 0 ? (
         <p className="mt-5 mb-0 max-w-[70ch] text-[14px] leading-[1.8] text-body-muted">
-          Nobody has confirmed an address yet, so there is nobody to send to. Addresses appear once
-          somebody asks on the news page and opens the link we email them.
+          Nobody has confirmed an address yet, so there is nobody to send to. Addresses become
+          sendable once somebody asks on the news page and opens the link we email them. If the
+          announcement list shows addresses waiting, the confirmation email is not being delivered:
+          check that <code>RESEND_FROM</code> points at a verified sending domain.
         </p>
       ) : announcements.length === 0 ? (
         <p className="mt-5 mb-0 max-w-[70ch] text-[14px] leading-[1.8] text-body-muted">
@@ -132,6 +137,20 @@ export default async function SendPage() {
               </div>
               {row.error ? (
                 <p className="mt-1 mb-0 text-[13px] leading-[1.7] text-maroon">{row.error}</p>
+              ) : null}
+
+              {canDelete ? (
+                <div className="mt-2">
+                  <DeleteButton
+                    what="record"
+                    warning={
+                      row.status === 'sent' || row.status === 'partial' || row.status === 'pending'
+                        ? 'Delete this record? It does not unsend anything. What it does do is unblock the announcement, so it can be mailed to the whole list again. Check the mail provider before you press this.'
+                        : 'Delete this record? A scheduled send is not cancelled by removing its record here; cancel it at the mail provider first.'
+                    }
+                    onDelete={deleteSend.bind(null, row.id)}
+                  />
+                </div>
               ) : null}
             </div>
           ))}

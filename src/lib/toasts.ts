@@ -13,12 +13,26 @@ export const SUBMIT_TOAST =
  * Shown once an address has been taken and a confirmation link sent.
  *
  * It does not say "you are subscribed", because at this point they are not:
- * nothing is ever mailed to an address that has not opened the link. Promising
- * announcements here would be the same false confirmation the unconfigured
- * branch below used to give.
+ * nothing is ever mailed to an address that has not opened the link.
  */
 export const SUBSCRIBE_CONFIRM_TOAST =
   'Almost there. Open the link in the email we just sent to confirm the address.'
+
+/**
+ * Shown when the address was taken but the link did not go out.
+ *
+ * Deliberately not an error, and deliberately not the message above.
+ *
+ * A failed send used to fail the whole form, which is how signup came to be
+ * broken for months: the mail provider refuses every recipient until a domain
+ * is verified, so the address was thrown away and the reader was told to try
+ * again in a few minutes, forever. The row is worth keeping either way. But
+ * telling them to open a link that was never sent would be worse than the
+ * error was, so this says what actually happened and gives them a person to
+ * write to.
+ */
+export const SUBSCRIBE_PENDING_TOAST =
+  'Your address is saved. The confirmation link has not gone out yet, so write to icrrjournal@gmail.com if it does not arrive.'
 
 /** Shown to somebody already confirmed and still on the list. */
 export const SUBSCRIBE_ALREADY_TOAST = 'That address is already on the announcement list.'

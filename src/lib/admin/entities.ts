@@ -223,7 +223,19 @@ export const ENTITIES: Entity[] = [
         type: 'tags',
         help: 'One per line. Each becomes its own tag on the profile.',
       },
-      { name: 'portrait_path', label: 'Photo', type: 'image' },
+      {
+        name: 'portrait_path',
+        label: 'Photo',
+        type: 'image',
+        /*
+         * The journal takes school-age authors, so some of these are children.
+         * Left empty the profile draws the same placeholder every unfilled slot
+         * draws, which is why no separate switch exists for this: a photo not
+         * uploaded is a photo not published, and the alternative was storing a
+         * flag recording that a named author is a minor.
+         */
+        help: 'Leave empty for authors under 18. Everything else on the profile still publishes.',
+      },
       PUBLISHED,
     ],
   },
@@ -634,6 +646,9 @@ export const WRITABLE_TABLES = new Set([
   'reviewer_applications',
   'editor_applications',
   'contact_messages',
+  // Neither is edited from the panel; both may be deleted from it.
+  'newsletter_subscribers',
+  'announcement_sends',
 ])
 
 /**

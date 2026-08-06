@@ -5,7 +5,7 @@ import { JsonLd } from '@/components/seo/JsonLd'
 import { ImageSlot } from '@/components/ui/ImageSlot'
 import { ToastButton } from '@/components/ui/ToastButton'
 import { getArticlesByAuthor, getAuthorBySlug, getAuthors } from '@/lib/content'
-import { absolute } from '@/lib/site'
+import { SITE_SHORT_NAME, absolute } from '@/lib/site'
 import { PDF_TOAST } from '@/lib/toasts'
 
 export async function generateStaticParams() {
@@ -33,6 +33,7 @@ export async function generateMetadata({
       title: author.name,
       description,
       url: absolute(`/authors/${author.slug}`),
+      siteName: SITE_SHORT_NAME,
     },
     twitter: { card: 'summary_large_image', title: author.name, description },
   }

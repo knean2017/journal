@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Libre_Baskerville, Lato } from 'next/font/google'
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_SHORT_NAME, SITE_URL } from '@/lib/site'
 import '@/styles/globals.css'
 
 const libreBaskerville = Libre_Baskerville({
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    siteName: SITE_NAME,
+    siteName: SITE_SHORT_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION,
     url: '/',
