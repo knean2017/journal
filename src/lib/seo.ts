@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { SITE_DESCRIPTION, SITE_NAME, absolute } from '@/lib/site'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_SHORT_NAME, absolute } from '@/lib/site'
 
 /**
  * A page's title, description, canonical link and social card, together.
@@ -40,7 +40,7 @@ export function pageMetadata({
       title: `${title} | ICRR`,
       description,
       url: absolute(path),
-      siteName: SITE_NAME,
+      siteName: SITE_SHORT_NAME,
       locale: 'en',
     },
     twitter: { card: 'summary_large_image', title: `${title} | ICRR`, description },
@@ -85,5 +85,33 @@ export function journalSchema({ issn }: { issn: string | null }) {
         logo: absolute('/brand/lockup-full.png'),
       },
     ],
+  }
+}
+
+/**
+ * The site's own name, for the line above a search result.
+ *
+ * Separate from `journalSchema` because it belongs on the homepage and nowhere
+ * else: Google reads one name per host and takes it from the record at the
+ * root, so a copy on every page is at best ignored. The `@id` references point
+ * at the two nodes the layout has already put in the same document, which is
+ * how the three end up read as one entity rather than three.
+ *
+ * `alternateName` is not decoration either. Google treats `name` as a
+ * preference rather than an instruction, and the alternate is what it falls
+ * back to before it falls back to the domain.
+ */
+export function websiteSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': absolute('/#website'),
+    name: SITE_SHORT_NAME,
+    alternateName: SITE_NAME,
+    url: absolute('/'),
+    description: SITE_DESCRIPTION,
+    inLanguage: 'en',
+    publisher: { '@id': absolute('/#organization') },
+    mainEntity: { '@id': absolute('/#periodical') },
   }
 }

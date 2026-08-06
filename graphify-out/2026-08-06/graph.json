@@ -5071,7 +5071,7 @@
       "label": "SITE_CONFIG_FIELDS",
       "file_type": "code",
       "source_file": "src/lib/admin/entities.ts",
-      "source_location": "L601",
+      "source_location": "L589",
       "_origin": "ast",
       "id": "admin_entities_site_config_fields",
       "community": 29,
@@ -5081,7 +5081,7 @@
       "label": "findEntity()",
       "file_type": "code",
       "source_file": "src/lib/admin/entities.ts",
-      "source_location": "L637",
+      "source_location": "L625",
       "_origin": "ast",
       "id": "admin_entities_findentity",
       "community": 29,
@@ -5091,7 +5091,7 @@
       "label": "WRITABLE_TABLES",
       "file_type": "code",
       "source_file": "src/lib/admin/entities.ts",
-      "source_location": "L642",
+      "source_location": "L630",
       "_origin": "ast",
       "id": "admin_entities_writable_tables",
       "community": 29,
@@ -5101,7 +5101,7 @@
       "label": "INBOX_TABLES",
       "file_type": "code",
       "source_file": "src/lib/admin/entities.ts",
-      "source_location": "L659",
+      "source_location": "L647",
       "_origin": "ast",
       "id": "admin_entities_inbox_tables",
       "community": 14,
@@ -5111,7 +5111,7 @@
       "label": "InboxKey",
       "file_type": "code",
       "source_file": "src/lib/admin/entities.ts",
-      "source_location": "L665",
+      "source_location": "L653",
       "_origin": "ast",
       "id": "admin_entities_inboxkey",
       "community": 29,
@@ -5121,7 +5121,7 @@
       "label": "INBOX_STATUSES",
       "file_type": "code",
       "source_file": "src/lib/admin/entities.ts",
-      "source_location": "L672",
+      "source_location": "L660",
       "_origin": "ast",
       "id": "admin_entities_inbox_statuses",
       "community": 0,
@@ -16717,9 +16717,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L16",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "lib_seo"
+      "target": "lib_seo",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -16728,9 +16728,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L16",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "lib_seo_websiteschema"
+      "target": "lib_seo_websiteschema",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -16739,9 +16739,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L8",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "seo_jsonld"
+      "target": "seo_jsonld",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -16750,9 +16750,9 @@
       "source_file": "src/app/(site)/page.tsx",
       "source_location": "L8",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "site_page",
-      "target": "seo_jsonld_jsonld"
+      "target": "seo_jsonld_jsonld",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -33672,9 +33672,9 @@
       "source_file": "src/lib/seo.ts",
       "source_location": "L104",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "lib_seo",
-      "target": "lib_seo_websiteschema"
+      "target": "lib_seo_websiteschema",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",

@@ -1,7 +1,7 @@
 # Graph Report - design_handoff_icrr_journal  (2026-08-06)
 
 ## Corpus Check
-- 204 files · ~144,738 words
+- 204 files · ~144,529 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

@@ -177,6 +177,114 @@ export async function deleteRecord(entitySlug: string, id: string) {
   redirect(`/${adminPath()}/${entitySlug}`)
 }
 
+/*
+ * The four deletes below cover everything the panel lists that the generic
+ * record editor does not reach: the two inboxes, submissions, the announcement
+ * list, and the record of what has been mailed. Each is gated on `edit` in the
+ * same area as the page it appears on, so a role that may only read a list
+ * cannot remove from it by posting to the action directly.
+ *
+ * All four revalidate and return rather than redirect, unlike `deleteRecord`.
+ * They are pressed on a list rather than on a record's own page, so there is
+ * nowhere to send anybody: the list they are already looking at is the answer,
+ * one row shorter.
+ */
+
+/**
+ * Takes an address off the list for good.
+ *
+ * Different from unsubscribing, which keeps the row and records the date. This
+ * is for a row that should never have existed: a typo, a bounce, or somebody
+ * who asked the office directly to be erased rather than merely unsubscribed.
+ */
+export async function deleteSubscriber(id: string): Promise<void> {
+  await requireCapability('subscribers', 'edit')
+  assertWritable('newsletter_subscribers')
+
+  const supabase = createSupabaseServiceClient()
+  const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', id)
+  if (error) throw new Error(friendlyError(error.message, 'address'))
+
+  revalidatePath(`/${adminPath()}/subscribers`)
+  revalidatePath(`/${adminPath()}/send`)
+}
+
+/** Removes one application or contact message. Keyed by inbox, never by table. */
+export async function deleteInboxItem(key: InboxKey, id: string): Promise<void> {
+  const area = areaForInbox(key)
+  if (!area) throw new Error(`No permission area is defined for inbox "${key}"`)
+  await requireCapability(area, 'edit')
+
+  const inbox = INBOX_TABLES[key]
+  if (!inbox) throw new Error(`Unknown inbox "${key}"`)
+  assertWritable(inbox.table)
+
+  const supabase = createSupabaseServiceClient()
+  const { error } = await supabase.from(inbox.table).delete().eq('id', id)
+  if (error) throw new Error(friendlyError(error.message, 'entry'))
+
+  revalidatePath(`/${adminPath()}/${key}`)
+  // The sidebar carries a count per inbox, so it goes stale otherwise.
+  revalidatePath(`/${adminPath()}`, 'layout')
+}
+
+/**
+ * Removes a submission and the files that came with it.
+ *
+ * The row goes first. If the storage removal fails afterwards the editor is
+ * left with two orphaned objects in a private bucket, which is untidy; doing it
+ * the other way round would leave a row pointing at files that are gone, which
+ * is a submission that cannot be read and cannot be explained.
+ */
+export async function deleteSubmission(id: string): Promise<void> {
+  await requireCapability('submissions', 'edit')
+  assertWritable('submissions')
+
+  const supabase = createSupabaseServiceClient()
+
+  const { data: row } = await supabase
+    .from('submissions')
+    .select('manuscript_path, cover_letter_path')
+    .eq('id', id)
+    .maybeSingle()
+
+  const { error } = await supabase.from('submissions').delete().eq('id', id)
+  if (error) throw new Error(friendlyError(error.message, 'submission'))
+
+  const paths = [row?.manuscript_path, row?.cover_letter_path].filter(
+    (path): path is string => typeof path === 'string' && path.length > 0,
+  )
+
+  if (paths.length > 0) {
+    const { error: storageError } = await supabase.storage.from('manuscripts').remove(paths)
+    if (storageError) console.error('[admin] submission files left behind:', storageError)
+  }
+
+  revalidatePath(`/${adminPath()}/submissions`)
+  revalidatePath(`/${adminPath()}`, 'layout')
+}
+
+/**
+ * Removes one line from the record of what has been mailed.
+ *
+ * The send action refuses to mail an announcement that already has a row here,
+ * whatever that row says, so this is also the release valve for the case that
+ * guard warns about: a send recorded as started or stopped partway blocks the
+ * announcement forever until somebody who has checked the mail provider clears
+ * it. Deleting a completed send does not unsend it, and it does let the same
+ * announcement go out to the whole list a second time.
+ */
+export async function deleteSend(id: string): Promise<void> {
+  await requireCapability('announcement_sends', 'edit')
+  assertWritable('announcement_sends')
+
+  const supabase = createSupabaseServiceClient()
+  const { error } = await supabase.from('announcement_sends').delete().eq('id', id)
+  if (error) throw new Error(friendlyError(error.message, 'send'))
+
+  revalidatePath(`/${adminPath()}/send`)
+}
+
 export async function saveSiteConfig(
   _previous: FormResult | null,
   form: FormData,

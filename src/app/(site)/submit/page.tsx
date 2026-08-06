@@ -40,9 +40,9 @@ export default async function SubmitPage() {
         <div>
           <h2 className="m-0 font-serif text-[24px] font-bold text-maroon">Eligibility</h2>
           <p className="mt-3 mb-0 text-[15.5px] leading-[1.85] text-body">
-            At least one author must be a current undergraduate or graduate student, or have
-            graduated within the last twelve months. Faculty may appear as co-authors where they
-            contributed substantively.
+            At least one author must be a current high school, undergraduate, or graduate student,
+            or have graduated within the last twelve months. Faculty and teachers may appear as
+            co-authors where they contributed substantively.
           </p>
 
           {/* Each list below is entered in the panel, so its heading goes with it. */}

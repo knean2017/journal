@@ -35,14 +35,14 @@ export const TEMPLATES: Template[] = [
     title: 'Manuscript template',
     summary:
       'The paper itself, anonymous. The usual headings are already in it, in order, with the guidance in grey for you to delete as you go. Keep, rename, or drop them as your work needs.',
-    docx: { href: '/templates/ICRR-Manuscript-Template.docx', bytes: 21353 },
+    docx: { href: '/templates/ICRR-Manuscript-Template.docx', bytes: 68415 },
   },
   {
     id: 'cover-letter',
     title: 'Cover letter template',
     summary:
       'The letter that travels with it. Read by the editors only and never sent to reviewers, which is why your name belongs here and not in the paper.',
-    docx: { href: '/templates/ICRR-Cover-Letter-Template.docx', bytes: 19611 },
+    docx: { href: '/templates/ICRR-Cover-Letter-Template.docx', bytes: 68700 },
   },
 ]
 

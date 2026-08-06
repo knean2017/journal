@@ -6,7 +6,7 @@ import { PreviewBanner } from '@/components/ui/PreviewBanner'
 import { ToastButton } from '@/components/ui/ToastButton'
 import { getArticleBySlug, getArticles, getConfig, getIssues } from '@/lib/content'
 import { resolveIssn } from '@/lib/seo'
-import { SITE_NAME, absolute } from '@/lib/site'
+import { SITE_NAME, SITE_SHORT_NAME, absolute } from '@/lib/site'
 import { PDF_TOAST } from '@/lib/toasts'
 
 export async function generateStaticParams() {
@@ -87,6 +87,7 @@ export async function generateMetadata({
       title: article.title,
       description,
       url: absolute(`/articles/${article.slug}`),
+      siteName: SITE_SHORT_NAME,
       publishedTime: article.publishedOn ?? undefined,
       authors: names,
       tags: article.keywords,

@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "src/app/(site)/about/page.tsx": {
-    "mtime": 1786019393.8616853,
-    "ast_hash": "b2825f9d59a6ee7500dc8d1b3da503e4",
+    "mtime": 1785488595.9350965,
+    "ast_hash": "9bbe32e456c5a0eee226ce13db399300",
     "semantic_hash": ""
   },
   "src/app/(site)/archives/page.tsx": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "src/app/(site)/submit/page.tsx": {
-    "mtime": 1786019392.0334995,
-    "ast_hash": "1c5e4c11e8c80b92b2ea55706223669e",
+    "mtime": 1785790184.1176207,
+    "ast_hash": "d11fa943dc2130834b54a24034dedc39",
     "semantic_hash": ""
   },
   "src/app/(site)/team/page.tsx": {
@@ -375,8 +375,8 @@
     "semantic_hash": ""
   },
   "src/components/site/submit/SubmissionForm.tsx": {
-    "mtime": 1786019684.1850395,
-    "ast_hash": "7d22154542caf5a5076037b31ba75481",
+    "mtime": 1785488595.9350965,
+    "ast_hash": "3c456b7f2b19d73e388af4950de19977",
     "semantic_hash": ""
   },
   "src/components/ui/Button.tsx": {
@@ -455,8 +455,8 @@
     "semantic_hash": "28deb6d3ba0d6d1a7693dc19c8e8378f"
   },
   "src/lib/admin/entities.ts": {
-    "mtime": 1786019425.597232,
-    "ast_hash": "060dfda3ba640644f5b016961a9bf632",
+    "mtime": 1786018364.6071107,
+    "ast_hash": "5c302c307bb084ae91a72901b0048450",
     "semantic_hash": ""
   },
   "src/lib/admin/lookups.ts": {
@@ -515,8 +515,8 @@
     "semantic_hash": ""
   },
   "src/lib/content/seed/process.ts": {
-    "mtime": 1786019407.2501917,
-    "ast_hash": "975ddba2945749490fdbfaa5de01a2f3",
+    "mtime": 1785787176.3114266,
+    "ast_hash": "2b0ae66ff103f1c318dba8521190cdfd",
     "semantic_hash": ""
   },
   "src/lib/content/seed/roles.ts": {
@@ -1055,8 +1055,8 @@
     "semantic_hash": ""
   },
   "supabase/seed/editorial-copy.sql": {
-    "mtime": 1786019421.0968966,
-    "ast_hash": "6209e5f17d5f1e259f53fe6ba85b7cc1",
+    "mtime": 1785840321.6368191,
+    "ast_hash": "f3ef68041a11c528924609bd95b2c620",
     "semantic_hash": ""
   },
   "supabase/migrations/0011_inbox_counts.sql": {

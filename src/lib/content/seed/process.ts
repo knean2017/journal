@@ -112,7 +112,15 @@ export const requirements: Requirement[] = [
 ]
 
 export const checklist: string[] = [
-  'At least one author is a current student or graduated within the last twelve months.',
+  'At least one author is a current high school, undergraduate, or graduate student, or graduated within the last twelve months.',
+  /*
+   * Sits with eligibility rather than at the end, because it is the condition
+   * attached to the line above it: opening the journal to school students
+   * means some authors are minors, and a named child with an affiliation and a
+   * biography is published on the open web permanently. The office cannot ask
+   * for consent it never collected, so it is confirmed at submission.
+   */
+  'Where an author is under 18, a parent or guardian has consented in writing to publication.',
   'The manuscript is anonymised and contains no identifying information.',
   'The work is original, unpublished, and not under consideration elsewhere.',
   'Ethical approval is attached where human subjects are involved.',

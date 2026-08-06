@@ -80,15 +80,16 @@ where not exists (select 1 from submission_requirements);
 -- The submit page, below the requirements.
 insert into submission_checklist (text, sort_order)
 select * from (values
-  ('At least one author is a current student or graduated within the last twelve months.', 0),
-  ('The manuscript is anonymised and contains no identifying information.',                1),
-  ('The work is original, unpublished, and not under consideration elsewhere.',            2),
-  ('Ethical approval is attached where human subjects are involved.',                      3),
-  ('Funding, supervision, and use of generative tools are declared in the cover letter.',  4)
+  ('At least one author is a current high school, undergraduate, or graduate student, or graduated within the last twelve months.', 0),
+  ('Where an author is under 18, a parent or guardian has consented in writing to publication.', 1),
+  ('The manuscript is anonymised and contains no identifying information.',                2),
+  ('The work is original, unpublished, and not under consideration elsewhere.',            3),
+  ('Ethical approval is attached where human subjects are involved.',                      4),
+  ('Funding, supervision, and use of generative tools are declared in the cover letter.',  5)
 ) as v(text, sort_order)
 where not exists (select 1 from submission_checklist);
 
--- What you should see afterwards: 4, 5, 6, 7, 5.
+-- What you should see afterwards: 4, 5, 6, 7, 6.
 select 'process_steps' as block, count(*) from process_steps
 union all select 'timeline_entries',        count(*) from timeline_entries
 union all select 'journal_facts',           count(*) from journal_facts

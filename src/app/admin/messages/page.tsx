@@ -2,7 +2,7 @@ import { InboxRow } from '@/components/admin/InboxRow'
 import { ListToolbar } from '@/components/admin/ListToolbar'
 import { INBOX_STATUSES } from '@/lib/admin/entities'
 import { matchesQuery, matchesStatus, param } from '@/lib/admin/filter'
-import { requireCapability } from '@/lib/admin/session'
+import { canDo, requireCapability } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
@@ -14,6 +14,7 @@ export default async function MessagesPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   await requireCapability('messages', 'view')
+  const canDelete = await canDo('messages', 'edit')
 
   const filters = await searchParams
   const query = param(filters.q)
@@ -60,6 +61,7 @@ export default async function MessagesPage({
                 <InboxRow
                   key={row.id}
                   inbox="messages"
+                  canDelete={canDelete}
                   item={{
                     id: row.id,
                     title: row.topic,

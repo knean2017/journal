@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { setInboxStatus } from '@/lib/admin/actions'
+import { DeleteButton } from './DeleteButton'
+import { deleteInboxItem, setInboxStatus } from '@/lib/admin/actions'
 import { INBOX_STATUSES as STATUSES, type InboxKey } from '@/lib/admin/entities'
 
 export type InboxItem = {
@@ -15,7 +16,16 @@ export type InboxItem = {
   details: { label: string; value: string }[]
 }
 
-export function InboxRow({ inbox, item }: { inbox: InboxKey; item: InboxItem }) {
+export function InboxRow({
+  inbox,
+  item,
+  canDelete = false,
+}: {
+  inbox: InboxKey
+  item: InboxItem
+  /** Off unless the viewer may edit this inbox, so an observer sees no button. */
+  canDelete?: boolean
+}) {
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState(item.status)
   const [notes, setNotes] = useState(item.adminNotes)
@@ -94,6 +104,16 @@ export function InboxRow({ inbox, item }: { inbox: InboxKey; item: InboxItem }) 
             </button>
             {message ? <span className="text-[12.5px] text-body-muted">{message}</span> : null}
           </div>
+
+          {canDelete ? (
+            <div className="border-t border-rule pt-4">
+              <DeleteButton
+                what="entry"
+                warning={`Delete this entry from ${item.email} for good? Everything they wrote goes with it, and it cannot be brought back. Archive it instead to keep the record.`}
+                onDelete={() => deleteInboxItem(inbox, item.id)}
+              />
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

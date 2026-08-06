@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { setSubmissionStatus, signSubmissionFile } from '@/lib/admin/actions'
+import { DeleteButton } from './DeleteButton'
+import { deleteSubmission, setSubmissionStatus, signSubmissionFile } from '@/lib/admin/actions'
 
 const STATUSES = [
   { value: 'new', label: 'New' },
@@ -27,7 +28,14 @@ export type Submission = {
   createdAt: string
 }
 
-export function SubmissionRow({ submission }: { submission: Submission }) {
+export function SubmissionRow({
+  submission,
+  canDelete = false,
+}: {
+  submission: Submission
+  /** Off unless the viewer may edit submissions, so an observer sees no button. */
+  canDelete?: boolean
+}) {
   const [open, setOpen] = useState(false)
   const [status, setStatus] = useState(submission.status)
   const [notes, setNotes] = useState(submission.adminNotes)
@@ -141,6 +149,16 @@ export function SubmissionRow({ submission }: { submission: Submission }) {
             </button>
             {message ? <span className="text-[12.5px] text-body-muted">{message}</span> : null}
           </div>
+
+          {canDelete ? (
+            <div className="border-t border-rule pt-4">
+              <DeleteButton
+                what="submission"
+                warning="Delete this submission for good? The manuscript and cover letter are deleted from storage with it, and neither can be brought back. Mark it rejected instead to keep the record."
+                onDelete={() => deleteSubmission(submission.id)}
+              />
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

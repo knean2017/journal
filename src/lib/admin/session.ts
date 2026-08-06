@@ -178,3 +178,21 @@ export async function requireCapability(area: Area, need: 'view' | 'edit'): Prom
 
   return admin
 }
+
+/**
+ * The same question, asked rather than enforced.
+ *
+ * For a page that is already past its own gate and needs to know whether to
+ * draw a control the viewer may not use: an observer reads every list, and a
+ * delete button they can only be refused by is worse than no button at all.
+ *
+ * Never the only check on anything. The action behind the control calls
+ * `requireCapability` itself, because hiding a button is a courtesy and a
+ * server action is reachable by direct POST regardless.
+ */
+export async function canDo(area: Area, need: 'view' | 'edit'): Promise<boolean> {
+  const admin = await currentAdmin()
+  if (!admin) return false
+
+  return can(await permissionMatrix(), admin.role, area, need)
+}

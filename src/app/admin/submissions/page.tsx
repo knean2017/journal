@@ -1,7 +1,7 @@
 import { ListToolbar } from '@/components/admin/ListToolbar'
 import { SubmissionRow } from '@/components/admin/SubmissionRow'
 import { matchesQuery, matchesStatus, param } from '@/lib/admin/filter'
-import { requireCapability } from '@/lib/admin/session'
+import { canDo, requireCapability } from '@/lib/admin/session'
 import { adminPath } from '@/lib/supabase/env'
 import { createSupabaseServiceClient } from '@/lib/supabase/service'
 
@@ -21,6 +21,7 @@ export default async function SubmissionsPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   await requireCapability('submissions', 'view')
+  const canDelete = await canDo('submissions', 'edit')
 
   const filters = await searchParams
   const query = param(filters.q)
@@ -72,6 +73,7 @@ export default async function SubmissionsPage({
               {shown.map((row) => (
                 <SubmissionRow
                   key={row.id}
+                  canDelete={canDelete}
                   submission={{
                     id: row.id,
                     title: row.title,

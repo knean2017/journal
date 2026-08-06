@@ -47,9 +47,9 @@ export default async function AboutPage() {
       <section className="max-w-[1180px] mx-auto px-[clamp(18px,5vw,40px)] pt-11 page-split">
         <div>
           <p className="m-0 font-serif text-[20px] leading-[1.75] text-maroon-deep">
-            The International Collegiate Research Review publishes reviewed research by
-            undergraduate and graduate students, from any institution and any country, at no cost to
-            authors or readers.
+            The International Collegiate Research Review publishes reviewed research by high school,
+            undergraduate, and graduate students, from any institution and any country, at no cost
+            to authors or readers.
           </p>
 
           {SECTIONS.map((section, i) => (
